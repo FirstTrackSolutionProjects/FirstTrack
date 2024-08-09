@@ -1,0 +1,1 @@
+//Here lies all the constant objects of the site
