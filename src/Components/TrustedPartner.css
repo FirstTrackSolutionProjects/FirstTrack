@@ -1,0 +1,38 @@
+/* Animation for slide-up effect */
+
+  
+  .animate-slide-up {
+    animation: slide-up 1s ease-out forwards;
+  }
+  
+  /* Slider setup */
+  .slider {
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+  }
+  
+  .slider-track {
+    display: flex;
+    width: calc(250px * 10); /* Adjust width based on number of logos */
+    animation: slide 20s linear infinite;
+  }
+  
+  .slider-item {
+    width: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+  }
+  
+  /* Keyframes for continuous sliding */
+  @keyframes slide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  

@@ -5,7 +5,13 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: { 
+        "inter":['Inter','Inter'],
+        "poppins":['Poppins','Poppins'],
+        "domine":['Domine','Domine']
+    },
+    },
   },
   plugins: [],
 }
