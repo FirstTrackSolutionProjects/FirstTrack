@@ -13,14 +13,23 @@ const AboutUs = () => {
   return (
     <div className="font-inter text-gray-800">
       {/* Hero Section */}
-      <section className="relative w-full h-80 md:h-96 bg-cover
-       bg-center bg-[url('images/FTEXPRESS.png')]">
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-4xl md:text-6xl font-bold text-center">
-            About Us
-          </h1>
-        </div>
-      </section>
+      <div className="relative w-full h-[400px] p-2">
+      {/* Background Image */}
+      <img
+        src="images/about2.jpg" // Replace with your image URL
+        alt="About Us Background"
+        className="w-full h-full object-cover"
+      />
+
+      {/* Full-width background with centered text */}
+      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <h1 className="text-white text-6xl font-bold">
+          About Us
+        </h1>
+      </div>
+    </div>
+
+  
 
       {/* Mission & Values */}
       <section className="py-5 md:py-12 bg-gray-100">

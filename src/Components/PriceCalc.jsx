@@ -241,8 +241,8 @@ const Domestic = () => {
             </div>
             </>
           ))}
-            <button type="button" className="m-2 px-5 py-1 border border-green-500 rounded-3xl bg-white text-green-500" onClick={addBox}>Add More Boxes</button>
-            <button type="submit" className="border bg-green-500 text-white mx-2  py-2 px-4 rounded-3xl">
+            <button type="button" className="m-2 px-5 py-1 border border-green-600 rounded-3xl bg-white text-green-600" onClick={addBox}>Add More Boxes</button>
+            <button type="submit" className="border bg-green-600 text-white mx-2  py-2 px-4 rounded-3xl">
               Submit and Compare
             </button>
         </form>
