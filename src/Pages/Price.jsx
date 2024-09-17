@@ -5,11 +5,11 @@ import PriceCalc from '../Components/PriceCalc'
 
 const Price = () => {
   return (
-    <>
+    <div className='bg-green-50 font-inter'>
         
         <PriceCalc />
         
-    </>
+    </div>
   )
 }
 

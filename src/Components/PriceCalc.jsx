@@ -260,7 +260,7 @@ const PriceCalc = () => {
       <div className="relative">
       
       <div className="w-full p-8 flex flex-col items-center space-y-6">
-        <div className="justify-center text-center text-3xl font-medium mb-8 flex">
+        <div className="justify-center text-center text-xl md:text-3xl font-medium mb-8 flex">
           Calculate Your Shipping Price
         </div>
         <Domestic />
