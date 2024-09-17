@@ -10,13 +10,21 @@ const ContactUs = () => {
   return (
     <div className="font-inter text-gray-800">
       {/* Hero Section */}
-      <section className="relative w-full h-96 bg-cover bg-center bg-[url('images/contact.jpg')]">
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-4xl md:text-6xl font-bold text-center">
-            Contact Us
-          </h1>
-        </div>
-      </section>
+      <div className="relative w-full h-[400px] p-2">
+      {/* Background Image */}
+      <img
+        src="images/contact.jpg" // Replace with your image URL
+        alt="About Us Background"
+        className="w-full h-full object-cover"
+      />
+
+      {/* Full-width background with centered text */}
+      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <h1 className="text-white text-6xl font-bold">
+          Contact Us
+        </h1>
+      </div>
+    </div>
 
       {/* Contact Form & Info Section */}
       <section className="py-12">
@@ -81,15 +89,15 @@ const ContactUs = () => {
             <ul className="space-y-4">
               <li>
               <FontAwesomeIcon icon={faMapMarkerAlt} className="text-blue-500 mr-3" />
-                <span>Address : 123 Logistics Avenue, Shipping City, Country</span>
+                <span> 123 Logistics Avenue, Shipping City, Country</span>
               </li>
               <li>
               <FontAwesomeIcon icon={faPhone} className="text-blue-500 mr-3" />
-                <span>Phone : +123 456 7890</span>
+                <span> +123 456 7890</span>
               </li>
               <li>
               <FontAwesomeIcon icon={faEnvelope} className="text-blue-500 mr-3" />
-                <span>Email : info@firsttrackexpress.com</span>
+                <span> info@firsttrackexpress.com</span>
               </li>
             </ul>
             <div className="mt-8">

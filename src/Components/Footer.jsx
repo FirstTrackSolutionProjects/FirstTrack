@@ -34,12 +34,12 @@ const Footer =()=>{
                 <div className="text-xl font-semibold mb-4">Contact Us</div>
                     <div className="flex items-center mb-4 text-balance">
                         <FaMapMarkerAlt className="h-5 w-4 mr-3" />
-                        <span className=" text-sm">Shop No 201, ABC Complex.</span>
+                        <span className=" text-sm">123 Logistics Avenue, Shipping City, Country.</span>
                     </div>
                     
                     <div className="flex items-center mb-4">
                         <FaPhoneAlt className="h-5 w-4 mr-3" />
-                        <span className="text-sm">Phone: +91-9040170727</span>
+                        <span className="text-sm">Phone: +123 456 7890</span>
                     </div>
                     
                     <div className="flex items-center">
@@ -88,7 +88,7 @@ const Footer =()=>{
                 </div>
             </div>
             <div className="bg-black justify-between text-white text-sm flex-1 md:flex p-8">
-                <div><span className="text-gray-400">Copyright &copy; 2024 </span><span className="font-bold"> First Track Solution Technologies. All Rights Reserved.</span></div>
+                <div><span className="text-gray-400">Copyright &copy; 2024 </span><span className="font-bold"> Developed By First Track Solution Technologies</span></div>
 
                 <div className=" mt-5 md:mt-0 md:flex mr-10">
                 <Link to='/' onClick={scrollToTop} className="">Home&nbsp; |&nbsp;</Link>

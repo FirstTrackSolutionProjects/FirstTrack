@@ -46,3 +46,24 @@ export const testimonials = [
       icon: "⚓",
     },
   ];
+
+  export const counts =[
+    {
+        id:1,
+        title:"Trusted Clients",
+        num: "10",
+        sym:"K+",
+    },
+    {
+        id:2,
+        title:"Orders Delivered",
+        num: "20",
+        sym:"K+",
+    },
+    {
+        id:3,
+        title:"Sellers",
+        num: "25",
+        sym:"+",
+    },
+  ];

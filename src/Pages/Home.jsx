@@ -4,7 +4,9 @@ import Service from '../Components/Service'
 import PriceCalc from '../Components/PriceCalc';
 import TrustedPartnerSection from '../Components/TrustedPartner';
 import HomeCalculator from '../Components/HomeCalculator';
-import {testimonials,whyChooseUs} from '../Constants/index'
+import {testimonials,whyChooseUs,counts} from '../Constants/index'
+import { useInView } from 'react-intersection-observer';
+import CounterCard from '../Components/CounterCard';
 
 const Testimonials = () => {
   return (
@@ -102,12 +104,48 @@ const NewsletterSection = () => {
 
 
 
+const Counter = () => {
+  const { ref, inView } = useInView({
+    triggerOnce: false, // Trigger animation only once
+    threshold: 0.1, // Trigger when 10% of the section is visible
+  });
+  return(
+    <section ref={ref} className="py-8 md:py-10 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold mb-5 md:mb-12 text-green-600">
+          First Track Express Superiority
+        </h2>
+
+        <div className="grid grid-cols-1 px-10 md:grid-cols-3 gap-5 md:gap-12 md:px-20">
+          {counts.map((count, index) => (
+            <div
+              key={count.id}
+              className={`p-3 md:p-6 bg-neutral-200 shadow-md rounded-lg transform transition-all duration-700 ${
+                inView
+                  ? `opacity-100 translate-y-0 delay-[${index * 200}ms]`
+                  : "opacity-0 translate-y-10"
+              }`}
+            >
+              <CounterCard className="text-gray-800" count={count.num} symbol={count.sym} speed={10} />
+              <h3 className="text-lg md:text-xl font-semibold mb-2 text-gray-600">{count.title}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+
 const Home = () => {
+ 
   return (
     <div className='font-poppins z-10'>
       <Image/>
       <Service/>
       <WhyChooseUs/>
+      <Counter/>
       <Calc/>
       <NewsletterSection/>
       <Testimonials/>

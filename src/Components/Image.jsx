@@ -3,12 +3,20 @@ import { Link } from 'react-router-dom';
 
 const Image = () => {
   return (
-    <section className="z-0 relative w-full h-[400px] md:h-[480px] bg-cover bg-center bg-[url('images/banner.png')]">
-      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          {/* Tagline */}
-          <div className="text-white">
-            <h1 className="w-1/2 text-2xl md:text-4xl  font-bold mb-6">
+    <>
+    <div className="relative w-full h-[400px] md:h-[480px] p-2">
+    {/* Background Image */}
+    <img
+      src="images/banner.png" // Replace with your image URL
+      alt="Background"
+      className="w-full h-full object-cover" // Image with reduced opacity (dull)
+    />
+    
+    {/* Text Overlay */}
+    <div className="absolute inset-0  flex items-center justify-center">
+      <h1 className="text-white text-3xl  bg-black bg-opacity-30 h-[400px] md:h-[480px] w-full px-4 py-2 rounded">
+      <div className="max-w-6xl my-20 md:my-32 mx-auto md:px-8">
+            <h1 className="w-1/2 items-center text-2xl md:text-4xl  font-bold mb-6">
               YOUR TRUSTED LOGISTIC <span className='text-gray-700'>PARTNER</span> IN WORLDWIDE SMART WAY
             </h1>
             {/* Buttons */}
@@ -20,10 +28,11 @@ const Image = () => {
                 LOGIN
               </button></Link>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
+            </div>
+      </h1>
+    </div>
+  </div>
+  </>
   );
 };
 
