@@ -15,15 +15,15 @@ const Header = () => {
   return (
     <header className="bg-gray-100 shadow-md w-full font-inter">
       {/* Container for logo and navigation */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center py-2">
+      <div className="max-w-7xl mx-auto px-4 md:px-12 flex  justify-between md:justify-around  items-center py-1">
         {/* Logo and Company Name */}
         <Link to='/'><div className="flex items-center">
-          <img src="images/logo-removebg.png" alt="Logo" className="w-16 h-16 mr-3" />
-          <span className="text-lg md:text-xl font-bold hover:text-green-500">FIRST TRACK EXPRESS</span>
+          <img src="images/logo-removebg.png" alt="Logo" className="w-20 h-20 " />
+          
         </div></Link>
 
         {/* Menu for md and above */}
-        <nav className="hidden md:flex space-x-6 text-base font-semibold">
+        <nav className="-ml-20 hidden md:flex space-x-6 text-base font-semibold">
           <Link to="/" className="hover:text-blue-800">HOME</Link>
           <Link to="/track" className="hover:text-blue-800">TRACKING</Link>
           <Link to="/blog" className="hover:text-blue-800">BLOGS</Link>

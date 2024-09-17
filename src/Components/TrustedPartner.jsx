@@ -22,13 +22,13 @@ const { ref, inView } = useInView({
   return (
     <section ref={ref} className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-10">Our Trusted Partners</h2>
+        <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-10">Our Trusted Partners</h2>
         <div className="flex justify-center items-center">
           <div className="slider">
             <div className="slider-track">
               {logos.map((logo, index) => (
                 <div key={index} className="slider-item">
-                  <img src={logo} alt={`Trusted partner ${index + 1}`} className="h-16 md:h-24 object-contain" />
+                  <img src={logo} alt={`Trusted partner ${index + 1}`} className="h-14 md:h-24 object-contain" />
                 </div>
               ))}
             </div>

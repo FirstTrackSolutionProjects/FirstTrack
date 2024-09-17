@@ -39,7 +39,7 @@ const Form = () => {
     }
     return (
         <>
-            <div className='w-full pt-16'>
+            <div className='w-full md:pt-16 font-inter'>
                 <div className='w-full p-8 flex flex-col items-center space-y-16 mb-8'>
                     <div className='text-center text-3xl font-medium'>Track your Parcel</div>
                     
@@ -56,8 +56,8 @@ const Form = () => {
             </div>
             </div> */}
             <div className='flex'>
-            <input type="text" name="awb" value={formData.id} onChange={handleChange} className="border py-2 px-4 sm:rounded-l-xl bg-blue-50" placeholder="Enter Tracking Id/AWB" />
-            <button className="border py-2 px-4 sm:rounded-r-xl bg-blue-50">Track</button>
+            <input type="text" name="awb" value={formData.id} onChange={handleChange} className="border py-2 px-4 rounded-l-xl bg-blue-50" placeholder="Enter Tracking Id/AWB" />
+            <button className="border py-2 px-4 rounded-r-xl bg-blue-50">Track</button>
             </div>
         </form>
                 </div>

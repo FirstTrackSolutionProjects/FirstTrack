@@ -8,7 +8,7 @@ import {faTwitterSquare } from '@fortawesome/free-brands-svg-icons';
 
 const ContactUs = () => {
   return (
-    <div className="font-sans text-gray-800">
+    <div className="font-inter text-gray-800">
       {/* Hero Section */}
       <section className="relative w-full h-96 bg-cover bg-center bg-[url('images/contact.jpg')]">
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
