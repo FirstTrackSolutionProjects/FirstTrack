@@ -24,7 +24,7 @@ const Image = () => {
               <button className="bg-gray-700 text-sm md:text-base text-white py-3 px-6 rounded-lg transition duration-300">
                 DISCOVER MORE
               </button>
-              <Link to="/"><button className="bg-white text-sm md:text-base text-gray-600 py-3 px-6 rounded-lg hover:bg-gray-100 transition duration-300">
+              <Link to="/login"><button className="bg-white text-sm md:text-base text-gray-600 py-3 px-6 rounded-lg hover:bg-gray-100 transition duration-300">
                 LOGIN
               </button></Link>
             </div>

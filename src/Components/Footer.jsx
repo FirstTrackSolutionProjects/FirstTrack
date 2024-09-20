@@ -12,12 +12,15 @@ const Footer =()=>{
     return(
         <div className="font-inter">
         {/* Call to Action */}
-      <section className="py-12 bg-blue-900 text-white text-center">
+      <section className="py-5 md:py-12 bg-blue-900 text-white text-center">
         <h3 className="text-2xl font-semibold">Let’s Connect!</h3>
-        <p className="mt-4">We are always ready to assist you with your logistics needs. Contact us today!</p>
-        <button className="mt-6 px-6 py-3 bg-white text-blue-500 rounded-lg hover:bg-gray-100">
+        <div className="my-4">We are always ready to assist you with your logistics needs. Contact us today!</div>
+        <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer" ><div className=" mx-auto w-fit px-5 py-2 bg-white text-blue-500 rounded-full hover:bg-gray-100">
           Get in Touch
-        </button>
+        </div></a>
       </section>
             
         
@@ -34,12 +37,12 @@ const Footer =()=>{
                 <div className="text-xl font-semibold mb-4">Contact Us</div>
                     <div className="flex items-center mb-4 text-balance">
                         <FaMapMarkerAlt className="h-5 w-4 mr-3" />
-                        <span className=" text-sm">123 Logistics Avenue, Shipping City, Country.</span>
+                        <span className=" text-sm">BMC Bhawani Mall, Saheed Nagar Bhubaneswar, Odisha-751007.</span>
                     </div>
                     
                     <div className="flex items-center mb-4">
                         <FaPhoneAlt className="h-5 w-4 mr-3" />
-                        <span className="text-sm">Phone: +123 456 7890</span>
+                        <span className="text-sm">Phone: +91-9040170727</span>
                     </div>
                     
                     <div className="flex items-center">
@@ -50,7 +53,6 @@ const Footer =()=>{
 
                 <div className="w-full h-full items-center justify-center my-auto p-7">
                     <div className="text-xl font-semibold mb-4">Our Services</div>
-                    <Link to="/services" onClick={scrollToTop}><div className="my-2 text-sm">E-Commerce Delivery</div></Link>
                     <Link to="/services" onClick={scrollToTop}><div className="my-2 text-sm">Pick & Drop</div></Link>
                     <Link to="/services" onClick={scrollToTop}><div className="my-2 text-sm">Packaging</div></Link>
                     <Link to="/services" onClick={scrollToTop}><div className="my-2 text-sm">International & Domestic Services</div></Link>

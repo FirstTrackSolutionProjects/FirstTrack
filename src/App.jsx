@@ -12,6 +12,8 @@ import DomesticTracking from './Pages/Tracking'
 import Price from './Pages/Price'
 import Blogs from './Pages/Blogs'
 import Login from './Components/Login'
+import Register from './Components/Register'
+import Register2 from './Components/Register2'
 
 const App = () => {
   return (
@@ -28,6 +30,7 @@ const App = () => {
         <Route path='/privacy' element={<PrivacyPolicy/>}></Route>
         <Route path='/terms' element={<Terms/>}></Route>
         <Route path='/login' element={<Login/>}></Route>
+        <Route path='/register' element={<Register2/>}></Route>
       </Routes>
       <Footer/>
     </div>

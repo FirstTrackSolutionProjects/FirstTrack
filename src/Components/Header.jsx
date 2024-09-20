@@ -56,6 +56,7 @@ const Header = () => {
           <Link to="/" className="hover:text-blue-500" onClick={toggleSidebar}>Home</Link>
           <Link to="/track" className="hover:text-blue-500" onClick={toggleSidebar}>Tracking</Link>
           <Link to="/about" className="hover:text-blue-500" onClick={toggleSidebar}>About</Link>
+          <Link to="/blog" className="hover:text-blue-500" onClick={toggleSidebar}>Blogs</Link>
           <Link to="/pricing" className="hover:text-blue-500" onClick={toggleSidebar}>Pricing</Link>
           <Link to="/contact" className="hover:text-blue-500" onClick={toggleSidebar}>Contact</Link>
         </nav>

@@ -8,9 +8,9 @@ import {faTwitterSquare } from '@fortawesome/free-brands-svg-icons';
 
 const ContactUs = () => {
   return (
-    <div className="font-inter text-gray-800">
+    <div className="font-inter text-gray-800 p-3 md:p-0">
       {/* Hero Section */}
-      <div className="relative w-full h-[400px] p-2">
+      <div className="relative w-full h-[200px] md:h-[400px] p-2">
       {/* Background Image */}
       <img
         src="images/contact.jpg" // Replace with your image URL
@@ -20,7 +20,7 @@ const ContactUs = () => {
 
       {/* Full-width background with centered text */}
       <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <h1 className="text-white text-6xl font-bold">
+        <h1 className="text-white text-3xl md:text-6xl font-bold">
           Contact Us
         </h1>
       </div>
@@ -89,11 +89,11 @@ const ContactUs = () => {
             <ul className="space-y-4">
               <li>
               <FontAwesomeIcon icon={faMapMarkerAlt} className="text-blue-500 mr-3" />
-                <span> 123 Logistics Avenue, Shipping City, Country</span>
+                <span> BMC Bhawani Mall, Saheed Nagar Bhubaneswar, Odisha-751007.</span>
               </li>
               <li>
               <FontAwesomeIcon icon={faPhone} className="text-blue-500 mr-3" />
-                <span> +123 456 7890</span>
+                <span> +91-9040170727</span>
               </li>
               <li>
               <FontAwesomeIcon icon={faEnvelope} className="text-blue-500 mr-3" />
