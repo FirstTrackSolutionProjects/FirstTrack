@@ -5,8 +5,8 @@ const db = require('../db');
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-  const { fullName,email, password, mobile, business_name } = req.body;
-
+  const { fullName,email, password, mobile, business_name } = req.body ;
+ console.log(req.body);
   try {
     // Check if user already exists
     const [user] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -24,6 +24,7 @@ router.post('/', async (req, res) => {
     res.status(201).json({ token });
   } catch (err) {
     res.status(500).json({ error: err.message });
+    console.error(err);
   }
 });
 

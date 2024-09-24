@@ -67,7 +67,7 @@ const Footer =()=>{
                     <div className="text-xl font-semibold my-4">Follow Us:</div>
                     <div className="flex justify-evenly">
                         
-                    <a href="https://www.facebook.com/people/Firsttrack-Solutiontechnologies/pfbid0wn8Bk27pnv2nDpGxJNg1vWLM1ssykjyHBtj4iiJWeaaTwkJz3QMYi7rUoEjutrrl/" target="_blank" rel="noopener noreferrer" >
+                    <a href="https://www.facebook.com/share/J8N1Q5i9hVkNpB6w/?mibextid=qi2Omg" target="_blank" rel="noopener noreferrer" >
                     <FaFacebook className="h-6 w-6"/></a>
                     
                     <a href="https://x.com/Firsttrack123" target="_blank" rel="noopener noreferrer" >

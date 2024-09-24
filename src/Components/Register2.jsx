@@ -8,8 +8,8 @@ const RegisterForm = () => {
     fullName: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    businessName: "",
+    confirm_password: "",
+    business_name: "",
     mobile: ""
   });
 
@@ -41,8 +41,8 @@ const RegisterForm = () => {
     }
 
     // Confirm Password Validation
-    if (formData.password !== formData.confirmPassword) {
-      validationErrors.confirmPassword = "Passwords do not match";
+    if (formData.password !== formData.confirm_password) {
+      validationErrors.confirm_password = "Passwords do not match";
     }
 
     // Mobile Number Validation: Exactly 10 digits
@@ -60,7 +60,7 @@ const RegisterForm = () => {
       console.log("Validations check passed", formData);
       // Perform further actions like making an API request
       try {
-        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/register`, { email, password, fullName, mobile, businessName });
+        const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/register`, formData);
         console.log(res.data);  // Log response for debugging
         if (res && res.data) {
           alert('User registered successfully!');
@@ -71,14 +71,16 @@ const RegisterForm = () => {
         console.error(err);  // Log error for debugging
         if (err.response && err.response.data && err.response.data.message) {
           alert(err.response.data.message);  // Show server error message if available
-          console.log('Registration failed');
+          
         } else {
+          console.error(err);
           alert('Registration failed, please try again.');
-          console.log('Registration failed');
+          
         }
       }
     } else {
       setErrors(validationErrors);
+      alert('Please check form format!')
     }
 
     
@@ -158,22 +160,22 @@ const RegisterForm = () => {
 
             {/* Confirm Password Field */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+              <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700">Confirm Password</label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaLock className="text-gray-400" />
                 </div>
                 <input
-                  id="confirmPassword"
-                  name="confirmPassword"
+                  id="confirm_password"
+                  name="confirm_password"
                   type="password"
-                  value={formData.confirmPassword}
+                  value={formData.confirm_password}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none  "
                   placeholder="Confirm Password"
                 />
               </div>
-              {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
+              {errors.confirm_password && <p className="text-red-500 text-sm">{errors.confirm_password}</p>}
             </div>
 
             {/* Mobile Number Field */}
@@ -198,16 +200,16 @@ const RegisterForm = () => {
 
             {/* Business Name Field */}
             <div>
-              <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">Business Name</label>
+              <label htmlFor="business_name" className="block text-sm font-medium text-gray-700">Business Name</label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FaBuilding className="text-gray-400" />
                 </div>
                 <input
-                  id="businessName"
-                  name="businessName"
+                  id="business_name"
+                  name="business_name"
                   type="text"
-                  value={formData.businessName}
+                  value={formData.business_name}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none  "
                   placeholder="Business Name"

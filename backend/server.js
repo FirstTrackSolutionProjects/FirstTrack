@@ -17,8 +17,15 @@ app.use('/login', require('./routes/login'));
 app.use('/reset-password', require('./routes/resetPassword'));
 
 const PORT = process.env.PORT;
+try{
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  
+    console.log(`Server running on port ${PORT}`);
+  });
+  }
+  catch{
+    console.error(err);
+  }
+
 
 

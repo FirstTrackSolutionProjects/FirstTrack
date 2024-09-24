@@ -1,4 +1,26 @@
 //Here lies all the constant objects of the site
+// constants/index.js
+export const ADMIN_SIDEBAR_ITEMS = [
+  { name: 'Dashboard', route: '/admin/dashboard' },
+  { name: 'Manage Users', route: '/admin/users' },
+  { name: 'Total Merchants', route: '/admin/merchants' },
+  { name: 'Total Warehouses', route: '/admin/warehouses' },
+  { name: 'Total Shipments', route: '/admin/shipments' },
+  { name: 'Total Delivered', route: '/admin/delivered' },
+  { name: 'Pending Pickups', route: '/admin/pickups' },
+  { name: 'Parcel Return', route: '/admin/return' },
+  { name: 'NDR Parcel', route: '/admin/ndr' },
+  // add more items if needed
+];
+
+export const MERCHANT_SIDEBAR_ITEMS = [
+  { name: 'Dashboard', route: '/merchant/dashboard' },
+  { name: 'My Shipments', route: '/merchant/shipments' },
+  { name: 'Add Shipment', route: '/merchant/add-shipment' },
+  { name: 'My Profile', route: '/merchant/profile' },
+  { name: 'Reports', route: '/merchant/reports' },
+  // add more items if needed
+];
 
 export const testimonials = [
     {
