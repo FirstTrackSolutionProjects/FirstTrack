@@ -14,12 +14,14 @@ import Blogs from './Pages/Blogs'
 import Login from './Components/Login'
 import Register from './Components/Register'
 import Register2 from './Components/Register2'
+import Dashboard from './Components/Dashboard'
 
 const App = () => {
   return (
-    <div className=''>
+    <div className='App'>
       <Header/>
       <Routes>
+      
         <Route path='/' element={<Home/>}></Route>
         <Route path='/about' element={<About/>}></Route>
         <Route path='/contact' element={<Contact/>}></Route>
@@ -31,6 +33,7 @@ const App = () => {
         <Route path='/terms' element={<Terms/>}></Route>
         <Route path='/login' element={<Login/>}></Route>
         <Route path='/register' element={<Register2/>}></Route>
+        <Route path='/dashboard' element={<Dashboard/>}></Route>
       </Routes>
       <Footer/>
     </div>

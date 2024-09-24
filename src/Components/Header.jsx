@@ -35,7 +35,7 @@ const Header = () => {
         {/* Menu button for small screens */}
         <div className="md:hidden z-30">
           <button onClick={toggleSidebar}>
-            <AiOutlineMenu size={30} />
+            <AiOutlineMenu className='text-green-700' size={30} />
           </button>
         </div>
       </div>
