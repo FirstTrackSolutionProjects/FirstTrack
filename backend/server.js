@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const serverless = require('serverless-http');
 require('dotenv').config();
 
 const app = express(); // Enable CORS
@@ -16,16 +17,7 @@ app.use('/register', require('./routes/register'));
 app.use('/login', require('./routes/login'));
 app.use('/reset-password', require('./routes/resetPassword'));
 
-const PORT = process.env.PORT;
-try{
-app.listen(PORT, () => {
-  
-    console.log(`Server running on port ${PORT}`);
-  });
-  }
-  catch{
-    console.error(err);
-  }
+module.exports.handler = serverless(app);
 
 
 

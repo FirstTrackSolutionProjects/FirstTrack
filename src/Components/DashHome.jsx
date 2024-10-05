@@ -45,7 +45,7 @@ const DashHome = () => {
       </button>
       </div>
       {/*Card*/}
-        <div className='grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 p-5'>
+        <div className='grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 p-5 '>
           {cards.map((card) =>(
             <DashCard key={card.id} title={card.title} count={card.count}/>
           ))}

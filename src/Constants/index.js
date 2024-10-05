@@ -51,17 +51,42 @@ export const Admincards = [
 export const Merchantcards = [
   {
     id:'1',
-    title: 'Total Delivered',
-    count: '8'
+    title: 'Total Warehouses',
+    count: '1'
   },
   {
     id:'2',
-    title: 'Total Shipments',
-    count: '12'
+    title: 'Total Delivered',
+    count: '2'
   },
   {
     id:'3',
+    title: 'Total Shipments',
+    count: '27'
+  },
+  {
+    id:'4',
+    title: 'Pending Pickups',
+    count: '0'
+  },
+  {
+    id:'5',
+    title: 'Total Wallet Recharge',
+    count: '51080'
+  },
+  {
+    id:'6',
+    title: 'Parcel on process',
+    count: '0'
+  },
+  {
+    id:'7',
     title: 'Parcel Return',
+    count: '0'
+  },
+  {
+    id:'8',
+    title: 'NDR Parcel',
     count: '0'
   },
 ];
@@ -152,10 +177,61 @@ export const MERCHANT_SIDEBAR_ITEMS = [
 
 export const MERCHANT_SIDEBAR_ITEMS = [
   { name: 'Dashboard', route: '/merchant/dashboard' },
-  { name: 'My Shipments', route: '/merchant/shipments' },
-  { name: 'Add Shipment', route: '/merchant/add-shipment' },
-  { name: 'My Profile', route: '/merchant/profile' },
-  { name: 'Reports', route: '/merchant/reports' },
+  {
+    name: 'Wallet Recharge',
+    route: '/dashboard/wallet-recharge',
+    isDropdown: false,
+    dropdownOptions: [{}],
+  },
+  {
+    name: 'KYC Update',
+    route: '/dashboard/kycUpdate',
+    isDropdown: false,
+    dropdownOptions: [{}],
+  },
+  {
+    name: 'Create Shipment',
+    route: '/dashboard/create-shipment',
+    isDropdown: true,
+    dropdownOptions: [
+      { name: 'Domestic', route: '/admin/merchant/verified' },
+      { name: 'International', route: '/admin/merchant/non-verified' },
+    ],
+  },
+  { name: 'Warehouse', route: '/merchant/warehouse' },
+  {
+    name: 'Parcels',
+    route: '/dashboard/parcels',
+    isDropdown: true,
+    dropdownOptions: [
+      { name: 'Domestic', route: '/admin/merchant/verified' },
+      { name: 'International', route: '/admin/merchant/non-verified' },
+    ],
+  },
+  {
+    name: 'Transaction History',
+    route: '/dashboard/transactions',
+    isDropdown: false,
+    dropdownOptions: [{}],
+  },
+  {
+    name: 'Reports',
+    route: '/dashboard/reports',
+    isDropdown: true,
+    dropdownOptions: [
+      { name: 'Domestic', route: '/admin/merchant/verified' },
+      { name: 'International', route: '/admin/merchant/non-verified' },
+    ],
+  },
+  {
+    name: 'Settings',
+    route: '/dashboard/settings',
+    isDropdown: true,
+    dropdownOptions: [
+      {name: 'Profile', route: '/admin/settings/profile' },
+      {name: 'Change Password', route: '/admin/settings/change-password' },
+    ],
+  }
   // add more items if needed
 ];
 
