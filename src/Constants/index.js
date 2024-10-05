@@ -1,17 +1,154 @@
 //Here lies all the constant objects of the site
 // constants/index.js
-export const ADMIN_SIDEBAR_ITEMS = [
-  { name: 'Dashboard', route: '/admin/dashboard' },
-  { name: 'Manage Users', route: '/admin/users' },
-  { name: 'Total Merchants', route: '/admin/merchants' },
-  { name: 'Total Warehouses', route: '/admin/warehouses' },
-  { name: 'Total Shipments', route: '/admin/shipments' },
-  { name: 'Total Delivered', route: '/admin/delivered' },
-  { name: 'Pending Pickups', route: '/admin/pickups' },
-  { name: 'Parcel Return', route: '/admin/return' },
-  { name: 'NDR Parcel', route: '/admin/ndr' },
-  // add more items if needed
+export const Admincards = [
+  {
+    id:'1',
+    title: 'Total Merchants',
+    count: '31'
+  },
+  {
+    id:'2',
+    title: 'Total Warehouses',
+    count: '51'
+  },
+  {
+    id:'3',
+    title: 'Total Shipments',
+    count: '178'
+  },
+  {
+    id:'4',
+    title: 'Total Delivered',
+    count: '25'
+  },
+  {
+    id:'5',
+    title: 'Pending pickups',
+    count: '62'
+  },
+  {
+    id:'6',
+    title: 'Total Revenue',
+    count: '7500.80'
+  },
+  {
+    id:'7',
+    title: 'Parcel on process',
+    count: '9'
+  },
+  {
+    id:'8',
+    title: 'Parcel Return',
+    count: '0'
+  },
+  {
+    id:'9',
+    title: 'NDR Parcel',
+    count: '0'
+  }
 ];
+
+export const Merchantcards = [
+  {
+    id:'1',
+    title: 'Total Delivered',
+    count: '8'
+  },
+  {
+    id:'2',
+    title: 'Total Shipments',
+    count: '12'
+  },
+  {
+    id:'3',
+    title: 'Parcel Return',
+    count: '0'
+  },
+];
+
+export const ADMIN_SIDEBAR_ITEMS = [
+  {
+    menuId: [1],
+    name: 'Dashboard',
+    route: '/dashboard',
+    isDropdown: false,
+    dropdownOptions: [{}],
+  },
+  
+  {
+    menuId: [3],
+    name: 'Wallet Recharge',
+    route: '/dashboard/wallet-recharge',
+    isDropdown: false,
+    dropdownOptions: [{}],
+  },
+  
+  {
+    menuId: [7],
+    name: 'Transaction History',
+    route: '/dashboard/transactions',
+    isDropdown: false,
+    dropdownOptions: [{}],
+  },
+  
+  {
+    menuId: [9],
+    name: 'Merchant Manage',
+    route: '/dashboard/merchant-manage',
+    isDropdown: true,
+    dropdownOptions: [
+      { menuId: [9, 0], name: 'Verified Merchants', route: '/admin/merchant/verified' },
+      { menuId: [9, 1], name: 'Non-Verified Merchants', route: '/admin/merchant/non-verified' },
+      { menuId: [9, 2], name: 'Merchant Transactions', route: '/admin/merchant/transactions' },
+      { menuId: [9, 3], name: 'Shipments', route: '/admin/merchant/shipments' },
+      { menuId: [9, 4], name: 'Shipment Reports', route: '/admin/merchant/reports' },
+    ],
+  },
+  
+  {
+    menuId: [12],
+    name: 'Submission',
+    route: '/dashboard/submission',
+    isDropdown: true,
+    dropdownOptions: [
+      { menuId: [12, 0], name: 'Merchant Verification', route: '/admin/submission/verification' },
+      { menuId: [12, 1], name: 'Contact Submission', route: '/admin/submission/contact' },
+      { menuId: [12, 2], name: 'KYC Requests', route: '/admin/submission/kyc'},
+    ],
+  },
+  {
+    menuId: [13],
+    name: 'Manual Recharge',
+    route: '/dashboard/manual-recharge',
+    isDropdown: false,
+    dropdownOptions: [{}],
+  },
+  {
+    menuId: [14],
+    name: 'Settings',
+    route: '/dashboard/settings',
+    isDropdown: true,
+    dropdownOptions: [
+      { menuId: [14, 0], name: 'Profile', route: '/admin/settings/profile' },
+      { menuId: [14, 1], name: 'Change Password', route: '/admin/settings/change-password' },
+    ],
+  },
+];
+
+// Merchant Sidebar Items (Example)
+{/** 
+export const MERCHANT_SIDEBAR_ITEMS = [
+  {
+    menuId: [1],
+    name: 'Dashboard',
+    route: '/merchant/dashboard',
+    icon: 'icon-dashboard',
+    isDropdown: false,
+    dropdownOptions: [{}],
+  },
+  // Add merchant-specific sidebar items here similarly.
+];
+*/}
 
 export const MERCHANT_SIDEBAR_ITEMS = [
   { name: 'Dashboard', route: '/merchant/dashboard' },
