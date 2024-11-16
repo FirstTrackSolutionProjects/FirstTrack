@@ -18,7 +18,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-12 flex  justify-between md:justify-around  items-center py-1">
         {/* Logo and Company Name */}
         <Link to='/'><div className="flex items-center">
-          <img src="images/logo-removebg.png" alt="Logo" className="w-20 h-20 " />
+          <img src="images/logo.svg" alt="Logo" className="w-20 h-20 " />
           
         </div></Link>
 

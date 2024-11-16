@@ -27,7 +27,7 @@ const Footer =()=>{
         <div className="text-black bg-gradient-to-r from-gray-50 to-gray-300 w-full mt-2 h-fit">
             <div className="grid md:grid-cols-4  font-inter ">
                 <div className="w-full h-full items-center justify-center p-7 my-auto">
-                    <Link to="/"><img onClick={scrollToTop} src="images/logo-removebg.png" className="w-24 h-24 object-cover rounded-full"></img></Link>
+                    <Link to="/"><img onClick={scrollToTop} src="images/logo.svg" className="w-24 h-24 object-cover rounded-full"></img></Link>
                     <div className="text-balance font-inter text-sm my-5">
                     First Track delivers fast, reliable, and seamless logistics solutions, ensuring timely and secure shipments worldwide.
                     </div>
