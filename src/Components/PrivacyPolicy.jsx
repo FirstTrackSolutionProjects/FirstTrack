@@ -6,7 +6,7 @@ const PrivacyPolicy = () => {
       <h1 className="text-3xl font-bold mb-6 text-center">Privacy & Policy</h1>
 
       <p className="mb-4 text-gray-700">
-        At <strong>First Track Express</strong>, we are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, and protect your data when you use our services.
+        At <strong>First Track</strong>, we are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, and protect your data when you use our services.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">1. Information We Collect</h2>
@@ -43,7 +43,7 @@ const PrivacyPolicy = () => {
 
       <h2 className="text-2xl font-semibold mb-4">6. Your Rights</h2>
       <p className="mb-4 text-gray-700">
-        You have the right to access, modify, or delete your personal information at any time. If you wish to exercise these rights, please contact us at <a href="mailto:info@firsttrackexpress.com" className="text-blue-500 hover:underline">info@firsttrackexpress.com</a>.
+        You have the right to access, modify, or delete your personal information at any time. If you wish to exercise these rights, please contact us at <a href="mailto:info@firsttrack.site" className="text-blue-500 hover:underline">info@firsttrack.site</a>.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">7. Changes to this Policy</h2>
@@ -53,7 +53,7 @@ const PrivacyPolicy = () => {
 
       <h2 className="text-2xl font-semibold mb-4">8. Contact Us</h2>
       <p className="mb-4 text-gray-700">
-        If you have any questions or concerns about our Privacy Policy, feel free to contact us at <a href="mailto:info@firsttrackexpress.com" className="text-blue-500 hover:underline">info@firsttrackexpress.com</a>.
+        If you have any questions or concerns about our Privacy Policy, feel free to contact us at <a href="mailto:info@firsttrack.site" className="text-blue-500 hover:underline">info@firsttrack.site</a>.
       </p>
 
       <p className="text-gray-700 text-sm mt-6">

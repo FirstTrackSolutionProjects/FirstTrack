@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const faqData = [
   {
-    question: "What services does First Track Express offer?",
+    question: "What services does First Track offer?",
     answer: "We provide fast and reliable logistics, shipping, and door-to-door delivery services for both local and international shipments."
   },
   {

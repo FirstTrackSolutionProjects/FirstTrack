@@ -29,7 +29,7 @@ const Footer =()=>{
                 <div className="w-full h-full items-center justify-center p-7 my-auto">
                     <Link to="/"><img onClick={scrollToTop} src="images/logo-removebg.png" className="w-24 h-24 object-cover rounded-full"></img></Link>
                     <div className="text-balance font-inter text-sm my-5">
-                    First Track Express delivers fast, reliable, and seamless logistics solutions, ensuring timely and secure shipments worldwide.
+                    First Track delivers fast, reliable, and seamless logistics solutions, ensuring timely and secure shipments worldwide.
                     </div>
                     <Link to="/about" ><div onClick={scrollToTop} className="bg-gray-600 text-white font-bold w-28 p-3 text-center rounded-full">About Us</div></Link>
                 </div>
@@ -47,7 +47,7 @@ const Footer =()=>{
                     
                     <div className="flex items-center">
                         <FaEnvelope className="h-5 w-4 mr-3" />
-                        <span className="text-justify text-sm">Email: info@firsttrackexpress.com</span>
+                        <span className="text-justify text-sm">Email: info@firsttrack.site</span>
                     </div>
                 </div>
 

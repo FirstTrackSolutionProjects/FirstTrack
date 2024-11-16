@@ -6,7 +6,7 @@ const Terms = () => {
       <h1 className="text-3xl font-bold mb-6 text-center">Terms of Use</h1>
 
       <p className="mb-4 text-gray-700">
-        Welcome to <strong>First Track Express</strong>. By accessing or using our website and services, you agree to comply with and be bound by the following Terms of Use. Please review these terms carefully, as they govern your use of our platform.
+        Welcome to <strong>First Track</strong>. By accessing or using our website and services, you agree to comply with and be bound by the following Terms of Use. Please review these terms carefully, as they govern your use of our platform.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
@@ -16,7 +16,7 @@ const Terms = () => {
 
       <h2 className="text-2xl font-semibold mb-4">2. Services Provided</h2>
       <p className="mb-4 text-gray-700">
-        First Track Express provides logistics and shipping services, including but not limited to door-to-door delivery, shipment tracking, and global shipping solutions. The terms outlined here apply to all users of our services, including visitors, registered users, and customers.
+        First Track provides logistics and shipping services, including but not limited to door-to-door delivery, shipment tracking, and global shipping solutions. The terms outlined here apply to all users of our services, including visitors, registered users, and customers.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">3. User Responsibilities</h2>
@@ -43,17 +43,17 @@ const Terms = () => {
 
       <h2 className="text-2xl font-semibold mb-4">5. Limitation of Liability</h2>
       <p className="mb-4 text-gray-700">
-        First Track Express will not be held liable for any indirect, incidental, or consequential damages arising out of the use of our services. While we strive to ensure timely and safe deliveries, delays or issues caused by third parties, natural disasters, or other unforeseen circumstances are beyond our control.
+        First Track will not be held liable for any indirect, incidental, or consequential damages arising out of the use of our services. While we strive to ensure timely and safe deliveries, delays or issues caused by third parties, natural disasters, or other unforeseen circumstances are beyond our control.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">6. Intellectual Property</h2>
       <p className="mb-4 text-gray-700">
-        All content on our website, including text, graphics, logos, and images, is the intellectual property of First Track Express. You may not copy, reproduce, distribute, or create derivative works from any content without our express written permission.
+        All content on our website, including text, graphics, logos, and images, is the intellectual property of First Track. You may not copy, reproduce, distribute, or create derivative works from any content without our written permission.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">7. Termination of Use</h2>
       <p className="mb-4 text-gray-700">
-        First Track Express reserves the right to terminate or suspend your access to our services at any time, without notice, if we determine that you have violated these Terms of Use or engaged in unlawful or harmful behavior.
+        First Track reserves the right to terminate or suspend your access to our services at any time, without notice, if we determine that you have violated these Terms of Use or engaged in unlawful or harmful behavior.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">8. Changes to Terms</h2>
@@ -63,12 +63,12 @@ const Terms = () => {
 
       <h2 className="text-2xl font-semibold mb-4">9. Governing Law</h2>
       <p className="mb-4 text-gray-700">
-        These Terms of Use are governed by and construed in accordance with the laws of the jurisdiction in which First Track Express operates. Any disputes arising from the use of our services will be resolved in the courts of that jurisdiction.
+        These Terms of Use are governed by and construed in accordance with the laws of the jurisdiction in which First Track operates. Any disputes arising from the use of our services will be resolved in the courts of that jurisdiction.
       </p>
 
       <h2 className="text-2xl font-semibold mb-4">10. Contact Information</h2>
       <p className="mb-4 text-gray-700">
-        If you have any questions about these Terms of Use, please contact us at <a href="mailto:info@firsttrackexpress.com" className="text-blue-500 hover:underline">info@firsttrackexpress.com</a>.
+        If you have any questions about these Terms of Use, please contact us at <a href="mailto:info@firsttrack.site" className="text-blue-500 hover:underline">info@firsttrack.site</a>.
       </p>
 
       <p className="text-gray-700 text-sm mt-6">

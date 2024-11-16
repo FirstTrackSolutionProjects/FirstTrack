@@ -80,7 +80,7 @@ const NewsletterSection = () => {
       <div className="relative max-w-7xl mx-auto px-4 lg:px-8">
         <div className="text-center text-white">
           <h2 className="text-2xl md:text-4xl font-bold mb-6">
-            Stay Updated with First Track Express
+            Stay Updated with First Track
           </h2>
           <p className="text-base md:text-lg mb-6">
             Subscribe to our newsletter and get the latest updates on logistics and shipping.
@@ -113,7 +113,7 @@ const Counter = () => {
     <section ref={ref} className="py-8 md:py-10 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-5 md:mb-12 text-green-600">
-          First Track Express Superiority
+          First Track Superiority
         </h2>
 
         <div className="grid grid-cols-1 px-10 md:grid-cols-3 gap-5 md:gap-12 md:px-20">

@@ -97,7 +97,7 @@ const ContactUs = () => {
               </li>
               <li>
               <FontAwesomeIcon icon={faEnvelope} className="text-blue-500 mr-3" />
-                <span> info@firsttrackexpress.com</span>
+                <span> info@firsttrack.site</span>
               </li>
             </ul>
             <div className="mt-8">
@@ -130,7 +130,7 @@ const ContactUs = () => {
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-semibold text-center mb-8">Our Location</h2>
           <iframe
-            src="https://maps.google.com/maps?q=First%20Track%20Express&t=&z=13&ie=UTF8&iwloc=&output=embed"
+            src="https://maps.google.com/maps?q=First%20Track&t=&z=13&ie=UTF8&iwloc=&output=embed"
             className="w-full h-96 border-0 rounded-lg"
             allowFullScreen=""
             loading="lazy"
