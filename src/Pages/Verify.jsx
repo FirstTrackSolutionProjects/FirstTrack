@@ -6,6 +6,8 @@ import { FileUpload, CheckCircle } from "@mui/icons-material";
 import { z } from "zod";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import checkIncompleteRequest from "../services/checkIncompleteRequest";
+import checkPendingRequest from "../services/checkPendingRequest";
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -25,7 +27,8 @@ const formSchema = z.object({
   cin: z.string().optional(),
 });
 
-const FileUploadForm = ({ reqId }) => {
+const FileUploadForm = ({ reqId, onNext }) => {
+  const { id } = useAuth();
   const [fileData, setFileData] = useState({
     aadhar_doc: null,
     pan_doc: null,
@@ -41,6 +44,21 @@ const FileUploadForm = ({ reqId }) => {
     selfie_doc: false,
   });
 
+  const getDocumentStatus = async () => {
+    const response = await fetch(`${API_URL}/verification/documentStatus`, {
+      method: "POST",
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    });
+    const data = await response.json();
+    setUploadStatus(data.message);
+  }
+
+  useEffect(()=>{
+    getDocumentStatus()
+  },[])
+
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     setFileData((prevData) => ({
@@ -51,14 +69,6 @@ const FileUploadForm = ({ reqId }) => {
 
   const handleUpload = async (name) => {
     try {
-      const response = await fetch(`${API_URL}/auth/token/decode`, {
-        method: "POST",
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-      const tokenData = await response.json();
-      const id = tokenData.id;
       const key = `merchant/${id}/verificationDocs/${reqId}/${name}`;
       const urlResponse = await fetch(`${API_URL}/s3/putUrl`, {
         method: "POST",
@@ -96,8 +106,31 @@ const FileUploadForm = ({ reqId }) => {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try{
+        const request = await fetch(`${API_URL}/verification/submit`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: localStorage.getItem("token")
+            }
+        })
+        const response = await request.json()
+        if (response.success){
+            toast.success(response.message)
+            onNext()
+        } else {
+            toast.error(response.message)
+        }
+    } catch (error) {
+        toast.error(`Error submitting verification form`)
+    }
+  }
+
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
+    <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }} onSubmit={handleSubmit} component={"form"}>
       <Typography variant="h5" align="center" gutterBottom>
         Upload Verification Documents
       </Typography>
@@ -131,6 +164,13 @@ const FileUploadForm = ({ reqId }) => {
           </Grid>
         ))}
       </Grid>
+      <Button
+        variant="contained"
+        color="primary"
+        type="submit"
+        fullWidth
+        sx={{ mt: 3  }}
+        >Submit</Button>
     </Box>
   );
 };
@@ -182,21 +222,20 @@ const TextForm = ({ onNext }) => {
       setErrors({}); // Clear previous errors
 
       // Proceed with the form submission
-    //   const response = await fetch(
-    //     `${API_URL}/verification/createIncompleteVerifyRequest`,
-    //     {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Accept: "application/json",
-    //         Authorization: localStorage.getItem("token"),
-    //       },
-    //       body: JSON.stringify(formData),
-    //     }
-    //   );
-    //   const data = await response.json();
-    //   toast.success(data.message);
-      toast.success("Successfully created");
+      const response = await fetch(
+        `${API_URL}/verification/createIncompleteVerifyRequest`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      const data = await response.json();
+      toast.success(data.message);
       onNext();
     } else {
       // Set validation errors
@@ -254,14 +293,38 @@ const TextForm = ({ onNext }) => {
 
 const Verify = () => {  
   const navigate = useNavigate();  
-  const {isAuthenticated} = useAuth()
+  const {isAuthenticated ,verified, emailVerified} = useAuth()
   const [step, setStep] = useState(1);
+  const [reqId, setReqId] = useState(null);
   const nextStep = () => setStep((prevStep) => prevStep + 1);
 
-  useEffect(()=>{
-    if(!isAuthenticated){
-        navigate('/login')
+  const incompleteRequest = async () => {
+    const response = await checkIncompleteRequest();
+    if (response.success){
+        setReqId(response.message.reqId)
+        setStep(2)
     }
+  }
+
+  const pendingRequest = async () => {
+    const response = await checkPendingRequest();
+    if (response.success){
+        setStep(3)
+    }
+  }
+
+  useEffect(()=>{
+    if (isAuthenticated && verified){
+        navigate('/dashboard')
+    } else if (isAuthenticated && !emailVerified){
+        navigate('/login')
+    } else if (!isAuthenticated){
+        navigate('/login')
+    } else {
+        incompleteRequest()
+        pendingRequest()
+    }
+    
   },[isAuthenticated])
 
   return (
@@ -275,7 +338,8 @@ const Verify = () => {
       }}
     >
       {step === 1 && <TextForm onNext={nextStep} />}
-      {step === 2 && <FileUploadForm />}
+      {step === 2 && <FileUploadForm reqId={reqId} onNext={nextStep} />}
+      {step === 3 && <div>Verification Request Submitted</div>}
     </Box>
   );
 };

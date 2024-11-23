@@ -8,21 +8,20 @@ import Transaction from './Transaction';
 import MerchantManage from './MerchantManage';
 import ManualRecharge from './ManualRecharge';
 import Settings from './Settings';
-
+import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
+  const {admin} = useAuth()
   //const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
-  const userData = JSON.parse(localStorage.getItem('user'));
-  const page = userData.isAdmin === 1 ? <div>Admin</div> : <div>Merchant</div>
+  admin === 1 ? <div>Admin</div> : <div>Merchant</div>
 
   
  
   
 
 return (
-    
-    <div className='h-full flex font-inter bg-gray-200'>
+    <>
+    <div className='h-screen flex font-inter bg-gray-200'>
       {/* Menu button for mobile screens
       <button onClick={toggleSidebar} className="absolute md:hidden p-4">
         <FaBars size={24} />
@@ -42,7 +41,7 @@ return (
         </main>
 
     </div>
-    
+    </>
   );
 };
 

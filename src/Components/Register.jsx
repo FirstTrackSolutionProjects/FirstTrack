@@ -98,7 +98,7 @@ const RegisterForm = () => {
 
   return (
     <>
-    {emailModalOpen && <EmailOTPVerificationModal open={emailModalOpen} onClose={closeEmailModal} email={formData.reg_email}  />}
+    {emailModalOpen && <EmailOTPVerificationModal open={emailModalOpen} onClose={closeEmailModal}  />}
     <div className="flex flex-col justify-center px-4 md:px-8">
       <div className="w-full max-w-md mx-auto">
         <h2 className="mt-3 text-center text-xl md:text-2xl font-bold text-gray-900">

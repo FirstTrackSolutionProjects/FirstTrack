@@ -1,10 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import validateToken from '../services/validateToken';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  
+  const navigate = useNavigate()
   const [authState, setAuthState] = useState({isAuthenticated: false});
 
   const login = async (token) => {
@@ -15,6 +16,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     setAuthState({isAuthenticated: false});
+    navigate('/login');
   };
 
   const verifyEmail = () => {
@@ -38,9 +40,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      logout();
-    }
+    isAuthenticated()
   }, []);
   return (
     <AuthContext.Provider value={{ ...authState, login, logout, verifyEmail }}>

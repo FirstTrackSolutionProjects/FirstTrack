@@ -49,7 +49,7 @@ const LoginForm = () => {
 
   return (
     <>
-    {emailModalOpen && <EmailOTPVerificationModal verifyEmail={email} open={emailModalOpen} onClose={closeEmailModal} />}
+    {emailModalOpen && <EmailOTPVerificationModal open={emailModalOpen} onClose={closeEmailModal} />}
     {/*form 2 */}
     <div className="py-5 flex flex-col justify-center items-center ">
       <div className=" w-full max-w-md">

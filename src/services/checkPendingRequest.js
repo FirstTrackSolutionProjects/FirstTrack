@@ -1,8 +1,8 @@
 
 const API_URL = import.meta.env.VITE_APP_API_URL
-const validateToken = async () => {
+const checkPendingRequest = async () => {
     try {
-      const validateRequest = await fetch(`${API_URL}/auth/token/decode`, {
+      const pendingVerificationRequests = await fetch(`${API_URL}/verification/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -10,11 +10,11 @@ const validateToken = async () => {
           'Authorization': localStorage.getItem('token'),
         }
       });
-      if (!validateRequest.ok) {
-        throw new Error('Failed to validate token');
+      if (!pendingVerificationRequests.ok) {
+        throw new Error('Failed to get requests');
       }
   
-      const data = await validateRequest.json();
+      const data = await pendingVerificationRequests.json();
       console.log(data);
       return data;
     } catch (err) {
@@ -22,5 +22,5 @@ const validateToken = async () => {
     }
   };
   
-  export default validateToken;
+  export default checkPendingRequest;
   

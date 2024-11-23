@@ -1,6 +1,6 @@
 // Sidebar.js
 import React from 'react';
-import { ADMIN_SIDEBAR_ITEMS, MERCHANT_SIDEBAR_ITEMS } from '../Constants/index.jsx';
+import { ADMIN_SIDEBAR_ITEMS, MERCHANT_SIDEBAR_ITEMS } from '../Constants';
 import { FaTimes } from 'react-icons/fa';  // For close button
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {

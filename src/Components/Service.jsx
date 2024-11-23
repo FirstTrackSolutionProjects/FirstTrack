@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { services } from '../Constants/index.jsx';
+import { services } from '../Constants';
 
 
 const Service = () => {
