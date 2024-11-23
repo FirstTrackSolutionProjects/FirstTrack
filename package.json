@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@fontsource/roboto": "^5.1.0",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
@@ -17,6 +20,9 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@heroicons/react": "^1.0.6",
+    "@mui/icons-material": "^6.1.8",
+    "@mui/material": "^6.1.8",
+    "@mui/styled-engine-sc": "^6.1.8",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -35,7 +41,9 @@
     "react-intersection-observer": "^9.13.1",
     "react-router-dom": "^6.26.2",
     "react-toastify": "^10.0.5",
-    "serverless-http": "^3.2.0"
+    "serverless-http": "^3.2.0",
+    "styled-components": "^6.1.13",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",

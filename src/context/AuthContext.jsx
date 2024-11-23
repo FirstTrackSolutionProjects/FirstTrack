@@ -32,11 +32,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      logout();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!isAuthenticated()) {
+  //     logout();
+  //   }
+  // }, []);
   return (
     <AuthContext.Provider value={{ ...auth, login, logout }}>
       {children}

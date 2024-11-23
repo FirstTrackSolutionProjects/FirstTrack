@@ -13,8 +13,8 @@ import Price from './Pages/Price'
 import Blogs from './Pages/Blogs'
 import Login from './Components/Login'
 import Register from './Components/Register'
-import Register2 from './Components/Register2'
 import Dashboard from './Components/Dashboard'
+import Verify from './Pages/Verify'
 
 const App = () => {
   return (
@@ -32,8 +32,9 @@ const App = () => {
         <Route path='/privacy' element={<PrivacyPolicy/>}></Route>
         <Route path='/terms' element={<Terms/>}></Route>
         <Route path='/login' element={<Login/>}></Route>
-        <Route path='/register' element={<Register2/>}></Route>
+        <Route path='/register' element={<Register/>}></Route>
         <Route path='/dashboard/*' element={<Dashboard/>}></Route>
+        <Route path='/verify' element={<Verify/>}></Route>
       </Routes>
       <Footer/>
     </div>

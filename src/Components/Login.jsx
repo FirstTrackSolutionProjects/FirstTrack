@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -12,16 +11,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${import.meta.env.VITE_APP_API_URL}/login`, { email, password });
-      alert('Login successful!');
-      if (res && res.data) {
-        // Save JWT token and fullName (in localStorage or state)
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-
-        // Navigate to dashboard and pass the fullName
-        navigate('/dashboard');
-      }
+      
     } catch (err) {
       alert(err.response.data.message);
     }
