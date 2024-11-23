@@ -1,8 +1,8 @@
 
 const API_URL = import.meta.env.VITE_APP_API_URL
-const login = async (formData) => {
+const register = async (formData) => {
     try {
-      const registerRequest = await fetch(`${API_URL}/auth/login`, {
+      const registerRequest = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -18,5 +18,5 @@ const login = async (formData) => {
     }
   };
   
-  export default login;
+  export default register;
   

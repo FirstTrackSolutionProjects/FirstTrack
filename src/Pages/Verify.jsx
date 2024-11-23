@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, TextField, Button, Grid } from "@mui/material";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FileUpload, CheckCircle } from "@mui/icons-material";
 import { z } from "zod";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -246,16 +248,21 @@ const TextForm = ({ onNext }) => {
       >
         Submit
       </Button>
-
-      <ToastContainer />
     </Box>
   );
 };
 
-const Verify = () => {
+const Verify = () => {  
+  const navigate = useNavigate();  
+  const {isAuthenticated} = useAuth()
   const [step, setStep] = useState(1);
-
   const nextStep = () => setStep((prevStep) => prevStep + 1);
+
+  useEffect(()=>{
+    if(!isAuthenticated){
+        navigate('/login')
+    }
+  },[isAuthenticated])
 
   return (
     <Box

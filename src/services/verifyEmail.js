@@ -1,14 +1,14 @@
 
 const API_URL = import.meta.env.VITE_APP_API_URL
-const login = async (formData) => {
+const verifyEmail = async (email, otp) => {
     try {
-      const registerRequest = await fetch(`${API_URL}/auth/login`, {
+      const registerRequest = await fetch(`${API_URL}/email/verification/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({email, otp}),
       });
       const data = await registerRequest.json();
       console.log(data);
@@ -18,5 +18,5 @@ const login = async (formData) => {
     }
   };
   
-  export default login;
+  export default verifyEmail;
   

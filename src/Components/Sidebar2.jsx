@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaTachometerAlt, FaWallet, FaHistory, FaUsers,FaFileAlt,FaMoneyBillAlt, FaChevronDown, FaChevronUp, FaBars, FaTimes } from 'react-icons/fa'; // Import FontAwesome icons
 import { MdReport, MdSettings, MdDashboard } from 'react-icons/md'; // Import Material Design icons
-import { ADMIN_SIDEBAR_ITEMS, MERCHANT_SIDEBAR_ITEMS } from '../Constants/index'; // Import sidebar items
+import { ADMIN_SIDEBAR_ITEMS, MERCHANT_SIDEBAR_ITEMS } from '../Constants/index.jsx'; // Import sidebar items
 import { useNavigate } from 'react-router-dom';
 import { FaDollyFlatbed,FaBox,FaUser,FaClipboardList } from "react-icons/fa";
 

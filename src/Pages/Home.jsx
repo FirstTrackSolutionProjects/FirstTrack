@@ -4,7 +4,7 @@ import Service from '../Components/Service'
 import PriceCalc from '../Components/PriceCalc';
 import TrustedPartnerSection from '../Components/TrustedPartner';
 import HomeCalculator from '../Components/HomeCalculator';
-import {testimonials,whyChooseUs,counts} from '../Constants/index'
+import {testimonials,whyChooseUs,counts} from '../Constants/index.jsx'
 import { useInView } from 'react-intersection-observer';
 import CounterCard from '../Components/CounterCard';
 

@@ -1,17 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import loginService from '../services/login';
+import { useAuth } from '../context/AuthContext';
+import EmailOTPVerificationModal from './Modals/EmailOTPVerificationModal'
+import { toast } from 'react-toastify';
 
 const LoginForm = () => {
+  const { isAuthenticated, emailVerified ,login, verified } = useAuth();
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  const closeEmailModal = () => {
+    setEmailModalOpen(false);
+  }
+
+  useEffect(()=>{
+    if (isAuthenticated && verified){
+      navigate('/dashboard')
+    } else if(isAuthenticated && emailVerified){
+      navigate('/verify')
+    } else if (isAuthenticated){
+      setEmailModalOpen(true)
+    }
+  },[isAuthenticated])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      
+      const formData = {
+        email,
+        password
+      }
+      const loginResponse = await loginService(formData)
+      if (loginResponse.success) {
+        login(loginResponse.token)
+        toast.success(loginResponse.message)
+      } else {
+        toast.error(loginResponse.message)
+      }
     } catch (err) {
       alert(err.response.data.message);
     }
@@ -19,7 +49,7 @@ const LoginForm = () => {
 
   return (
     <>
-  
+    {emailModalOpen && <EmailOTPVerificationModal verifyEmail={email} open={emailModalOpen} onClose={closeEmailModal} />}
     {/*form 2 */}
     <div className="py-5 flex flex-col justify-center items-center ">
       <div className=" w-full max-w-md">

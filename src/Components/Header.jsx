@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai'; // Menu icon
 import { IoMdClose } from 'react-icons/io'; // Close icon
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 
 
 const Header = () => {
+  const {isAuthenticated, name, logout} = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -31,7 +33,7 @@ const Header = () => {
           <Link to="/about" className="hover:text-blue-800">ABOUT</Link>
           <Link to="/contact" className="hover:text-blue-800">CONTACT</Link>
         </nav>
-
+        {isAuthenticated?<div>{name} <span className='text-red-400' onClick={logout}>Logout</span></div>:null}
         {/* Menu button for small screens */}
         <div className="md:hidden z-30">
           <button onClick={toggleSidebar}>

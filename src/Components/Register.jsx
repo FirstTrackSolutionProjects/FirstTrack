@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   FaUserAlt,
   FaEnvelope,
@@ -7,19 +6,30 @@ import {
   FaMobileAlt,
   FaBuilding,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import register from "../services/register";
+import { useAuth } from "../context/AuthContext";
+import EmailOTPVerificationModal from "./Modals/EmailOTPVerificationModal";
 
 const RegisterForm = () => {
+  const { isAuthenticated, login, verified, emailVerified } = useAuth();
+  const [emailModalOpen, setEmailModalOpen] = useState(false)
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
+    name: "",
+    reg_email: "",
+    reg_password: "",
     confirm_password: "",
     business_name: "",
     mobile: "",
   });
 
   const [errors, setErrors] = useState({});
+
+  const closeEmailModal = () => {
+    setEmailModalOpen(false);
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -31,19 +41,19 @@ const RegisterForm = () => {
   const validate = () => {
     let validationErrors = {};
 
-    if (!/^[A-Za-z\s]+$/.test(formData.fullName)) {
-      validationErrors.fullName = "Full name should contain alphabets only";
+    if (!/^[A-Za-z\s]+$/.test(formData.name)) {
+      validationErrors.name = "Full name should contain alphabets only";
     }
 
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!/\S+@\S+\.\S+/.test(formData.reg_email)) {
       validationErrors.email = "Invalid email format";
     }
 
-    if (formData.password.length < 4) {
-      validationErrors.password = "Password should be at least 4 characters";
+    if (formData.reg_password.length < 4) {
+      validationErrors.reg_password = "Password should be at least 4 characters";
     }
 
-    if (formData.password !== formData.confirm_password) {
+    if (formData.reg_password !== formData.confirm_password) {
       validationErrors.confirm_password = "Passwords do not match";
     }
 
@@ -54,28 +64,41 @@ const RegisterForm = () => {
     return validationErrors;
   };
 
+  useEffect(()=>{
+    console.log("validation", isAuthenticated)
+    if (isAuthenticated && verified){
+      navigate("/dashboard")
+    } else if (isAuthenticated && emailVerified){
+      navigate("/verify")
+    } else if (isAuthenticated){
+      setEmailModalOpen(true);
+    }
+  },[isAuthenticated])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const res = await axios.post(
-          `${import.meta.env.VITE_APP_API_URL}/register`,
-          formData
-        );
-        alert("User registered successfully!");
+        const registerResponse = await register(formData)
+        if (registerResponse?.success) {
+          toast.success("User registered successfully!");
+          await login(registerResponse?.token)
+        } else {
+          toast.error(registerResponse?.message || "Registration failed, please try again.");
+        }
       } catch (err) {
-        alert(
-          err.response?.data?.message || "Registration failed, please try again."
-        );
+        toast.error("Unexpected Error Occured");
       }
     } else {
       setErrors(validationErrors);
-      alert("Please check form format!");
+      toast.error("Please check form format!");
     }
   };
 
   return (
+    <>
+    {emailModalOpen && <EmailOTPVerificationModal open={emailModalOpen} onClose={closeEmailModal} email={formData.reg_email}  />}
     <div className="flex flex-col justify-center px-4 md:px-8">
       <div className="w-full max-w-md mx-auto">
         <h2 className="mt-3 text-center text-xl md:text-2xl font-bold text-gray-900">
@@ -96,15 +119,15 @@ const RegisterForm = () => {
                 </div>
                 <input
                   type="text"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2 border rounded-md shadow-sm"
                   placeholder="Your full name"
                 />
               </div>
               {errors.fullName && (
-                <p className="text-red-500 text-sm">{errors.fullName}</p>
+                <p className="text-red-500 text-sm">{errors.name}</p>
               )}
             </div>
 
@@ -119,15 +142,15 @@ const RegisterForm = () => {
                 </div>
                 <input
                   type="email"
-                  name="email"
-                  value={formData.email}
+                  name="reg_email"
+                  value={formData.reg_email}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2 border rounded-md shadow-sm"
                   placeholder="you@example.com"
                 />
               </div>
               {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
+                <p className="text-red-500 text-sm">{errors.reg_email}</p>
               )}
             </div>
 
@@ -142,15 +165,15 @@ const RegisterForm = () => {
                 </div>
                 <input
                   type="password"
-                  name="password"
-                  value={formData.password}
+                  name="reg_password"
+                  value={formData.reg_password}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2 border rounded-md shadow-sm"
                   placeholder="Password"
                 />
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password}</p>
+                <p className="text-red-500 text-sm">{errors.reg_password}</p>
               )}
             </div>
 
@@ -238,6 +261,7 @@ const RegisterForm = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

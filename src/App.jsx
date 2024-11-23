@@ -15,10 +15,12 @@ import Login from './Components/Login'
 import Register from './Components/Register'
 import Dashboard from './Components/Dashboard'
 import Verify from './Pages/Verify'
+import { ToastContainer } from 'react-toastify'
 
 const App = () => {
   return (
     <div className='App'>
+      <ToastContainer />
       <Header/>
       <Routes>
       

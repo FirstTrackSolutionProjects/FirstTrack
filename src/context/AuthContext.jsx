@@ -1,45 +1,52 @@
-import React, { createContext, useState, useEffect } from 'react';
-import {jwtDecode} from 'jwt-decode';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import validateToken from '../services/validateToken';
+import { toast } from 'react-toastify';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   
-  const [auth, setAuth] = useState({
-    username: localStorage.getItem('username'),
-    token: localStorage.getItem('token'),
-  });
+  const [authState, setAuthState] = useState({isAuthenticated: false});
 
-  const login = (username, token) => {
-    localStorage.setItem('username', username);
+  const login = async (token) => {
     localStorage.setItem('token', token);
-    setAuth({ username, token });
+    await isAuthenticated()
   };
 
   const logout = () => {
-    localStorage.removeItem('username');
     localStorage.removeItem('token');
-    setAuth({ username: null, token: null });
+    setAuthState({isAuthenticated: false});
   };
 
-  const isAuthenticated = () => {
+  const verifyEmail = () => {
+    setAuthState((prev)=>(
+      {...prev, emailVerified: true}
+    ));
+  }
+
+  const isAuthenticated = async () => {
     const token = localStorage.getItem('token');
     if (!token) return false;
     try {
-      const decoded = jwtDecode(token);
-      return decoded.exp * 1000 > Date.now(); // Check if token is expired
+        const decoded = await validateToken();
+        setAuthState({isAuthenticated: true, email: decoded.email, verified: decoded.verified, name : decoded.name, id : decoded.id, business_name: decoded.business_name, admin: decoded.admin, emailVerified: decoded.email_verified });
+        return true;
     } catch (error) {
+      console.log(error);
+      toast.error(error)
       return false;
     }
   };
 
-  // useEffect(() => {
-  //   if (!isAuthenticated()) {
-  //     logout();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      logout();
+    }
+  }, []);
   return (
-    <AuthContext.Provider value={{ ...auth, login, logout }}>
+    <AuthContext.Provider value={{ ...authState, login, logout, verifyEmail }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

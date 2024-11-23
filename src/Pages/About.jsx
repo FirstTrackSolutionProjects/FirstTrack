@@ -2,7 +2,7 @@ import React from 'react';
 import { FaGlobe, FaHandshake, FaPlane, FaShippingFast } from 'react-icons/fa';
 
 import { useInView } from 'react-intersection-observer';
-import { whyChooseUs , services} from '../Constants';
+import { whyChooseUs , services} from '../Constants/index.jsx';
 
 
 const AboutUs = () => {

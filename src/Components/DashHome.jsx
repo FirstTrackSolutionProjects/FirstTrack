@@ -1,7 +1,7 @@
 import React ,{useEffect,useState} from 'react'
 import { useNavigate } from 'react-router-dom';
 import DashCard from './DashCard';
-import { Admincards, Merchantcards } from '../Constants/index';
+import { Admincards, Merchantcards } from '../Constants/index.jsx';
 
 const DashHome = () => {
   const [user, setUser] = useState(null);
