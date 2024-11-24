@@ -1,8 +1,28 @@
 //Here lies all the constant objects of the site
 // constants/index.js
-import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
 import { FaTachometerAlt, FaWallet, FaHistory, FaUsers,FaFileAlt,FaMoneyBillAlt, FaChevronDown, FaChevronUp, FaBars, FaTimes, FaBox, FaDollyFlatbed, FaClipboardList, FaHouseUser, FaDoorOpen } from 'react-icons/fa';
 import { MdSettings } from 'react-icons/md';
+import VerificationRequests from "../Components/VerificationRequests"
+import DashHome from '../Components/DashHome';
+import MerchantManage from '../Components/MerchantManage';
+import AllInternationalParcels from '../Components/AllInternationalParcels';
+import AllParcels from '../Components/AllParcels';
+import AllShipmentReports from '../Components/AllShipmentReports';
+import AllTransactions from '../Components/AllTransactions';
+import ContactSubmissions from '../Components/ContactSubmissions';
+import CreateOrder from '../Components/CreateOrder';
+import ChangePassword from '../Components/ChangePassword';
+import CreateOrderInternational from '../Components/CreateOrderInternational';
+import InternationalReports from '../Components/InternationalReports';
+import ManualRecharge from '../Components/ManualRecharge';
+import NDR from '../Components/NDR';
+import NonVerifiedMerchantManage from '../Components/NonVerifiedMerchantManage';
+import Profile from '../Components/Profile';
+import TransactionHistory from '../Components/TransactionHistory';
+import UpdateOrder from '../Components/UpdateOrder';
+import UpdateOrderInternational from '../Components/UpdateOrderInternational';
+import Warehouse from '../Components/Warehouse';
+
 export const Admincards = [
   {
     id:'1',
@@ -244,7 +264,7 @@ export const menuItems = [
       name : "Dashboard",
       isDropdown : false,
       url : '',
-      component : "",
+      component : DashHome,
       dropDownOptions : [{}]
   },
   {
@@ -254,15 +274,15 @@ export const menuItems = [
       url : 'wallet-recharge',
       dropDownOptions : [{}]
   },
-  {
-      icon : FaWallet,
-      name : "KYC Update",
-      isDropdown : false,
-      merchantOnly : true,
-      url : 'kyc-update',
-      component : "",
-      dropDownOptions : [{}]
-  },
+  // {
+  //     icon : FaWallet,
+  //     name : "KYC Update",
+  //     isDropdown : false,
+  //     merchantOnly : true,
+  //     url : 'kyc-update',
+  //     component : "",
+  //     dropDownOptions : [{}]
+  // },
   {
       icon : FaBox,
       name : "Create Shipment",
@@ -274,14 +294,14 @@ export const menuItems = [
           name : "Domestic",
           isDropdown : false,
           url : 'order/domestic/create',
-          component : "",
+          component : CreateOrder,
           dropDownOptions : [{}]
       },{
           icon : "/logo.webp",
           name : "International",
           isDropdown : false,
           url : 'order/international/create',
-          component : "",
+          component : CreateOrderInternational,
           dropDownOptions : [{}]
       },]
   },
@@ -291,7 +311,7 @@ export const menuItems = [
       isDropdown : false,
       merchantOnly : true,
       url : 'warehouse',
-      component : "",
+      component : Warehouse,
       dropDownOptions : [{}]
   },
   {
@@ -305,7 +325,7 @@ export const menuItems = [
           name : "Domestic",
           isDropdown : false,
           url : 'parcels/domestic',
-          component : "",
+          component : UpdateOrder,
           dropDownOptions : [{}]
       },
       {
@@ -313,7 +333,7 @@ export const menuItems = [
           name : "International",
           isDropdown : false,
           url : 'parcels/international',
-          component : "",
+          component : UpdateOrderInternational,
           dropDownOptions : [{}]
       },]
   },
@@ -322,7 +342,7 @@ export const menuItems = [
       name : "Transaction History",
       isDropdown : false,
       url : 'transaction-history',
-      component : "",
+      component : TransactionHistory,
       dropDownOptions : [{}]
   },
   {
@@ -336,14 +356,14 @@ export const menuItems = [
           name : "Domestic Reports",
           isDropdown : false,
           url : 'shipment/domestic/reports',
-          component : "",
+          component : NDR,
           dropDownOptions : [{}]
       },{
           icon : "/logo.webp",
           name : "International Reports",
           isDropdown : false,
           url : 'shipment/international/reports',
-          component : "",
+          component : InternationalReports,
           dropDownOptions : [{}]
       },]
   },
@@ -358,7 +378,7 @@ export const menuItems = [
           name : "Verified Merchants",
           isDropdown : false,
           url : 'manage/merchant/verified',
-          component : "",
+          component : MerchantManage,
           dropDownOptions : [{}]
       },
       {
@@ -366,7 +386,7 @@ export const menuItems = [
           name : "Non-Verified Merchants",
           isDropdown : false,
           url : 'manage/merchant/non-verified',
-          component : "",
+          component : NonVerifiedMerchantManage,
           dropDownOptions : [{}]
       },
       {
@@ -374,7 +394,7 @@ export const menuItems = [
           name : "Merchant Transactions",
           isDropdown : false,
           url : 'manage/merchant/transactions',
-          component : "",
+          component : AllTransactions,
           dropDownOptions : [{}]
       },
       {
@@ -387,14 +407,14 @@ export const menuItems = [
               name : "Domestic",
               isDropdown : false,
               url : 'manage/merchant/shipments/domestic',
-              component : "",
+              component : AllParcels,
               dropDownOptions : [{}]
           },{
               icon : "/logo.webp",
               name : "International",
               isDropdown : false,
               url : 'manage/merchant/shipments/international',
-              component : "",
+              component : AllInternationalParcels,
               dropDownOptions : [{}]
           },]
       },
@@ -407,14 +427,14 @@ export const menuItems = [
               name : "Domestic Reports",
               isDropdown : false,
               url : 'manage/merchant/shipments/domestic/reports',
-              component : "",
+              component : AllShipmentReports,
               dropDownOptions : [{}]
           },{
               icon : "/logo.webp",
               name : "International Reports",
               isDropdown : false,
               url : 'manage/merchant/shipments/international/reports',
-              component : "",
+              component : InternationalReports,
               dropDownOptions : [{}]
           },]
       }]
@@ -451,7 +471,7 @@ export const menuItems = [
           isDropdown : false,
           admin : true,
           url : 'submissions/merchant-verification',
-          component : "",
+          component : VerificationRequests,
           dropDownOptions : [{}]
       },
       {
@@ -460,18 +480,18 @@ export const menuItems = [
           isDropdown : false,
           admin : true,
           url : 'submissions/contact-submission',
-          component : "",
+          component : ContactSubmissions,
           dropDownOptions : [{}]
       },
-      {
-          icon : "/logo.webp",
-          name : "KYC Requests",
-          isDropdown : false,
-          admin : true,
-          url : 'submissions/kyc-requests',
-          component : "",
-          dropDownOptions : [{}]
-      }
+      // {
+      //     icon : "/logo.webp",
+      //     name : "KYC Requests",
+      //     isDropdown : false,
+      //     admin : true,
+      //     url : 'submissions/kyc-requests',
+      //     component : "",
+      //     dropDownOptions : [{}]
+      // }
   ]
   },
   {
@@ -480,7 +500,7 @@ export const menuItems = [
       isDropdown : false,
       admin : true,
       url : 'manual-recharge',
-      component : "",
+      component : ManualRecharge,
       dropDownOptions : [{}]
   },
   {
@@ -494,7 +514,7 @@ export const menuItems = [
               name : "Profile",
               isDropdown : false,
               url : 'settings/profile',
-              component : "",
+              component : Profile,
               dropDownOptions : [{}]
           },
           {
@@ -502,7 +522,7 @@ export const menuItems = [
               name : "Change Password",
               isDropdown : false,
               url : 'settings/change-password',
-              component : "",
+              component : ChangePassword,
               dropDownOptions : [{}]
           },
       ]

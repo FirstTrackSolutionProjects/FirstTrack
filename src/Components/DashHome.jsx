@@ -6,7 +6,6 @@ import { useAuth } from '../context/AuthContext.jsx';
 const DashHome = () => {
   const {admin, verified, name} = useAuth()
   const navigate = useNavigate();
-  const page = admin === 1 ? <div>Admin</div> : <div>Merchant</div>
   const cards = admin === 1 ? Admincards : Merchantcards
 
   useEffect(() => {

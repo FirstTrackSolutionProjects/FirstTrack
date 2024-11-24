@@ -38,7 +38,7 @@ const LoginForm = () => {
       const loginResponse = await loginService(formData)
       if (loginResponse.success) {
         login(loginResponse.token)
-        toast.success(loginResponse.message)
+        toast.success("Login Successfull")
       } else {
         toast.error(loginResponse.message)
       }
