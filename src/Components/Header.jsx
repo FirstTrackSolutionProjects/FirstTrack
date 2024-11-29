@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai'; // Menu icon
 import { IoMdClose } from 'react-icons/io'; // Close icon
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaDoorOpen } from 'react-icons/fa';
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
 const Header = () => {
+  const location = useLocation();
   const {isAuthenticated, name, logout, verified} = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -59,7 +60,7 @@ const Header = () => {
         </nav>
         
         {isAuthenticated?<div className='flex items-center space-x-4'>
-          {verified? (<>
+          {verified && location.pathname.startsWith('/dashboard')? (<>
               <div onClick={()=>setShowRecharge(true)} className={`relative bg-green-600 ${balance < 250 ? "text-red-400" : "text-white"} flex items-center font-medium rounded-tl-xl rounded-br-xl px-3 min-w-14 py-2 cursor-pointer border-l-4 border-t-4 border-green-900`}>
               {balance < 250 && <p className="absolute -mt-5 top-0 right-[2px] text-red-400 text-3xl">!</p>}
                 <p>{`₹${balance}`}</p>
