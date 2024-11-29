@@ -40,7 +40,7 @@ const DashHome = () => {
       <div className='flex gap-1 mt-5 text-xl justify-center'>Welcome <span className='font-semibold'>{name}</span>! </div> 
       </div>
       {/*Card*/}
-        <div className='grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 p-5 '>
+        <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-8 p-5 '>
             {admin ? <DashCard title="Total Merchants" count={summary?summary.merchant:0} /> : null}
             <DashCard title="Total Warehouses" count={summary?summary.warehouse:0} />
             <DashCard title="Total Shipments" count={summary?summary.shipment:0} />

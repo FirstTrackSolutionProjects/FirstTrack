@@ -58,7 +58,7 @@ const Header = () => {
           <Link to="/about" className="hover:text-blue-800">ABOUT</Link>
           <Link to="/contact" className="hover:text-blue-800">CONTACT</Link>
         </nav>
-        <div className='md:hidden flex items-center'>
+        <div className='md:hidden'>
           {verified && location.pathname.startsWith('/dashboard')? (<>
               <div onClick={()=>setShowRecharge(true)} className={`relative bg-green-600 ${balance < 250 ? "text-red-400" : "text-white"} flex items-center font-medium rounded-tl-xl rounded-br-xl px-3 min-w-14 py-2 cursor-pointer border-l-4 border-t-4 border-green-900`}>
               {balance < 250 && <p className="absolute -mt-5 top-0 right-[2px] text-red-400 text-3xl">!</p>}
