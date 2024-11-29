@@ -201,7 +201,7 @@ const Card = ({ report }) => {
           {report.status}
           <div className="px-3 py-1 bg-blue-500  rounded-3xl text-white cursor-pointer" onClick={() => setIsView(true)}>View</div>
 
-          {isShipped && !isCancelled && [1,2,6].includes(shipment.serviceId) ? <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" onClick={() => cancelShipment()}>Cancel</div> : null}
+          {isShipped && !isCancelled && [1,2,6].includes(report.serviceId) ? <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" onClick={() => cancelShipment()}>Cancel</div> : null}
           {isCancelled ? <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" >Cancelled</div> : null}
         </div>
       </div>
