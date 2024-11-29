@@ -321,7 +321,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
   return (
     <>
       <div
-        className={`absolute top-0 z-20 bg-white w-full p-4 flex flex-col items-center space-y-6 ${isManage ? "" : "hidden"
+        className={` bg-white w-full p-4 flex flex-col items-center space-y-6 ${isManage ? "" : "hidden"
           }`}
       >
         <div className="w-full h-16 px-4  relative flex">
@@ -1246,7 +1246,6 @@ const Card = ({ shipment }) => {
   return (
     <>
       {isShip && <ShipList setIsShip={setIsShip} setIsShipped={setIsShipped} shipment={shipment} />}
-      {isManage ? <ManageForm isManage={isManage} setIsManage={setIsManage} shipment={shipment} isShipped={isShipped} /> : null}
       <div className="w-full h-24 bg-white relative items-center px-4 sm:px-8 flex border-b">
         <div className="text-sm">
           <div className="font-bold">{shipment.ord_id}</div>
@@ -1265,6 +1264,7 @@ const Card = ({ shipment }) => {
           {isCancelled ? <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" >Cancelled</div> : null}
         </div>
       </div>
+      {isManage ? <ManageForm isManage={isManage} setIsManage={setIsManage} shipment={shipment} isShipped={isShipped} /> : null}
     </>
   );
 };

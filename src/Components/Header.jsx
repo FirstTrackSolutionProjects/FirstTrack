@@ -1,18 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai'; // Menu icon
 import { IoMdClose } from 'react-icons/io'; // Close icon
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { FaDoorOpen } from 'react-icons/fa';
 
-
+const API_URL = import.meta.env.VITE_APP_API_URL
 
 const Header = () => {
-  const {isAuthenticated, name, logout} = useAuth()
+  const location = useLocation();
+  const {isAuthenticated, name, logout, verified} = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const [balance, setBalance] = useState(0.00);
+  useEffect(() => {
+    const fetchBalance = async () => {
+      console.log("Fetching balance")
+      const balance = await fetch(
+        `${API_URL}/wallet/balance`,{
+          method : 'POST',
+          headers:{
+            "Authorization":localStorage.getItem("token"),
+          }
+        }
+      )
+        .then((response) => response.json())
+        .then((result) => {console.log(result); return result.balance});
+      if (balance) {
+        setBalance(balance);
+      }
+    };
+    if (isAuthenticated && verified){
+        fetchBalance();
+    }
+  }, [isAuthenticated]);
 
   return (
     <header className="bg-gray-100 shadow-md w-full font-inter">
@@ -33,7 +58,27 @@ const Header = () => {
           <Link to="/about" className="hover:text-blue-800">ABOUT</Link>
           <Link to="/contact" className="hover:text-blue-800">CONTACT</Link>
         </nav>
-        {isAuthenticated?<div>{name} <span className='text-red-400' onClick={logout}>Logout</span></div>:null}
+        <div className='md:hidden'>
+          {verified && location.pathname.startsWith('/dashboard')? (<>
+              <div onClick={()=>setShowRecharge(true)} className={`relative bg-green-600 ${balance < 250 ? "text-red-400" : "text-white"} flex items-center font-medium rounded-tl-xl rounded-br-xl px-3 min-w-14 py-2 cursor-pointer border-l-4 border-t-4 border-green-900`}>
+              {balance < 250 && <p className="absolute -mt-5 top-0 right-[2px] text-red-400 text-3xl">!</p>}
+                <p>{`₹${balance}`}</p>
+              </div>
+              </>
+          ):null}
+        </div>
+        {isAuthenticated?<div className='md:flex items-center space-x-4 hidden'>
+          {verified && location.pathname.startsWith('/dashboard')? (<>
+              <div onClick={()=>setShowRecharge(true)} className={`relative bg-green-600 ${balance < 250 ? "text-red-400" : "text-white"} flex items-center font-medium rounded-tl-xl rounded-br-xl px-3 min-w-14 py-2 cursor-pointer border-l-4 border-t-4 border-green-900`}>
+              {balance < 250 && <p className="absolute -mt-5 top-0 right-[2px] text-red-400 text-3xl">!</p>}
+                <p>{`₹${balance}`}</p>
+              </div>
+              </>
+          ):null}
+          <div className='flex items-center'>
+            {name} <span className='bg-red-500 text-white text-xl p-3 cursor-pointer rounded-xl mx-3' onClick={logout}><FaDoorOpen /></span>
+          </div>
+          </div>:null}
         {/* Menu button for small screens */}
         <div className="md:hidden z-30">
           <button onClick={toggleSidebar}>
@@ -53,6 +98,17 @@ const Header = () => {
           <button onClick={toggleSidebar}>
             <IoMdClose size={30} />
           </button>
+        </div>
+        <div className="flex items-center space-x-4">
+          {isAuthenticated?<div className="flex items-center justify-between w-full bg-gray-200 mx-2 rounded-xl">
+  <span className='mx-2 font-bold text-lg'>{name}</span>
+  <span
+    className="bg-red-500 text-white text-xl p-3 cursor-pointer rounded-xl"
+    onClick={logout}
+  >
+    <FaDoorOpen />
+  </span>
+</div>:null}
         </div>
         <nav className="flex flex-col p-4 space-y-4 text-lg">
           <Link to="/" className="hover:text-blue-500" onClick={toggleSidebar}>Home</Link>
