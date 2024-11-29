@@ -58,8 +58,16 @@ const Header = () => {
           <Link to="/about" className="hover:text-blue-800">ABOUT</Link>
           <Link to="/contact" className="hover:text-blue-800">CONTACT</Link>
         </nav>
-        
-        {isAuthenticated?<div className='flex items-center space-x-4'>
+        <div className='md:hidden flex items-center'>
+          {verified && location.pathname.startsWith('/dashboard')? (<>
+              <div onClick={()=>setShowRecharge(true)} className={`relative bg-green-600 ${balance < 250 ? "text-red-400" : "text-white"} flex items-center font-medium rounded-tl-xl rounded-br-xl px-3 min-w-14 py-2 cursor-pointer border-l-4 border-t-4 border-green-900`}>
+              {balance < 250 && <p className="absolute -mt-5 top-0 right-[2px] text-red-400 text-3xl">!</p>}
+                <p>{`₹${balance}`}</p>
+              </div>
+              </>
+          ):null}
+        </div>
+        {isAuthenticated?<div className='md:flex items-center space-x-4 hidden'>
           {verified && location.pathname.startsWith('/dashboard')? (<>
               <div onClick={()=>setShowRecharge(true)} className={`relative bg-green-600 ${balance < 250 ? "text-red-400" : "text-white"} flex items-center font-medium rounded-tl-xl rounded-br-xl px-3 min-w-14 py-2 cursor-pointer border-l-4 border-t-4 border-green-900`}>
               {balance < 250 && <p className="absolute -mt-5 top-0 right-[2px] text-red-400 text-3xl">!</p>}
@@ -90,6 +98,17 @@ const Header = () => {
           <button onClick={toggleSidebar}>
             <IoMdClose size={30} />
           </button>
+        </div>
+        <div className="flex items-center space-x-4">
+          {isAuthenticated?<div className="flex items-center justify-between w-full bg-gray-200 mx-2 rounded-xl">
+  <span className='mx-2 font-bold text-lg'>{name}</span>
+  <span
+    className="bg-red-500 text-white text-xl p-3 cursor-pointer rounded-xl"
+    onClick={logout}
+  >
+    <FaDoorOpen />
+  </span>
+</div>:null}
         </div>
         <nav className="flex flex-col p-4 space-y-4 text-lg">
           <Link to="/" className="hover:text-blue-500" onClick={toggleSidebar}>Home</Link>
