@@ -54,7 +54,7 @@ const DashHome = () => {
             <DashCard key={card.id} title={card.title} count={card.count}/>
           ))} */}
           
-        </div> 
+        </div>
     </div>
   )
 }

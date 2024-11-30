@@ -4,12 +4,17 @@ import { menuItems } from '../Constants'; // Import sidebar items
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import SidebarItem from './SidebarItem.jsx';
+import WalletRechargeModal from './WalletRechargeModal.jsx';
 const Sidebar2 = () => {
   const {admin, logout} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [showRecharge, setShowRecharge] = useState(false);
 
+  const closeRechargeModal = () => {
+    setShowRecharge(false);
+  }
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
@@ -20,6 +25,8 @@ const Sidebar2 = () => {
 
   const sidebarItems = menuItems
   return (
+    <>
+    {showRecharge ? <WalletRechargeModal onClose={closeRechargeModal} /> : null}
     <div>
       {/* Menu button (Icon) - visible only below md screens */}
       <button
@@ -36,7 +43,7 @@ const Sidebar2 = () => {
           if ((item.admin && !admin) || (item.merchantOnly && admin)) {
             return;
           }
-          return(<SidebarItem item={item} />)
+          return(<SidebarItem item={item} setShowRecharge={setShowRecharge}/>)
         })}
       </ul>
       </div>
@@ -63,6 +70,7 @@ const Sidebar2 = () => {
       </ul>
         </div>
     </div>
+    </>
   );
 };
 

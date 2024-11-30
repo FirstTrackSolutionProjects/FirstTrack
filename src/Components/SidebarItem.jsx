@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa'
-const SidebarItem = ({ item }) => {
+const SidebarItem = ({ item, setShowRecharge }) => {
     const location = useLocation()
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(0)
