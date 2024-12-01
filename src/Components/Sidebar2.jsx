@@ -65,7 +65,7 @@ const Sidebar2 = () => {
           if ((item.admin && !admin) || (item.merchantOnly && admin)) {
             return;
           }
-          return(<SidebarItem item={item} />)
+          return(<SidebarItem item={item} setShowRecharge={setShowRecharge} />)
         })}
       </ul>
         </div>
