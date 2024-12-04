@@ -6,7 +6,7 @@ const ComparePrices = ({method, boxes, status, origin, dest, weight, payMode, co
   useEffect(()=>{
     console.log({method, status, origin, dest, weight, payMode, codAmount, volume, quantity})
     const data = async () => {
-      await fetch(`${API_URL}/price`, {
+      await fetch(`${API_URL}/shipment/domestic/price`, {
         method: 'POST',
         headers: { 'Accept': '*/*',
           'Content-Type': 'application/json'
