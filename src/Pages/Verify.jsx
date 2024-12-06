@@ -337,7 +337,7 @@ const Verify = () => {
         p: 2,
       }}
     >
-      {step === 1 && <TextForm onNext={nextStep} />}
+      {step === 1 && <TextForm onNext={incompleteRequest} />}
       {step === 2 && <FileUploadForm reqId={reqId} onNext={nextStep} />}
       {step === 3 && <div>Verification Request Submitted</div>}
     </Box>
