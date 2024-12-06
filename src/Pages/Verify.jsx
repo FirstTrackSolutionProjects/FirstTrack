@@ -78,15 +78,24 @@ const FileUploadForm = ({ reqId, onNext }) => {
         },
         body: JSON.stringify({ filename: key, filetype: fileData[name].type }),
       });
+
+      if (!urlResponse.ok) {
+        throw new Error({message: "Failed to generate upload URL"});
+      }
+
       const { uploadURL } = await urlResponse.json();
 
-      await fetch(uploadURL, {
+      const uploadRequest = await fetch(uploadURL, {
         method: "PUT",
         headers: { "Content-Type": fileData[name].type },
         body: fileData[name],
       });
 
-      await fetch(`${API_URL}/verification/documentStatus/update`, {
+      if (!uploadRequest.ok) {
+        throw new Error({message: "Failed to upload file"});
+      }
+
+      const updateDocStatusRequest = await fetch(`${API_URL}/verification/documentStatus/update`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -95,6 +104,10 @@ const FileUploadForm = ({ reqId, onNext }) => {
         },
         body: JSON.stringify({ name, key }),
       });
+
+      if (!updateDocStatusRequest.ok) {
+        throw new Error({message: "Failed to update document status"});
+      }
 
       setUploadStatus((prevStatus) => ({
         ...prevStatus,
