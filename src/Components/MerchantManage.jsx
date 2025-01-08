@@ -1,4 +1,5 @@
 import { useEffect , useState  } from 'react'
+import UserDiscountModal from './Modals/UserDiscountModal'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const View = ({merchant, balance ,fullName, email, phone,isActive, uid  , gst, setView, businessName, cin, aadhar_number, pan_number, address, city, state, pin, accountNumber, ifsc, bank}) => {
     const [isActivated, setIsActivated] = useState(isActive)
@@ -58,6 +59,10 @@ const View = ({merchant, balance ,fullName, email, phone,isActive, uid  , gst, s
         document.body.removeChild(link);
     })
     }
+    const [openDiscountModal, setOpenDiscountModal] = useState(false);
+    const closeDiscountModal = () => {
+        setOpenDiscountModal(false);
+    }
     return (
         <>
             <div className='absolute inset-0 bg-[rgba(0,0,0,0.5)] z-50 flex justify-center items-center overflow-y-auto'>
@@ -92,11 +97,17 @@ const View = ({merchant, balance ,fullName, email, phone,isActive, uid  , gst, s
                             <p>Cancelled Cheque : <span className="cursor-pointer" onClick={()=>handleDownload('cancelledCheque')}>[PDF]</span></p>
                         </div>
                     </div>
-                    <button onClick={isActivated?()=>deactivate():()=>activate()}  className={` ${isActivated?"bg-red-500":"bg-green-500"} text-white mx-2  py-2 px-4 rounded-3xl`}>
-                        {isActivated? "Deactivate" : "Activate"}
-                    </button>
+                    <div className='flex space-x-1'>
+                        <button onClick={isActivated?()=>deactivate():()=>activate()}  className={` ${isActivated?"bg-red-500":"bg-green-500"} text-white mx-2  py-2 px-4 rounded-3xl`}>
+                            {isActivated? "Deactivate" : "Activate"}
+                        </button>
+                        <button onClick={() => setOpenDiscountModal(true)}  className={`bg-blue-500 text-white mx-2  py-2 px-4 rounded-3xl`}>
+                            Discounts
+                        </button>
+                    </div>
                 </div>
             </div>
+            <UserDiscountModal open={openDiscountModal} onClose={closeDiscountModal} uid={uid} />
         </>
     )
 }
