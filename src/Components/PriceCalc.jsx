@@ -28,7 +28,7 @@ const ComparePrices = ({method, boxes, status, origin, dest, payMode, codAmount,
             prices.length ? prices.map((price)=>(
               <div className="w-full h-16 bg-white relative justify-center px-4 flex flex-col border-b" >
           <div className="font-bold">{price.name+" "+price.weight}</div>
-          <div>{"Chargable Weight : "+price.chargableWeight}gm</div>
+          <div>{price.chargableWeight && "Chargable Weight : "+price.chargableWeight+"gm"}</div>
           <div className="absolute right-4">{`₹${Math.round((price.price))}`}</div>
         </div>
             ))

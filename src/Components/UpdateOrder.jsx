@@ -1284,7 +1284,7 @@ const Card = ({ shipment }) => {
           {isProcessing && <div className="px-3 py-1 bg-blue-500  rounded-3xl text-white cursor-pointer" onClick={isRefreshing ? () => { } : () => refreshShipment()}>{isRefreshing ? 'Refreshing...' : 'Refresh'}</div>}
           {isShipped && !isProcessing && !isCancelled ? <div className="px-3 py-1 bg-blue-500  rounded-3xl text-white cursor-pointer" onClick={() => getLabel()}>Label</div> : null}
           {!isShipped && !isDeleted ? <div className="px-3 py-1 bg-blue-500  rounded-3xl text-white cursor-pointer" onClick={() => setIsShip(true)}>Ship</div> : null}
-          {isShipped && !isProcessing && !isCancelled && [1,2,6].includes(shipment.serviceId) ? <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" onClick={isCancelling ? () => { } : () => cancelShipment()}>{isCancelling ? "Cancelling..." : "Cancel"}</div> : null}
+          {isShipped && !isProcessing && !isCancelled && [1,2,6,8].includes(shipment.serviceId) ? <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" onClick={isCancelling ? () => { } : () => cancelShipment()}>{isCancelling ? "Cancelling..." : "Cancel"}</div> : null}
           {!isShipped && !isDeleted && <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" onClick={isDeleting ? () => {} : () => deleteOrder()}>{isDeleting ? "Deleting..." : "Delete"}</div> }
           {isDeleted ? <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" >Deleted</div> : null}
           {isCancelled ? <div className="px-3 py-1 bg-red-500  rounded-3xl text-white cursor-pointer" >Cancelled</div> : null}
