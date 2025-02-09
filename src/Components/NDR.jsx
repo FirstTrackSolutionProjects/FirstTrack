@@ -90,6 +90,22 @@ const ShiprocketStatusCard = ({ report, status }) => {
   )
 }
 
+const IntargosStatusCard = ({ report, status }) => {
+  return (
+    <div className="flex flex-col">
+      <p className="mt-5">AWB : {report.awb}</p>
+
+      {status.length ?
+        (status).reverse().map((scan, index) => {
+          return (
+            <div>{scan.DateandTime} | {scan.Location} | {`(${scan.Status}) ${scan.Remark}`} </div>
+          )
+        }) : "Shipment is not yet picked up"
+      }
+    </div>
+  )
+}
+
 const View = ({ report, setIsView }) => {
   const [status, setStatus] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -137,6 +153,9 @@ const View = ({ report, setIsView }) => {
           }
           {
             status && report.serviceId == 6? <ShiprocketStatusCard report={report} status={status} /> : null
+          }
+          {
+            status && report.serviceId == 8? <IntargosStatusCard report={report} status={status} /> : null
           }
         </div>
       </div>
