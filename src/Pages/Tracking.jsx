@@ -142,6 +142,20 @@ const ShiprocketCard = ({ scan }) => {
     )
 }
 
+const IntargosCard = ({ scan }) => {
+  return (
+    <>
+        <div className="w-full py-3 bg-white relative items-center justify-center px-8 flex border-b space-x-4">
+            <div className='flex flex-col items-center justify-center'>
+                <div className='font-bold'>{`(${scan.Status}) ${scan.Remark}`}</div>
+                <div>{scan.Location}</div>
+                <div>{scan.DateandTime}</div>
+            </div>
+        </div>
+    </>
+    )
+}
+
 
 const ResultModal = ({ data, onClose }) => {
     useEffect(() => {
@@ -183,6 +197,10 @@ const ResultModal = ({ data, onClose }) => {
             {data?.id === 7 &&
               data?.data.map((scan, index) => (
                 <DillikingCard key={index} scan={scan} />
+              ))}
+              {data?.id === 8 &&
+              data?.data.map((scan, index) => (
+                <IntargosCard key={index} scan={scan} />
               ))}
           </div>
         </div>
