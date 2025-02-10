@@ -21,6 +21,7 @@ const Sidebar2 = () => {
 
   useEffect(()=>{
     if (location.pathname=="/dashboard/logout") logout()
+    setIsOpen(false);
   },[navigate])
 
   const sidebarItems = menuItems
