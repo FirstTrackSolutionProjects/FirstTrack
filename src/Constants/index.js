@@ -22,6 +22,8 @@ import TransactionHistory from '../Components/TransactionHistory';
 import UpdateOrder from '../Components/UpdateOrder';
 import UpdateOrderInternational from '../Components/UpdateOrderInternational';
 import Warehouse from '../Components/Warehouse';
+import UpdateProfileRequest from '../Components/UpdateProfileRequest';
+import UpdateProfileRequestSubmissions from '../Components/UpdateProfileRequestSubmissions';
 
 export const Admincards = [
   {
@@ -476,6 +478,15 @@ export const menuItems = [
       },
       {
           icon : "/logo.webp",
+          name : "Update Profile Requests",
+          isDropdown : false,
+          admin : true,
+          url : 'submissions/merchant-update-profile-requests',
+          component : UpdateProfileRequestSubmissions,
+          dropDownOptions : [{}]
+      },
+      {
+          icon : "/logo.webp",
           name : "Contact Submission",
           isDropdown : false,
           admin : true,
@@ -515,6 +526,15 @@ export const menuItems = [
               isDropdown : false,
               url : 'settings/profile',
               component : Profile,
+              dropDownOptions : [{}]
+          },
+          {
+              icon : "/logo.webp",
+              name : "Profile Update",
+              isDropdown : false,
+              url : 'settings/profile-update-request',
+              component : UpdateProfileRequest,
+              merchantOnly : true,
               dropDownOptions : [{}]
           },
           {

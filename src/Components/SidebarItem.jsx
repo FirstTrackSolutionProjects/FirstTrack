@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa'
+import { useAuth } from '../context/AuthContext'
 const SidebarItem = ({ item, setShowRecharge }) => {
     const location = useLocation()
     const navigate = useNavigate()
+    const {admin} = useAuth()
     const [isOpen, setIsOpen] = useState(0)
     const [isCurrentMenu, setIsCurrentMenu] = useState(location.pathname === `/dashboard/${item.url}`)
     useEffect(() => {
@@ -20,9 +22,10 @@ const SidebarItem = ({ item, setShowRecharge }) => {
                 </p> : null}
             </div>
             {item.isDropdown ? <div className={`  ${isOpen ? `` : "hidden"}`}>
-                {item.dropDownOptions.map((subitem, index) => (
-                    <SidebarItem item={subitem} />
-                ))}
+                {item.dropDownOptions.map((subitem, index) => {
+                    if ((subitem.admin && !admin) || (subitem.merchantOnly && admin)) return;
+                    return <SidebarItem item={subitem} />
+                })}
             </div> : null}
         </>
     )

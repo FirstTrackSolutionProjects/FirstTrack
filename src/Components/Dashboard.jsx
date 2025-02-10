@@ -26,9 +26,9 @@ const Dashboard = () => {
   };
 return (
     <>
-    <div className='h-screen flex font-inter bg-gray-200'>
+    <div className='h-[calc(100vh-86px)] flex font-inter bg-gray-200'>
       <Sidebar2 />
-        <main className="flex-grow justify-center items-center">
+        <main className="flex-grow justify-center items-center overflow-y-auto">
           <Routes>
             {generateRoutes(menuItems, admin)}
           </Routes>
