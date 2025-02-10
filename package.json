@@ -34,6 +34,7 @@
     "heroicons": "^2.1.5",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
+    "mui-file-input": "^6.0.0",
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.15",
     "react": "^18.3.1",
