@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 
 const API_URL = import.meta.env.VITE_APP_API_URL
-const ComparePrices = ({method, boxes, status, origin, dest, weight, payMode, codAmount, volume, quantity}) => {
+const ComparePrices = ({method, boxes, status, origin, dest, payMode, codAmount, isB2B, invoiceAmount}) => {
   const [prices,setPrices] = useState([])
   useEffect(()=>{
-    console.log({method, status, origin, dest, weight, payMode, codAmount, volume, quantity})
+    console.log({method, status, origin, dest, payMode, codAmount})
     const data = async () => {
-      await fetch(`${API_URL}/price`, {
+      await fetch(`${API_URL}/shipment/domestic/price`, {
         method: 'POST',
-        headers: { 'Accept': '*/*',
+        headers: { 'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-          body : JSON.stringify({method: method, boxes : boxes, status : status, origin : origin, dest : dest, weight : weight, payMode : payMode, codAmount : codAmount,volume, quantity}),
+          body : JSON.stringify({method: method, boxes : boxes, status : status, origin : origin, dest : dest, payMode : payMode, codAmount : codAmount, isB2B : isB2B, invoiceAmount : invoiceAmount, priceCalc : true}),
         
       }).then(response => response.json()).then(result => {console.log(result); setPrices(result.prices)}).catch(error => console.log(error + " " + error.message))
     }  
@@ -28,7 +28,7 @@ const ComparePrices = ({method, boxes, status, origin, dest, weight, payMode, co
             prices.length ? prices.map((price)=>(
               <div className="w-full h-16 bg-white relative justify-center px-4 flex flex-col border-b" >
           <div className="font-bold">{price.name+" "+price.weight}</div>
-          <div>{"Chargable Weight : "+price.chargableWeight}gm</div>
+          <div>{price.chargableWeight && "Chargable Weight : "+price.chargableWeight+"gm"}</div>
           <div className="absolute right-4">{`₹${Math.round((price.price))}`}</div>
         </div>
             ))
@@ -42,6 +42,7 @@ const ComparePrices = ({method, boxes, status, origin, dest, weight, payMode, co
 }
 
 
+
 const Form = () => {
   const [boxes, setBoxes] = useState([{weight : 0, length : 0, breadth : 0, height : 0}])
   const [formData, setFormData] = useState({
@@ -51,24 +52,9 @@ const Form = () => {
     dest : '',
     payMode : 'COD',
     codAmount : '0',
-    weight : 0,
-    volume : 0,
-    quantity : 0
+    invoiceAmount : 0,
+    isB2B : false
   })
-  useEffect(()=>{
-    let totalVolume = 0;
-    let totalWeight = 0;
-    boxes.map((box,index)=>{
-        totalVolume += box.length * box.breadth * box.height
-        totalWeight += box.weight
-    })
-    setFormData((prevData) => ({
-     ...prevData,
-      weight : totalWeight,
-      volume : totalVolume,
-      quantity : boxes.length
-    }));
-  },[boxes])
   const [showCompare, setShowCompare] = useState(false)
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,6 +65,34 @@ const Form = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (formData.origin.length !== 6 || formData.origin.length !== 6){
+      toast.error("Origin and Destination pincodes should be 6 digits")
+      return;
+    }
+    if (formData.isB2B && formData.invoiceAmount < 1){
+      toast.error("Invoice Amount should be atleast 1 for B2B")
+      return;
+    }
+    if (formData.payMode == "COD" && formData.codAmount < 1){
+      toast.error("COD Amount should be atleast 1")
+      return;
+    }
+    let boxValidationError = false;
+    boxes.map(box => {
+      if (!box.weight){
+        toast.error("Weight is required")
+        boxValidationError = true;
+      }
+      if (!box.length || !box.breadth || !box.height){
+        toast.error("Length, Breadth and Height should be non-zero")
+        boxValidationError = true;
+      }
+      if (box.quantity < 1){
+        toast.error("Quantity should be atleast 1")
+        boxValidationError = true;
+      }
+    })
+    if (boxValidationError) return;
     setShowCompare(true)
   }
   const handleBoxes = (index, event) => {
@@ -88,7 +102,7 @@ const Form = () => {
     setBoxes(updatedBoxes);
   };
   const addBox = () => {
-    setBoxes([...boxes, {  length: 0 , breadth : 0 , height : 0  , weight: 0 }]);
+    setBoxes([...boxes, {  length: 0 , breadth : 0 , height : 0  , weight: 0, weight_unit : 'g', quantity: 1 }]);
   };
   const removeBox = (index) => {
     const updatedBoxes = boxes.filter((_, i) => i !== index);
@@ -204,12 +218,49 @@ const Form = () => {
           </select>
         </div>
       </div>
+
+      {/* Row 4:Shipment Type and Invoice Amount */}
+      <div className="grid grid-cols-2  gap-4">
+      <div>
+          <label htmlFor="shipmentType" className="block text-sm font-medium text-gray-700">
+          Shipment Type
+          </label>
+          <select
+            name="isB2B"
+            id="shipmentType"
+            value={formData.isB2B}
+            onChange={handleChange}
+            className="mt-1 text-sm block w-full p-2 border border-gray-300 rounded-md"
+          >
+            
+            <option value={false}>B2C</option>
+            <option value={true}>B2B</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="invoiceAmount" className="block text-sm font-medium text-gray-700">
+          Invoice Amount
+          </label>
+          <input
+            type="text"
+            id="invoiceAmount"
+            name="invoiceAmount"
+            placeholder="Ex. 157"
+            value={formData.invoiceAmount}
+            onChange={handleChange}
+            className="mt-1 text-sm block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        
+      </div>
+      
           {boxes.map((box,index)=>(
             <>
-               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+               <div className="grid grid-cols-2 sm:grid-cols-6 gap-4 p-2 rounded-md bg-gray-200">
         <div>
           <label htmlFor="weight" className="block text-sm font-medium text-gray-700">
-            Weight (in gm)
+            Weight
           </label>
           <input
             type="text"
@@ -221,7 +272,22 @@ const Form = () => {
             className="mt-1 text-sm block w-full p-2 border border-gray-300 rounded-md"
           />
         </div>
-
+        <div>
+          <label htmlFor="weight_unit" className="block text-sm font-medium text-gray-700">
+          W unit
+          </label>
+          <select
+            name="weight_unit"
+            id="weight_unit"
+            value={box.weight_unit}
+            onChange={(e)=>handleBoxes(index,e)}
+            className="mt-1 text-sm block w-full p-2 border border-gray-300 rounded-md"
+          >
+            
+            <option value={'g'}>g</option>
+            <option value={'kg'}>kg</option>
+          </select>
+        </div>
         <div>
           <label htmlFor="length" className="block text-sm font-medium text-gray-700">
             L (in cm)
@@ -262,6 +328,21 @@ const Form = () => {
             name="height"
             placeholder="Ex. 2.5"
             value={box.height}
+            onChange={(e)=>handleBoxes(index,e)}
+            className="mt-1 text-sm block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+        <div>
+          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
+            Count
+          </label>
+          <input
+            type="text"
+            id="quantity"
+            name="quantity"
+            placeholder="Ex. 2.5"
+            min={1}
+            value={box.quantity}
             onChange={(e)=>handleBoxes(index,e)}
             className="mt-1 text-sm block w-full p-2 border border-gray-300 rounded-md"
           />
