@@ -2,7 +2,8 @@ import React from 'react';
 import { FaFacebookSquare,FaInstagramSquare,FaYoutubeSquare , FaLinkedin, FaTwitterSquare} from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt, faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import {faTwitterSquare } from '@fortawesome/free-brands-svg-icons';
+import { FaWhatsapp } from "react-icons/fa6";
+import {faTwitterSquare, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
 
 
@@ -93,6 +94,10 @@ const ContactUs = () => {
               </li>
               <li>
               <FontAwesomeIcon icon={faPhone} className="text-blue-500 mr-3" />
+                <span> +91-8240742313</span>
+              </li>
+              <li>
+              <FontAwesomeIcon icon={faWhatsapp} className="text-blue-500 text-xl mr-3" />
                 <span> +91-9040170727</span>
               </li>
               <li>

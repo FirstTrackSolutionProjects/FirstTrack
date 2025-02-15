@@ -1,6 +1,7 @@
 import React from "react";
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaFacebook, FaTwitter, FaInstagram , FaLinkedin, FaYoutube  } from 'react-icons/fa';
 import { Link } from "react-router-dom";
+import { FaWhatsapp } from "react-icons/fa6";
 const Footer =()=>{
     const scrollToTop = () => {
         window.scrollTo({
@@ -42,7 +43,12 @@ const Footer =()=>{
                     
                     <div className="flex items-center mb-4">
                         <FaPhoneAlt className="h-5 w-4 mr-3" />
-                        <span className="text-sm">Phone: +91-9040170727</span>
+                        <span className="text-sm">+91-8240742313</span>
+                    </div>
+
+                    <div className="flex items-center mb-4">
+                        <FaWhatsapp className="h-5 w-4 mr-3" />
+                        <span className="text-sm">+91-9040170727</span>
                     </div>
                     
                     <div className="flex items-center">

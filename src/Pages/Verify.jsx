@@ -19,7 +19,7 @@ const formSchema = z.object({
   pin: z.string().min(1, "PIN Code is required").regex(/^\d{6}$/, "Invalid PIN Code"),
   aadhar: z.string().min(1, "Aadhar Number is required").length(12, "Aadhar must be 12 digits"),
   pan: z.string().min(1, "PAN Number is required").length(10, "PAN must be 10 characters"),
-  gst: z.string().min(1, "GST Number is required"),
+  gst: z.string().optional(),
   msme: z.string().optional(),
   bank: z.string().min(1, "Bank Name is required"),
   ifsc: z.string().min(1, "IFSC Code is required"),
