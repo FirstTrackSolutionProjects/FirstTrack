@@ -142,18 +142,36 @@ const FileUploadForm = ({ reqId, onNext }) => {
     }
   }
 
+  const docs = [{
+    name: "Aadhar Card*",
+    id: "aadhar_doc"
+  },{
+    name: "PAN Card*",
+    id: "pan_doc"
+  },{
+    name: "GST Document",
+    id: "gst_doc"
+  },{
+    name: "Cancelled Cheque",
+    id: "cancelledCheque"
+  },{
+    name: "Selfie Photo*",
+    id: "selfie_doc"
+  }]
+
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }} onSubmit={handleSubmit} component={"form"}>
       <Typography variant="h5" align="center" gutterBottom>
         Upload Verification Documents
       </Typography>
       <Grid container spacing={2}>
-        {["aadhar_doc", "pan_doc", "gst_doc", "cancelledCheque", "selfie_doc"].map((doc, idx) => (
+        {docs.map((doc, idx) => (
           <Grid item xs={12} md={6} key={idx}>
+            <Typography variant="h6">{doc.name}</Typography>
             <TextField
               type="file"
-              id={doc}
-              name={doc}
+              id={doc.id}
+              name={doc.id}
               variant="outlined"
               fullWidth
               onChange={handleFileChange}
@@ -163,12 +181,12 @@ const FileUploadForm = ({ reqId, onNext }) => {
               color="primary"
               fullWidth
               sx={{ mt: 2 }}
-              onClick={() => handleUpload(doc)}
+              onClick={() => handleUpload(doc.id)}
               startIcon={<FileUpload />}
             >
               Upload
             </Button>
-            {uploadStatus[doc] && (
+            {uploadStatus[doc.id] && (
               <Typography color="success.main" sx={{ mt: 1 }}>
                 <CheckCircle sx={{ fontSize: 16, mr: 1 }} />
                 Uploaded
@@ -182,6 +200,7 @@ const FileUploadForm = ({ reqId, onNext }) => {
         color="primary"
         type="submit"
         fullWidth
+        disabled={!uploadStatus.aadhar_doc || !uploadStatus.pan_doc || !uploadStatus.selfie_doc}
         sx={{ mt: 3  }}
         >Submit</Button>
     </Box>
