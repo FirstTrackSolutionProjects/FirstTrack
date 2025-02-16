@@ -42,6 +42,21 @@ const Profile = () => {
     ifsc: '',
     designation: '',
   })
+  const [profilePhoto, setProfilePhoto] = useState(null)
+  useEffect(()=>{
+      const getProfilePhoto = async () => {
+          await fetch(`${API_URL}/s3/getUrl`, {
+              method : 'POST',
+              headers : {
+                  'Content-Type' : 'application/json',
+                  'Accept' : 'application/json',
+                  'Authorization' : localStorage.getItem('token')
+              },
+              body : JSON.stringify({key : profileData['selfie_doc']})
+          }).then((response)=>response.json()).then(result => setProfilePhoto(result.downloadURL))
+      }
+      getProfilePhoto()
+  },[profileData])
   useEffect(() => {
     fetch(`${API_URL}/${admin?'admin':'merchant'}/profile`, {
       method: 'POST',
@@ -68,7 +83,8 @@ const Profile = () => {
         bank: data.bank,
         account_number: data.accountNumber,
         ifsc: data.ifsc,
-        designation: data.designation
+        designation: data.designation,
+        selfie_doc: data.selfie_doc
       })
     })
   }, [])
@@ -102,7 +118,7 @@ const Profile = () => {
           <div className='w-full space-y-6'>
             <div className='w-full flex items-center flex-col md:flex-row justify-center space-x-8'>
               <div className='flex justify-center items-center w-32 h-32'>
-                <img src='/user.webp' />
+                <img src={profilePhoto || '/user.webp'} />
               </div>
               <div className=''>
                 <p className='font-medium text-xl'>{profileData.business_name}</p>
