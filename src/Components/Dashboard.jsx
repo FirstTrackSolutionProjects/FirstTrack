@@ -3,9 +3,19 @@ import Sidebar2 from './Sidebar2';
 import { Routes,Route } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { menuItems } from '../Constants';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const {admin} = useAuth()
+  const {admin, isAuthenticated, verified} = useAuth()
+  const navigate = useNavigate();
+  if (!isAuthenticated) {
+    navigate('/login');
+    return null;
+  }
+  if (!verified) {
+    navigate('/verify');
+    return null;
+  }
   const generateRoutes = (items, admin) => {
     return items.flatMap((item, index) => {
       if ((item.admin && !admin) || (item.merchantOnly && admin)) {
