@@ -1,5 +1,7 @@
+import { TextField } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+import { FaEye } from "react-icons/fa";
 const API_URL = import.meta.env.VITE_APP_API_URL
 const AddForm = ({ setMode }) => {
   const [formData, setFormData] = useState({
@@ -210,53 +212,25 @@ const AddForm = ({ setMode }) => {
   );
 };
 
-const ManageForm = ({ isManage, setIsManage, name, address, pin, phone, wid }) => {
-  const [formData, setFormData] = useState({
-    wid: wid,
+const ManageForm = ({ isManage, setIsManage, name, address, pin, phone, city, state }) => {
+  const formData = {
     name: name,
     phone: phone,
     address: address,
-    pin: pin
-  });
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validatedFormData = {
-      wid : formData.wid,
-      name : formData.name.trim(),
-      phone : formData.phone.trim(),
-      address : formData.address.trim(),
-      pin : formData.pin.trim()
-    }
-    if (validatedFormData.phone.length !== 10) {alert("Please enter phone number with 10 digits"); return; }
-    if (validatedFormData.pin.length !== 6) {alert("Please enter pincode with 6 digits"); return; }
-    fetch(`${API_URL}/warehouse/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": localStorage.getItem("token"),
-      },
-      body: JSON.stringify(validatedFormData),
-    })
-      .then((response) => response.json())
-      .then((result) => alert(result.message))
-      .catch((error) => alert(error.message));
+    pin: pin,
+    city: city,
+    state: state,
+    country: "India"
   };
   return (
     <>
       <div
-        className={`absolute  z-20 bg-white w-full p-4 flex flex-col items-center space-y-6 ${isManage ? "" : "hidden"
+        className={`fixed inset-0 bg-[rgba(0,0,0,0.4)] z-20 w-full p-4 flex flex-col items-center justify-center ${isManage ? "" : "hidden"
           }`}
       >
-        <div className="w-[728px] h-16 px-4  relative flex">
-          <div className="text-2xl font-medium">MANAGE WAREHOUSE</div>
+       <div className="p-4 bg-white rounded-lg max-h-[95%] overflow-y-auto">
+       <div className="w-full md:w-[600px] h-16 px-4  relative flex">
+          <div className="text-2xl font-medium">WAREHOUSE</div>
           <div
             onClick={(e) => {
               e.preventDefault();
@@ -269,75 +243,78 @@ const ManageForm = ({ isManage, setIsManage, name, address, pin, phone, wid }) =
         </div>
         <form
           action=""
-          className="flex flex-col space-y-4"
-          onSubmit={handleSubmit}
+          className="flex flex-col"
         >
           <div className="w-full flex mb-2 flex-wrap ">
             <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
               <label htmlFor="name">Warehouse Name</label>
-              <input required
+              <TextField
+                size={'small'}
                 className="w-full border py-2 px-4 rounded-3xl"
                 type="text"
-                id="name"
-                name="name"
-                placeholder="Warehouse Name"
                 value={formData.name}
-                readOnly
               />
             </div>
           </div>
           <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
+            <div className="flex-1 mx-2 mb-2 min-w-[280px] space-y-2">
               <label htmlFor="phone">Mobile Number</label>
-              <input required
+              <TextField
+                size={'small'}
                 className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="phone"
-                name="phone"
-                minLength={10}
-                maxLength={10}
-                placeholder="Ex. 1234567890"
                 value={formData.phone}
-                onChange={handleChange}
               />
             </div>
           </div>
-          <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
+          <div className="flex-1 mx-2 mb-2 min-w-[280px] space-y-2">
             <label htmlFor="address">Address</label>
-            <input required
+            <TextField
+              size="small"
               className="w-full border py-2 px-4 rounded-3xl"
               type="text"
-              maxLength={100}
-              id="address"
-              name="address"
-              placeholder="Enter Address"
               value={formData.address}
-              onChange={handleChange}
+            />
+          </div>
+          <div className="flex-1 mx-2 mb-2 min-w-[280px] space-y-2">
+            <label htmlFor="state">City</label>
+            <TextField
+              size="small"
+              className="w-full border py-2 px-4 rounded-3xl"
+              type="text"
+              value={formData.city}
+            />
+          </div>
+          <div className="flex-1 mx-2 mb-2 min-w-[280px] space-y-2">
+            <label htmlFor="address">State</label>
+            <TextField
+              size="small"
+              className="w-full border py-2 px-4 rounded-3xl"
+              type="text"
+              value={formData.state}
+            />
+          </div>
+          <div className="flex-1 mx-2 mb-2 min-w-[280px] space-y-2">
+            <label htmlFor="address">Country</label>
+            <TextField
+              size="small"
+              className="w-full border py-2 px-4 rounded-3xl"
+              type="text"
+              value={formData.country}
             />
           </div>
           <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
+            <div className="flex-1 mx-2 mb-2 min-w-[280px] space-y-2">
               <label htmlFor="pin">Pincode</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
+              <TextField
+                size="small"
+                className="w-full border py-2 px-4"
                 type="text"
-                id="pin"
-                name="pin"
-                minLength={6}
-                maxLength={6}
-                placeholder="XXXXXX"
                 value={formData.pin}
-                onChange={handleChange}
               />
             </div>
           </div>
-          <button
-            type="submit"
-            className="border bg-white mx-2  py-2 px-4 rounded-3xl"
-          >
-            Edit Warehouse
-          </button>
         </form>
+       </div>
       </div>
     </>
   );
@@ -418,7 +395,7 @@ const WarehouseServiceList = ({ wid, setCheckWarehouse }) => {
   )
 }
 
-const Card = ({ name, address, pin, phone, wid, justCreated }) => {
+const Card = ({ name, address, pin, phone, wid, justCreated, state, city }) => {
   const [isManage, setIsManage] = useState(false);
   const [checkWarehouse, setCheckWarehouse] = useState(justCreated ? true : false);
   useEffect(() => {
@@ -441,12 +418,13 @@ const Card = ({ name, address, pin, phone, wid, justCreated }) => {
   }, [])
   return (
     <>
-      <ManageForm isManage={isManage} setIsManage={setIsManage} name={name} address={address} pin={pin} phone={phone} wid={wid} />
+      <ManageForm isManage={isManage} setIsManage={setIsManage} name={name} address={address} pin={pin} phone={phone} wid={wid} state={state} city={city} />
       <div className="w-full h-16 bg-white relative items-center px-8 flex border-b">
         <div>{name}</div>
-        <div className="absolute right-8">
-          {/* <div className="cursor-pointer" onClick={() => setIsManage(true)}>Manage</div> */}
-          <div className="cursor-pointer" onClick={() => setCheckWarehouse(true)}>Check</div>
+        <div className="absolute right-8 flex space-x-2 items-center">
+          
+          <div className="cursor-pointer py-1 px-2 rounded-lg bg-blue-500 text-white" onClick={() => setCheckWarehouse(true)}>Check</div>
+          <div className="cursor-pointer p-2 rounded-lg bg-blue-500 text-white" onClick={() => setIsManage(true)}><FaEye/></div>
         </div>
       </div>
       {checkWarehouse ? <WarehouseServiceList wid={wid} setCheckWarehouse={setCheckWarehouse} /> : null}
@@ -492,7 +470,16 @@ const Listing = ({ setMode }) => {
         </div>
         <div className="w-full">
           {warehouses.map((warehouse, index) => (
-            <Card name={warehouse.warehouseName} address={warehouse.address} phone={warehouse.phone} pin={warehouse.pin} wid={warehouse.wid} justCreated={warehouse.just_created} />
+            <Card 
+              name={warehouse.warehouseName} 
+              address={warehouse.address} 
+              phone={warehouse.phone} 
+              pin={warehouse.pin} 
+              wid={warehouse.wid} 
+              justCreated={warehouse.just_created}
+              state={warehouse.state}
+              city={warehouse.city} 
+            />
           ))}
         </div>
       </div>
