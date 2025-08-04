@@ -411,7 +411,7 @@ const Listing = () => {
           >
             View Status
           </Button>
-          {!params.row.cancelled && [1,2,6].includes(params.row.serviceId) && (
+          {!params.row.cancelled && [1,2,5,6,7,8].includes(params.row.serviceId) && (
             <Button
               variant="contained"
               color="error"
