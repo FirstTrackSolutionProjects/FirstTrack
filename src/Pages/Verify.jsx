@@ -345,19 +345,19 @@ const Verify = () => {
     }
   }
 
-  useEffect(()=>{
-    if (isAuthenticated && verified){
-        navigate('/dashboard')
-    } else if (isAuthenticated && !emailVerified){
-        navigate('/login')
-    } else if (!isAuthenticated){
-        navigate('/login')
-    } else {
-        incompleteRequest()
-        pendingRequest()
-    }
+  // useEffect(()=>{
+  //   if (isAuthenticated && verified){
+  //       navigate('/dashboard')
+  //   } else if (isAuthenticated && !emailVerified){
+  //       navigate('/login')
+  //   } else if (!isAuthenticated){
+  //       navigate('/login')
+  //   } else {
+  //       incompleteRequest()
+  //       pendingRequest()
+  //   }
     
-  },[isAuthenticated])
+  // },[isAuthenticated])
 
   return (
     <Box

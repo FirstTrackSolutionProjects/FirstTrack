@@ -1,5 +1,26 @@
-import { useEffect, useState } from "react";
-const API_URL = import.meta.env.VITE_APP_API_URL
+import React, { useEffect, useState } from "react";
+import { 
+  Dialog, 
+  DialogTitle, 
+  DialogContent,
+  Box,
+  Paper,
+  TextField,
+  IconButton,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import CloseIcon from '@mui/icons-material/Close';
+import * as XLSX from 'xlsx';
+import DownloadIcon from '@mui/icons-material/Download';
+import { toast } from "react-toastify";
+import convertToUTCISOString from "../helpers/convertToUTCISOString";
+
+const API_URL = import.meta.env.VITE_APP_API_URL;
 
 const timestampToDate = (timestamp) => {
   const date = new Date(timestamp);
@@ -106,208 +127,483 @@ const IntargosStatusCard = ({ report, status }) => {
   )
 }
 
-const View = ({ report, setIsView }) => {
-  const [status, setStatus] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
+const ViewDialog = ({ isOpen, onClose, report }) => {
+  const [status, setStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Add report?.ref_id to dependency array and check if report exists before making request
   useEffect(() => {
-
     const getReport = async () => {
-      setIsLoading(true)
-      const response = await fetch(`${API_URL}/shipment/domestic/report`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': localStorage.getItem('token'),
-        },
-        body: JSON.stringify({ ref_id: report.ref_id, serviceId: report.serviceId })
-      }).then(response => response.json()).then(result => {
+      if (!report?.ref_id || !report?.serviceId) return;
+      
+      setIsLoading(true);
+      setStatus(null); // Reset status when loading new report
+      
+      try {
+        const response = await fetch(`${API_URL}/shipment/domestic/report`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': localStorage.getItem('token'),
+          },
+          body: JSON.stringify({ 
+            ref_id: report.ref_id, 
+            serviceId: report.serviceId 
+          }),
+        });
+        const result = await response.json();
         if (result.success) {
-          setStatus(result.data || [])
+          setStatus(result.data || []);
+        } else {
+          console.error('Failed to fetch status:', result);
         }
-        setIsLoading(false)
-      })
-      setIsLoading(false)
+      } catch (error) {
+        console.error('Error fetching status:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isOpen) {
+      getReport();
     }
-    getReport();
-  }, [])
+  }, [report?.ref_id, report?.serviceId, isOpen]);
+
+  const renderStatus = () => {
+    if (isLoading) return <Box p={2}>Loading...</Box>;
+    
+    switch(report?.serviceId) {
+      case 1:
+      case 2:
+        return <DelhiveryStatusCard report={report} status={status} />;
+      case 3:
+        return <MovinStatusCard report={report} status={status} />;
+      case 5:
+        return <PickrrStatusCard report={report} status={status} />;
+      case 6:
+        return <ShiprocketStatusCard report={report} status={status} />;
+      case 8:
+        return <IntargosStatusCard report={report} status={status} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <>
-      <div className="absolute inset-0 bg-[rgba(0,0,0,0.5)] flex z-50 justify-center items-center">
-        <div className="bg-white p-4  border">
-          <div onClick={() => setIsView(false)}>X</div>
-          {
-              isLoading? <div>Loading...</div> : null
-          }
-          {
-            status && report.serviceId == 1 ? <DelhiveryStatusCard report={report} status={status} /> : null
-          }
-          {
-            status && report.serviceId == 2? <DelhiveryStatusCard report={report} status={status} /> : null
-          }
-          {
-            status && report.serviceId == 3 ? <MovinStatusCard report={report} status={status} /> : null
-          }
-          {
-            status && report.serviceId == 5 ? <PickrrStatusCard report={report} status={status} /> : null
-          }
-          {
-            status && report.serviceId == 6? <ShiprocketStatusCard report={report} status={status} /> : null
-          }
-          {
-            status && report.serviceId == 8? <IntargosStatusCard report={report} status={status} /> : null
-          }
-        </div>
-      </div>
+    <Dialog 
+      open={isOpen} 
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogTitle>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <div>Shipment Status</div>
+          <IconButton onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </DialogTitle>
+      <DialogContent>
+        {renderStatus()}
+      </DialogContent>
+    </Dialog>
+  );
+};
 
-    </>
-  )
-}
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const pages = [];
+  
+  // Function to add page numbers to the array
+  const addPageNumber = (pageNum) => {
+    pages.push({
+      number: pageNum,
+      isCurrent: pageNum === currentPage
+    });
+  };
 
-const Card = ({ report }) => {
+  // Add first page
+  addPageNumber(1);
 
+  if (totalPages <= 7) {
+    // If total pages is 7 or less, show all pages
+    for (let i = 2; i < totalPages; i++) {
+      addPageNumber(i);
+    }
+  } else {
+    if (currentPage <= 4) {
+      // We're near the start
+      for (let i = 2; i <= 5; i++) {
+        addPageNumber(i);
+      }
+      pages.push({ number: '...', isCurrent: false });
+      addPageNumber(totalPages);
+    } else if (currentPage >= totalPages - 3) {
+      // We're near the end
+      pages.push({ number: '...', isCurrent: false });
+      for (let i = totalPages - 4; i < totalPages; i++) {
+        addPageNumber(i);
+      }
+    } else {
+      // We're in the middle
+      pages.push({ number: '...', isCurrent: false });
+      for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+        addPageNumber(i);
+      }
+      pages.push({ number: '...', isCurrent: false });
+      addPageNumber(totalPages);
+    }
+  }
 
-  const [view, setIsView] = useState(false)
   return (
-    <>
-      {view && <View report={report} setIsView={setIsView} />}
-      <div className="w-full h-24 bg-white relative items-center px-4 sm:px-8 flex border-b">
-        <div>
-          <div className="text-sm font-bold">
-            FTL{report.ref_id}
-            <span className="text-gray-500">({report.ord_id})</span>
-          </div>
-          <div className="text-[10px] text-gray-500">
-            {report.customer_name}
-          </div>
-          <div className="text-[10px] text-gray-500">
-            {report.awb}
-          </div>
-          <div className="text-[10px] text-gray-500">
-            {report.date ? report.date.toString().split('T')[0] + ' ' + report.date.toString().split('T')[1].split('.')[0] : null}
-          </div>
-        </div>
-        <div className="absolute right-4 sm:right-8 flex space-x-2">
-          {report.status}
-          <div className="px-3 py-1 bg-blue-500  rounded-3xl text-white cursor-pointer" onClick={() => setIsView(true)}>View</div>
-        </div>
-      </div>
-    </>
+    <div className="flex items-center justify-center space-x-1 sm:space-x-2 mt-4">
+      <button 
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
+          currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+        }`}
+      >
+        <span className="hidden sm:inline">Previous</span>
+        <span className="sm:hidden">Prev</span>
+      </button>
+      
+      {pages.map((page, idx) => (
+        <button
+          key={idx}
+          onClick={() => page.number !== '...' && onPageChange(page.number)}
+          className={`min-w-[30px] px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
+            page.number === '...' ? 'cursor-default' 
+            : page.isCurrent ? 'bg-blue-500 text-white' 
+            : 'bg-white hover:bg-gray-100 border'
+          }`}
+        >
+          {page.number}
+        </button>
+      ))}
+      
+      <button 
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
+          currentPage === totalPages ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+        }`}
+      >
+        <span className="hidden sm:inline">Next</span>
+        <span className="sm:hidden">Next</span>
+      </button>
+    </div>
   );
 };
 
 const Listing = () => {
-  const [reports, setReports] = useState([])
-  const [filteredReports, setFilteredReports] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const [filters, setFilters] = useState({
-    email: "",
-    orderId: "",
-    name: "",
-    awb: ""
+    awb: "",
+    ord_id: "",
+    serviceId: "",
+    startDate: "",
+    endDate: ""
   });
-  useEffect(() => {
+  const [services, setServices] = useState([]);
 
-    fetch(`${API_URL}/shipment/domestic/reports`, {
-      method: 'POST',
+  useEffect(() => {
+    fetchServices();
+    fetchReports();
+  }, [page, filters]);
+
+  const fetchServices = async () => {
+    await fetch(`${API_URL}/services/active-shipments/domestic`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem('token'),
       },
+    }).then(response => response.json()).then((result) => {
+      if (result.success) {
+        setServices(result.services)
+      }
     })
-      .then(response => response.json())
-      .then(result => {
-        if (result.success) {
-          result.rows.sort((a, b) => parseInt(a.ref_id) - parseInt(b.ref_id)).reverse();
-          setReports(result.rows);
-        } else {
-          alert('Fetch failed: ' + result.message)
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred during fetching reports');
-      });
-  }, []);
+  };
 
-  useEffect(() => {
-    if (!reports.length) {
-      return;
-    }
-    const filteredData = reports.filter((report) => {
-      return (
-        (filters.name === "" || report.customer_name.toLowerCase().startsWith(filters.name.toLowerCase())) &&
-        (filters.email === "" || report.customer_email.toString().startsWith(filters.email)) &&
-        (filters.orderId === "" || (report.ord_id.toLowerCase() == filters.orderId.toLowerCase())) &&
-        (filters.awb === "" || (report.awb.toLowerCase() == filters.awb.toLowerCase()))
-      );
+  const fetchReports = async () => {
+    setIsLoading(true);
+    const startDate = filters.startDate ? convertToUTCISOString(new Date(filters.startDate).setHours(0,0,0,0)) : '';
+    const endDate = filters.endDate ? convertToUTCISOString(new Date(filters.endDate).setHours(23,59,59,999)) : '';
+    const queryParams = new URLSearchParams({
+      page,
+      awb: filters.awb,
+      ord_id: filters.ord_id,
+      serviceId: filters.serviceId,
+      startDate: startDate,
+      endDate: endDate
     });
-    setFilteredReports(filteredData)
-  }, [reports, filters])
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
-  }
-  return (
-    <>
-      <div
-        className={`w-full p-4 flex flex-col items-center space-y-6`}
-      >
-        <div className="w-full h-16 px-4  relative flex">
-          <div className="text-2xl font-medium">SHIPMENT REPORTS</div>
-        </div>
-        <details className="w-full p-2 bg-blue-500 rounded-xl text-white">
-          <summary>Filters</summary>
-          <div className="grid space-y-2 lg:grid-rows-1 lg:grid-cols-4 lg:space-y-0 lg:space-x-4 p-2 rounded-xl w-full bg-blue-500 text-black justify-evenly">
-            <input
-              className="p-1 rounded-xl min-w-[260px] lg:min-w-0"
-              type="text"
-              name="name"
-              placeholder="Customer Name"
-              value={filters.name}
-              onChange={handleChange}
-            />
-            <input
-              className="p-1 rounded-xl"
-              type="email"
-              name="email"
-              placeholder="Customer Email"
-              value={filters.email}
-              onChange={handleChange}
-            />
-            <input
-              className="p-1 rounded-xl"
-              type="text"
-              name="orderId"
-              placeholder="Order Id"
-              value={filters.orderId}
-              onChange={handleChange}
-            />
-            <input
-              className="p-1 rounded-xl"
-              type="text"
-              name="awb"
-              placeholder="AWB"
-              value={filters.awb}
-              onChange={handleChange}
-            />
-          </div>
-        </details>
-        <div className="w-full">
 
-          {filteredReports.map((report, index) => (
-            <Card key={index} report={report} />
-          ))}
-        </div>
-      </div>
-    </>
+    try {
+      const response = await fetch(`${API_URL}/shipment/domestic/reports?${queryParams}`, {
+        headers: {
+          'Authorization': localStorage.getItem('token'),
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setReports(data.data);
+        setTotalPages(data.totalPages);
+      }
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const columns = [
+    { field: 'ref_id', headerName: 'Reference ID', width: 130 },
+    { field: 'ord_id', headerName: 'Order ID', width: 130 },
+    { 
+      field: 'date',
+      headerName: 'Date', 
+      width: 180,
+      renderCell: (params) => 
+        params.value ? new Date(params.value).toLocaleString() : ''
+    },
+    { field: 'awb', headerName: 'AWB', width: 150 },
+    { 
+      field: 'service_name', 
+      headerName: 'Service', 
+      width: 150
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 150
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 200,
+      renderCell: (params) => (
+        <Box display="flex h-16" gap={1}>
+          <Button
+            variant="contained"
+            size="small"
+            sx={{ mr: 1 }}
+            onClick={() => {
+              setSelectedReport(params.row);
+              setIsViewOpen(true);
+            }}
+          >
+            View Status
+          </Button>
+        </Box>
+      )
+    }
+  ];
+
+  return (
+    <div className="w-full p-4">
+      <Paper sx={{ width: '100%', p: 2 }}>
+        <Box sx={{ mb: 3 }}>
+          <h2 className="text-2xl font-medium">Shipment Reports</h2>
+        </Box>
+
+        <Box
+          sx={{
+            mb: 3,
+            p: 2,
+            bgcolor: 'primary.main',
+            borderRadius: 2, '& .MuiTextField-root': {bgcolor: 'background.paper', borderRadius: 1},
+            overflowX: 'auto',
+            '&::-webkit-scrollbar': {
+              display: 'none'
+            },
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}
+        >
+          <Box
+            display="flex"
+            gap={1}
+            sx={{
+              minWidth: 'fit-content',  // Prevents wrapping
+            }}
+          >
+            <TextField
+              label="Order ID"
+              variant="outlined"
+              size="small"
+              name="ord_id"
+              value={filters.ord_id}
+              onChange={(e) => setFilters({ ...filters, ord_id: e.target.value })}
+              sx={{ mr: 1, minWidth: '150px' }}
+              InputLabelProps={{
+                // shrink: true,
+                sx: {
+                  backgroundColor: 'white',
+                  px: 0.5,
+                  width: '100%',
+                  borderRadius: 1,
+                },
+              }}
+            />
+            <TextField
+              label="AWB"
+              variant="outlined"
+              size="small"
+              name="awb"
+              value={filters.awb}
+              onChange={(e) => setFilters({ ...filters, awb: e.target.value })}
+              sx={{ mr: 1, minWidth: '150px' }}
+              InputLabelProps={{
+                // shrink: true,
+                sx: {
+                  backgroundColor: 'white',
+                  px: 0.5,
+                  width: '100%',
+                  borderRadius: 1,
+                },
+              }}
+            />
+            <TextField
+              label="Start Date"
+              variant="outlined"
+              size="small"
+              type="date"
+              name="startDate"
+              value={filters.startDate}
+              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+              sx={{ mr: 1, minWidth: '150px' }}
+              InputLabelProps={{
+                // shrink: true,
+                sx: {
+                  backgroundColor: 'white',
+                  px: 0.5,
+                  width: '100%',
+                  borderRadius: 1,
+                },
+              }}
+            />
+            <TextField
+              label="End Date"
+              variant="outlined"
+              size="small"
+              type="date"
+              name="endDate"
+              value={filters.endDate}
+              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+              sx={{ mr: 1, minWidth: '150px' }}
+              InputLabelProps={{
+                // shrink: true,
+                sx: {
+                  backgroundColor: 'white',
+                  px: 0.5,
+                  width: '100%',
+                  borderRadius: 1,
+                },
+              }}
+            />
+            <FormControl size="small" sx={{ minWidth: '150px', mr: 1 }}>
+              <InputLabel id="service-select-label" className="bg-white w-full">Service</InputLabel>
+              <Select
+                labelId="service-select-label"
+                value={filters.serviceId}
+                onChange={(e) => setFilters({ ...filters, serviceId: e.target.value })}
+                label="Service"
+                sx={{
+                  backgroundColor: 'white',
+                  borderRadius: 1,
+                }}
+              >
+                <MenuItem value="">
+                  <em>All</em>
+                </MenuItem>
+                {services.map((service) => (
+                  <MenuItem key={service.service_id} value={service.service_id}>
+                    {service.service_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <IconButton
+              onClick={async () => {
+                try {
+                  const response = await fetch(`${API_URL}/shipment/domestic/reports/download/merchant`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': localStorage.getItem('token'),
+                    },
+                    body: JSON.stringify(filters)
+                  });
+                  const data = await response.json();
+                  if (!data.success) {
+                    throw new Error(data.message || 'Failed to download reports');
+                  }
+                  // Convert to Excel and download
+                  const worksheet = XLSX.utils.json_to_sheet(data.data);
+                  const workbook = XLSX.utils.book_new();
+                  XLSX.utils.book_append_sheet(workbook, worksheet, "Reports");
+                  
+                  // Generate filename with current date
+                  const date = new Date().toISOString().split('T')[0];
+                  XLSX.writeFile(workbook, `shipment_reports_${date}.xlsx`);
+                } catch (error) {
+                  console.error('Download failed:', error);
+                  toast.error(error?.message || 'Failed to download reports');
+                }
+              }}
+              sx={{ 
+                backgroundColor: 'white',
+                borderRadius: 1,
+                '&:hover': {
+                  backgroundColor: 'grey.100',
+                },
+                minWidth: '40px'
+              }}
+            >
+              <DownloadIcon />
+            </IconButton>
+          </Box>
+        </Box>
+
+        <Box sx={{ height: 600, width: '100%' }}>
+          <DataGrid
+            rows={reports}
+            columns={columns}
+            loading={isLoading}
+            hideFooter={true}
+            disableSelectionOnClick
+            getRowId={(row) => row.ref_id}
+          />
+        </Box>
+
+        {/* Add custom pagination */}
+        <Pagination 
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      </Paper>
+
+      <ViewDialog
+        isOpen={isViewOpen}
+        onClose={() => setIsViewOpen(false)}
+        report={selectedReport}
+      />
+    </div>
   );
 };
-const NDR = () => {
+
+export default function NDR() {
   return (
-    <div className=" py-16 w-full h-full flex flex-col items-center overflow-x-hidden overflow-y-auto">
+    <div className="py-16 w-full h-full flex flex-col items-center overflow-x-hidden overflow-y-auto">
       <Listing />
     </div>
-  )
+  );
 }
-
-export default NDR

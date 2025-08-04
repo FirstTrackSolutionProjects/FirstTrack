@@ -1,11 +1,33 @@
 import React, { useEffect, useState } from "react";
+import { 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Checkbox,
+  FormControlLabel,
+  Box,
+  Paper,
+  IconButton,
+} from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import CloseIcon from '@mui/icons-material/Close';
+import convertToUTCISOString from "../helpers/convertToUTCISOString";
+
 const API_URL = import.meta.env.VITE_APP_API_URL
 const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
+  if (!isManage) return null;
   const [boxes, setBoxes] = useState([
-    { box_no: 1, length: 0, breadth: 0, height: 0, weight: 0, weight_unit: 'kg', quantity: 1 }
+    { box_no: 1, length: 10, breadth: 10, height: 10, weight: 1, weight_unit: 'kg', quantity: 1 }
   ]);
   const [orders, setOrders] = useState([
-    { box_no: 1, product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: '' }
+    { box_no: 1, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: '' }
   ]);
   const [warehouses, setWarehouses] = useState([])
   useEffect(() => {
@@ -110,7 +132,8 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
     invoiceDate: shipment.invoice_date,
     invoiceAmount: shipment.invoice_amount,
     invoiceUrl: shipment.invoice_url,
-    isB2B: shipment.is_b2b
+    isB2B: shipment.is_b2b,
+    customer_reference_number: shipment?.customer_reference_number
   })
   useEffect(() => {
 
@@ -163,10 +186,10 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
   }, [formData.Bpostcode])
 
   const addProduct = () => {
-    setOrders([...orders, { box_no: 1, product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: '' }]);
+    setOrders([...orders, { box_no: 1, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: '' }]);
   };
   const addBox = () => {
-    setBoxes([...boxes, { box_no: boxes.length + 1, length: 0, breadth: 0, height: 0, weight: 0, weight_unit: 'kg', quantity: 1 }]);
+    setBoxes([...boxes, { box_no: boxes.length + 1, length: 10, breadth: 10, height: 10, weight: 1, weight_unit: 'kg', quantity: 1 }]);
   };
   const removeProduct = (index) => {
     const updatedOrders = orders.filter((_, i) => i !== index);
@@ -318,750 +341,733 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
       });
   }
   return (
-    <>
-      <div
-        className={` bg-white w-full p-4 flex flex-col items-center space-y-6 ${isManage ? "" : "hidden"
-          }`}
-      >
-        <div className="w-full h-16 px-4  relative flex">
-          <div className="text-2xl font-medium">MANAGE SHIPMENT</div>
-          <div
-            onClick={(e) => {
-              e.preventDefault();
-              setIsManage(0);
-            }}
-            className="px-5 py-1 bg-blue-500 absolute rounded-3xl text-white  right-4"
-          >
-            X
-          </div>
-        </div>
-
-        <form action="" onSubmit={handleSubmit}>
-          <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="wid">Pickup Warehouse Name</label>
-              <select
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="wid"
-                name="wid"
-                placeholder="Warehouse Name"
+    <Dialog 
+      open={isManage} 
+      onClose={() => setIsManage(false)}
+      maxWidth="lg"
+      fullWidth
+    >
+      <DialogTitle>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <div>MANAGE SHIPMENT</div>
+          <IconButton onClick={() => setIsManage(false)}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </DialogTitle>
+      <DialogContent>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
+            <FormControl fullWidth sx={{ minWidth: 300 }}>
+              <InputLabel>Pickup Warehouse Name</InputLabel>
+              <Select
                 value={formData.wid}
                 onChange={handleChange}
+                size="small"
+                name="wid"
+                label="Pickup Warehouse Name"
               >
-                <option value="">Select Warehouse</option>
-                {warehouses.length ?
-                  warehouses.map((warehouse, index) => (
-                    <option value={warehouse.wid} >{warehouse.warehouseName}</option>
-                  )) : null
-                }
-              </select>
-            </div>
-
-          </div>
-          <div className="w-full flex mb-2 flex-wrap">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="pickupDate">Pickup Date</label>
-              <input required
-                className="w-full border py-2 px-4 rounded-3xl"
+                <MenuItem value="">Select Warehouse</MenuItem>
+                {warehouses.map((warehouse) => (
+                  <MenuItem key={warehouse.wid} value={warehouse.wid}>
+                    {warehouse.warehouseName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Pickup Date"
                 type="date"
-                id="pickupDate"
                 name="pickupDate"
+                size="small"
                 value={formData.pickupDate}
                 onChange={handleChange}
+                InputLabelProps={{ shrink: true }}
               />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="pickupTime">Pickup Time</label>
-              <input required
-                className="w-full border py-2 px-4 rounded-3xl"
+            </FormControl>
+            <FormControl sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Pickup Time"
                 type="time"
-                id="pickupTime"
                 name="pickupTime"
+                size="small"
                 value={formData.pickupTime}
                 onChange={handleChange}
+                InputLabelProps={{ shrink: true }}
               />
-            </div>
-          </div>
-          <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="order">Order Id</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="order"
+            </FormControl>
+            <FormControl sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Order Id"
                 name="order"
+                size="small"
                 placeholder="Ex. ORDER123456"
                 value={formData.order}
-                readOnly
                 disabled
                 onChange={handleChange}
               />
-            </div>
-
-          </div>
-
-
-          <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="payMode">Payment Method</label>
-              <select
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="payMode"
-                name="payMode"
+            </FormControl>
+            <FormControl sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Customer Reference Number"
+                name="customer_reference_number"
+                size="small"
+                placeholder="Ex. REF123"
+                value={formData.customer_reference_number}
+                onChange={handleChange}
+              />
+            </FormControl>
+            <FormControl sx={{ minWidth: 300, flex: 1 }}>
+              <InputLabel>Payment Method</InputLabel>
+              <Select
                 value={formData.payMode}
                 onChange={handleChange}
+                name="payMode"
+                size="small"
+                label="Payment Method"
               >
-                <option value="COD">COD</option>
-                <option value="Pre-paid">Prepaid</option>
-                <option value="topay">To Pay</option>
-              </select>
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="name">Buyer's Name</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="name"
+                <MenuItem value="COD">COD</MenuItem>
+                <MenuItem value="Pre-paid">Prepaid</MenuItem>
+                <MenuItem value="topay">To Pay</MenuItem>
+              </Select>
+            </FormControl>
+             <FormControl sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="COD Amount"
+                name="cod"
+                size="small"
+                value={formData.cod}
+                onChange={handleChange}
+              />
+            </FormControl>
+            <FormControl sx={{ minWidth: 300, flex: 1 }}>
+              <InputLabel>Shipping Type</InputLabel>
+              <Select
+                value={formData.shippingType}
+                onChange={handleChange}
+                name="shippingType"
+                size="small"
+                label="Shipping Type"
+              >
+                <MenuItem value="Surface">Surface</MenuItem>
+                <MenuItem value="Express">Express</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Buyer's Name"
                 name="name"
+                size="small"
                 placeholder="Ex. Aditya Kumar"
                 value={formData.name}
                 onChange={handleChange}
               />
-            </div>
-
-          </div>
-          <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="city">Buyer's email</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="email"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 2 }}>
+              <TextField
+                label="Buyer's email"
                 name="email"
                 placeholder="Ex. customer@example.com"
+                size="small"
                 value={formData.email}
                 onChange={handleChange}
               />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="phone">Buyer's Phone</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="phone"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Buyer's Phone"
                 name="phone"
+                size="small"
                 placeholder="Ex. 1234554321"
                 value={formData.phone}
                 onChange={handleChange}
               />
-            </div>
-
-          </div>
-
-          <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="address">Shipping Address</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                maxLength={100}
-                id="address"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 3 }}>
+              <TextField
+                label="Shipping Address"
                 name="address"
+                size="small"
                 placeholder="Ex. House no. 105, Kankarbagh, Patna, Bihar"
                 value={formData.address}
                 onChange={handleChange}
               />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="addressType">Shipping Address Type</label>
-              <select
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="addressType"
-                name="addressType"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
+              <InputLabel>Shipping Address Type</InputLabel>
+              <Select
                 value={formData.addressType}
                 onChange={handleChange}
+                name="addressType"
+                size="small"
+                label="Shipping Address Type"
               >
-                <option value="home">Home</option>
-                <option value="office">Office</option>
-              </select>
-            </div>
-
-
-          </div>
-
-          <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="postcode">Shipping Postcode</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="postcode"
+                <MenuItem value="home">Home</MenuItem>
+                <MenuItem value="office">Office</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Shipping Postcode"
                 name="postcode"
+                size="small"
                 placeholder="Ex. 813210"
                 value={formData.postcode}
                 onChange={handleChange}
               />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="city">Shipping City</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="city"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Shipping City"
                 name="city"
+                size="small"
                 placeholder="Ex. Bhagalpur"
                 value={formData.city}
                 onChange={handleChange}
               />
-            </div>
-
-
-          </div>
-
-          <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="state">Shipping State</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="state"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Shipping State"
                 name="state"
+                size="small"
                 placeholder="Ex. Bihar"
                 value={formData.state}
                 onChange={handleChange}
               />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="country">Shipping Country</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="country"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
+              <TextField
+                label="Shipping Country"
                 name="country"
+                size="small"
                 placeholder="Ex. India"
-                readOnly
+                disabled
                 value={formData.country}
                 onChange={handleChange}
               />
-            </div>
-
-          </div>
-          <div className="flex-1 mx-2 mb-2 min-w-[300px] space-x-4 flex items-center">
-            <input
-              className=""
-              type="checkbox"
-              checked={formData.same}
-              id="same"
-              name="same"
-              value={formData.same}
-              onChange={handleChange}
+            </FormControl>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.same}
+                  onChange={handleChange}
+                  name="same"
+                />
+              }
+              label="Billing address is same as Shipping address"
             />
-            <label htmlFor="same" >Billing address is same as Shipping address</label>
-
-          </div>
-          <div className={`w-full ${formData.same ? 'hidden' : ''}`}>
-            <div className="w-full flex mb-2 flex-wrap ">
-              <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="Baddress">Billing Address</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  maxLength={100}
-                  id="Baddress"
-                  name="Baddress"
-                  placeholder="Ex. House no. 105, Kankarbagh, Patna, Bihar"
-                  value={formData.Baddress}
-                  onChange={handleChange}
-                />
-              </div>
-
-
-            </div>
-            <div className="w-full flex mb-2 flex-wrap ">
-              <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="BaddressType">Billing Address Type</label>
-                <select
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="BaddressType"
-                  name="BaddressType"
-                  placeholder="Home or Office"
-                  value={formData.BaddressType}
-                  onChange={handleChange}
-                >
-                  <option value="home">Home</option>
-                  <option value="office">Office</option>
-                </select>
-              </div>
-
-            </div>
-
-            <div className="w-full flex mb-2 flex-wrap ">
-              <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="Bpostcode">Billing Postcode</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="Bpostcode"
-                  name="Bpostcode"
-                  placeholder="Ex. 813210"
-                  value={formData.Bpostcode}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="Bcity">Billing City</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="Bcity"
-                  name="Bcity"
-                  placeholder="Ex. Bhagalpur"
-                  value={formData.Bcity}
-                  onChange={handleChange}
-                />
-              </div>
-
-
-            </div>
-
-            <div className="w-full flex mb-2 flex-wrap ">
-              <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="Bstate">Billing State</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="Bstate"
-                  name="Bstate"
-                  placeholder="Ex. Bihar"
-                  value={formData.Bstate}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="Bcountry">Billing Country</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="Bcountry"
-                  name="Bcountry"
-                  placeholder="Ex. India"
-                  value={formData.Bcountry}
-                  onChange={handleChange}
-                />
-              </div>
-
-            </div>
-          </div>
-          <h2 className="text-xl font-bold mx-1">Boxes</h2>
-          {boxes.map((box, index) => (
-
-            <div key={index} className="product-form flex space-x-2 flex-wrap items-center">
-
-              <div className="flex-1 mx-2 mb-2 min-w-[150px] space-y-2">
-                <label htmlFor="box_no">Box No</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="box_no"
-                  name="box_no"
-                  placeholder="Box No"
-                  disabled
-                  value={index + 1}
-                  onChange={(e) => handleBoxes(index, e)}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[150px] space-y-2">
-                <label htmlFor="length">Length (in cm)</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="length"
-                  name="length"
-                  min={1}
-                  placeholder="Length (in cm)"
-                  value={box.length}
-                  onChange={(e) => handleBoxes(index, e)}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[150px] space-y-2">
-                <label htmlFor="breadth">Width (in cm)</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="breadth"
-                  name="breadth"
-                  min={1}
-                  placeholder="Breadth (in cm)"
-                  value={box.breadth}
-                  onChange={(e) => handleBoxes(index, e)}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[150px] space-y-2">
-                <label htmlFor="height">Height (in cm)</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="height"
-                  name="height"
-                  min={1}
-                  placeholder="Height (in cm)"
-                  value={box.height}
-                  onChange={(e) => handleBoxes(index, e)}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[150px] space-y-2">
-                <label htmlFor="weight">Weight</label>
-                <div className="w-full flex space-x-2"> 
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="weight"
-                  name="weight"
-                  placeholder="Weight"
-                  value={box.weight}
-                  onChange={(e) => handleBoxes(index, e)}
-                />
-                <select
-                name="weight_unit"
-                id="weight_unit"
-                className="border py-2 px-4 rounded-3xl"
-                value={box.weight_unit}
-                onChange={(e)=>handleBoxes(index,e)}
-              >
-                <option value={'g'}>gm</option>
-                <option value={'kg'}>kg</option>
-              </select>
-                </div>
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[150px] space-y-2">
-                <label htmlFor="quantity">Quantity</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="quantity"
-                  name="quantity"
-                  min={1}
-                  placeholder="Quantity"
-                  value={box.quantity}
-                  onChange={(e) => handleBoxes(index, e)}
-                />
-              </div>
-              {boxes.length > 1 && <button type="button" className="m-2 px-5 py-1 border rounded-3xl bg-red-500 text-white" onClick={() => removeBox(index)}>Remove</button>}
-            </div>
-          ))}
-          <button type="button" className="m-2 px-5 py-1 border rounded-3xl bg-blue-500 text-white" onClick={addBox}>Add More Boxes</button>
-          <h2 className="text-xl font-bold mx-1">Items</h2>
-          {orders.map((order, index) => (
-
-            <div key={index} className="product-form flex space-x-2 flex-wrap items-center">
-              <div className="flex-1 mx-2 mb-2 min-w-[150px] space-y-2">
-                <label htmlFor="box_no">Box No</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="box_no"
-                  name="box_no"
-                  placeholder="Box No"
-                  value={order.box_no}
-                  onChange={(e) => handleOrders(index, e)}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="product">Product Name</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="product"
-                  name="product_name"
-                  placeholder="Product Name"
-                  value={order.product_name}
-                  onChange={(e) => handleOrders(index, e)}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[50px] space-y-2">
-                <label htmlFor="quantity">Quantity</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="number"
-                  id="quantity"
-                  name="product_quantity"
-                  placeholder="Quantity"
-                  value={order.product_quantity}
-                  onChange={(e) => handleOrders(index, e)}
-                />
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[100px] space-y-2">
-                <label htmlFor="price">Price</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="price"
-                  name="selling_price"
-                  placeholder="Price"
-                  value={order.selling_price}
-                  onChange={(e) => handleOrders(index, e)}
-                />
-              </div>
-              {/* <div className="flex-1 mx-2 mb-2 min-w-[100px] space-y-2">
-              <label htmlFor="discount">Discount</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="discount"
-                name="discount"
-                placeholder="Discount"
-                value={order.discount}
-                onChange={(e) => handleOrders(index, e)}
+          </Box>
+          <Box sx={{ display: formData.same ? 'none' : 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
+            <FormControl fullWidth sx={{ minWidth: 300 }}>
+              <TextField
+                label="Billing Address"
+                name="Baddress"
+                size="small"
+                placeholder="Ex. House no. 105, Kankarbagh, Patna, Bihar"
+                value={formData.Baddress}
+                onChange={handleChange}
               />
-            </div> */}
-              <div className="flex-1 mx-2 mb-2 min-w-[100px] space-y-2">
-                <label htmlFor="tax">Tax</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="tax"
-                  name="tax_in_percentage"
-                  placeholder="Tax"
-                  value={order.tax_in_percentage}
-                  onChange={(e) => handleOrders(index, e)}
-                />
-              </div>
-              {orders.length > 1 ? <button type="button" className="m-2 px-5 py-1 border rounded-3xl bg-red-500 text-white" onClick={() => removeProduct(index)}>Remove</button> : null}
-            </div>
-          ))}
-          <button type="button" className="m-2 px-5 py-1 border rounded-3xl bg-blue-500 text-white" onClick={addProduct}>Add More Product</button>
-          <div className="flex-1 mx-2 mb-2 min-w-[300px] space-x-4 flex items-center">
-            <input
-              className=""
-              type="checkbox"
-              checked={formData.isB2B}
-              id="isB2B"
-              name="isB2B"
-              value={formData.isB2B}
-              onChange={handleChange}
-            />
-            <label htmlFor="isB2B" >Is this is a B2B shipment?</label>
-
-          </div>
-          {
-            formData.isB2B ? <>
-              <div className="w-full flex mb-2 flex-wrap ">
-                <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                  <label htmlFor="invoiceNumber">Invoice Number</label>
-                  <input required
-                    className="w-full border py-2 px-4 rounded-3xl"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
+              <InputLabel>Billing Address Type</InputLabel>
+              <Select
+                value={formData.BaddressType}
+                onChange={handleChange}
+                name="BaddressType"
+                size="small"
+                label="Billing Address Type"
+              >
+                <MenuItem value="home">Home</MenuItem>
+                <MenuItem value="office">Office</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300,  flex: 1 }}>
+              <TextField
+                label="Billing Postcode"
+                name="Bpostcode"
+                size="small"
+                placeholder="Ex. 813210"
+                value={formData.Bpostcode}
+                onChange={handleChange}
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300,   flex: 1 }}>
+              <TextField
+                label="Billing City"
+                name="Bcity"
+                size="small"
+                placeholder="Ex. Bhagalpur"
+                value={formData.Bcity}
+                onChange={handleChange}
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300,   flex: 1 }}>
+              <TextField
+                label="Billing State"
+                name="Bstate"
+                size="small"
+                placeholder="Ex. Bihar"
+                value={formData.Bstate}
+                onChange={handleChange}
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300,   flex: 1 }}>
+              <TextField
+                label="Billing Country"
+                name="Bcountry"
+                size="small"
+                placeholder="Ex. India"
+                value={formData.Bcountry}
+                onChange={handleChange}
+              />
+            </FormControl>
+          </Box>
+          <Box sx={{ my: 4 }}>
+            <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Boxes</div>
+            {boxes.map((box, index) => (
+              <Box key={index} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
+                <FormControl sx={{ minWidth: 100, flex: 1 }}>
+                  <TextField
+                    label="Box No"
+                    name="box_no"
+                    size="small"
+                    disabled
+                    value={index + 1}
+                  />
+                </FormControl>
+                <FormControl sx={{ minWidth: 100, flex: 1 }}>
+                  <TextField
+                    label="Length (in cm)"
+                    name="length"
+                    size="small"
+                    value={box.length}
+                    onChange={(e) => handleBoxes(index, e)}
+                  />
+                </FormControl>
+                <FormControl sx={{ minWidth: 100,  flex: 1 }}>
+                  <TextField
+                    label="Width (in cm)"
+                    name="breadth"
+                    size="small"
+                    value={box.breadth}
+                    onChange={(e) => handleBoxes(index, e)}
+                  />
+                </FormControl>
+                <FormControl sx={{ minWidth: 100, flex: 1 }}>
+                  <TextField
+                    label="Height (in cm)"
+                    name="height"
+                    size="small"
+                    value={box.height}
+                    onChange={(e) => handleBoxes(index, e)}
+                  />
+                </FormControl>
+                <Box sx={{ flex: 1, display: 'flex' }}>
+                  <FormControl sx={{ minWidth: 90, flex: 1 }}>
+                  <TextField
+                    label="Weight"
+                    name="weight"
+                    size="small"
+                    value={box.weight}
+                    onChange={(e) => handleBoxes(index, e)}
+                  />
+                </FormControl>
+                <FormControl sx={{ minWidth: 50 }}>
+                  <InputLabel>Unit</InputLabel>
+                  <Select
+                    value={box.weight_unit}
+                    onChange={(e) => handleBoxes(index, e)}
+                    name="weight_unit"
+                    size="small"
+                    label="Weight Unit"
+                  >
+                    <MenuItem value="g">gm</MenuItem>
+                    <MenuItem value="kg">kg</MenuItem>
+                  </Select>
+                </FormControl>
+                </Box>
+                <FormControl sx={{ minWidth: 100, flex: 1 }}>
+                  <TextField
+                    label="Quantity"
+                    name="quantity"
+                    size="small"
                     type="text"
-                    id="invoiceNumber"
-                    name="invoiceNumber"
-                    placeholder="Enter invoice Number"
-                    value={formData.invoiceNumber}
-                    onChange={handleChange}
+                    value={box.quantity}
+                    onChange={(e) => handleBoxes(index, e)}
                   />
-                </div>
-                <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                  <label htmlFor="invoiceDate">Invoice Date</label>
-                  <input required
-                    className="w-full border py-2 px-4 rounded-3xl"
-                    type="date"
-                    id="invoiceDate"
-                    name="invoiceDate"
-                    value={formData.invoiceDate}
-                    onChange={handleChange}
+                </FormControl>
+                {boxes.length > 1 && (
+                  <FormControl fullWidth sx={{ minWidth: 150 }}>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => removeBox(index)}
+                      sx={{ width: '100%' }}
+                    >
+                      Remove
+                    </Button>
+                  </FormControl>
+                )}
+              </Box>
+            ))}
+            <Button
+              variant="contained"
+              onClick={addBox}
+              sx={{ borderRadius: '24px', mt: 2 }}
+            >
+              Add More Boxes
+            </Button>
+          </Box>
+          <Box sx={{ my: 4 }}>
+            <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Items</div>
+            {orders.map((order, index) => (
+              <Box key={index} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
+                <FormControl sx={{ minWidth: 150, flex: 1 }}>
+                  <TextField
+                    label="Box No"
+                    name="box_no"
+                    size="small"
+                    value={order.box_no}
+                    onChange={(e) => handleOrders(index, e)}
                   />
-                </div>
-              </div>
-              <div className="w-full flex mb-2 flex-wrap ">
-                <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                  <label htmlFor="invoiceAmount">Invoice Amount</label>
-                  <input required
-                    className="w-full border py-2 px-4 rounded-3xl"
+                </FormControl>
+                <FormControl  sx={{ minWidth: 300, flex: 2 }}>
+                  <TextField
+                    label="Product Name"
+                    name="product_name"
+                    size="small"
+                    value={order.product_name}
+                    onChange={(e) => handleOrders(index, e)}
+                  />
+                </FormControl>
+                <FormControl sx={{ minWidth: 75, flex: 1 }}>
+                  <TextField
+                    label="Quantity"
+                    name="product_quantity"
+                    size="small"
                     type="number"
-                    min={1}
-                    id="invoiceAmount"
-                    name="invoiceAmount"
-                    placeholder="Enter Invoice Amount"
-                    value={formData.invoiceAmount}
-                    onChange={handleChange}
+                    value={order.product_quantity}
+                    onChange={(e) => handleOrders(index, e)}
                   />
-                </div>
-                <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                  <label htmlFor="invoice">Invoice</label>
-                  <input required={(formData.invoiceUrl) ? false : true}
-                    className="w-full border py-2 px-4 rounded-3xl"
-                    type="file"
-                    id="invoice"
-                    name="invoice"
-                    onChange={handleInvoice}
+                </FormControl>
+                <FormControl fullWidth sx={{ minWidth: 100, flex: 1 }}>
+                  <TextField
+                    label="Price"
+                    name="selling_price"
+                    size="small"
+                    value={order.selling_price}
+                    onChange={(e) => handleOrders(index, e)}
                   />
-                  <a type="button" className="m-2 px-5 py-1 border rounded-3xl bg-blue-500 text-white" target="_blank" href={import.meta.env.VITE_APP_BUCKET_URL + formData.invoiceUrl}>View</a>
-                  <button type="button" className="m-2 px-5 py-1 border rounded-3xl bg-blue-500 text-white" onClick={uploadInvoice}>Update</button>
-                </div>
-              </div>
-              <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="ewaybill">E-Waybill</label>
-                <input required={formData.invoiceAmount >= 50000 && formData.isB2B}
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="ewaybill"
+                </FormControl>
+                <FormControl fullWidth sx={{ minWidth: 100, flex: 1 }}>
+                  <TextField
+                    label="Tax"
+                    name="tax_in_percentage"
+                    size="small"
+                    value={order.tax_in_percentage}
+                    onChange={(e) => handleOrders(index, e)}
+                  />
+                </FormControl>
+                {orders.length > 1 && (
+                  <FormControl fullWidth sx={{ minWidth: 150 }}>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => removeProduct(index)}
+                      sx={{ width: '100%' }}
+                    >
+                      Remove
+                    </Button>
+                  </FormControl>
+                )}
+              </Box>
+            ))}
+            <Button
+              variant="contained"
+              onClick={addProduct}
+              sx={{ borderRadius: '24px', mt: 2 }}
+            >
+              Add More Product
+            </Button>
+          </Box>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.isB2B}
+                onChange={handleChange}
+                name="isB2B"
+              />
+            }
+            label="Is this is a B2B shipment?"
+          />
+          {formData.isB2B && (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
+              <FormControl sx={{ minWidth: 150, flex:1 }}>
+                <TextField
+                  label="Invoice Number"
+                  name="invoiceNumber"
+                  size="small"
+                  value={formData.invoiceNumber}
+                  onChange={handleChange}
+                />
+              </FormControl>
+              <FormControl sx={{ minWidth: 150, flex:1 }}>
+                <TextField
+                  label="Invoice Date"
+                  type="date"
+                  size="small"
+                  name="invoiceDate"
+                  value={formData.invoiceDate}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </FormControl>
+              <FormControl sx={{ minWidth: 150, flex:1 }}>
+                <TextField
+                  label="Invoice Amount"
+                  name="invoiceAmount"
+                  type="number"
+                  size="small"
+                  value={formData.invoiceAmount}
+                  onChange={handleChange}
+                />
+              </FormControl>
+              <FormControl fullWidth sx={{ minWidth: 300, flex:1 }}>
+                <label>Invoice</label>
+                <input
+                  type="file"
+                  onChange={handleInvoice}
+                />
+                <Box className="flex items-center mt-2">
+                  <a type="button" className="m-2 w-20 px-5 py-2 border rounded-3xl bg-blue-600 text-white" target="_blank" href={import.meta.env.VITE_APP_BUCKET_URL + formData.invoiceUrl}>View</a>
+                <Button
+                  variant="contained"
+                  onClick={uploadInvoice}
+                  className="bg-blue-500"
+                  sx={{ borderRadius: '24px' }}
+                >
+                  Update
+                </Button>
+                </Box>
+              </FormControl>
+              <FormControl fullWidth sx={{ minWidth: 300 }}>
+                <TextField
+                  label="E-Waybill"
                   name="ewaybill"
-                  placeholder="Enter E-waybill Number"
                   value={formData.ewaybill}
                   onChange={handleChange}
                 />
-              </div>
-            </> : null
-          }
-          <div className="w-full flex mb-2 flex-wrap ">
-
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="discount">Discount</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="discount"
+              </FormControl>
+            </Box>
+          )}
+          <Box sx={{ my: 4 }}>
+            <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Additional Info</div>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
+            <FormControl fullWidth sx={{ minWidth: 300, flex:1 }}>
+              <TextField
+                label="Discount"
                 name="discount"
-                placeholder="Ex. 1500"
+                size="small"
                 value={formData.discount}
                 onChange={handleChange}
               />
-            </div>
-            <div className="flex-1 mx-2 mb-2 flex min-w-[300px] space-x-2">
-              <div className="space-y-2">
-                <label htmlFor="cod">COD Amount</label>
-                <input
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="cod"
-                  name="cod"
-                  placeholder="Ex. 1500"
-                  value={formData.cod}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="shippingType">Shipping Type</label>
-                <select
-                  className="w-full border py-2 px-4 rounded-3xl"
-                  type="text"
-                  id="shippingType"
-                  name="shippingType"
-                  value={formData.shippingType}
-                  onChange={handleChange}
-                >
-                  <option value="Surface">Surface</option>
-                  <option value="Express">Express</option>
-                </select>
-              </div>
-            </div>
-
-          </div>
-          {/* <div className="w-full flex mb-2 flex-wrap ">
-
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="weight">Weight (In g)</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="weight"
-                name="weight"
-                placeholder="Ex. 2.5"
-                value={formData.weight}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] flex">
-            <div className="flex-1 mx-2 mb-2 min-w-[100px] space-y-2">
-              <label htmlFor="length">Length (in cm)</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="length"
-                name="length"
-                placeholder="Ex. 2.5"
-                value={formData.length}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[100px] space-y-2">
-              <label htmlFor="breadth">Breadth (in cm)</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="breadth"
-                name="breadth"
-                placeholder="Ex. 2.5"
-                value={formData.breadth}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[100px] space-y-2">
-              <label htmlFor="height">Height (in cm)</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="height"
-                name="height"
-                placeholder="Ex. 2.5"
-                value={formData.height}
-                onChange={handleChange}
-              />
-            </div>
-            </div>
+            </FormControl>
+           
             
-          </div> */}
-          <div className="w-full flex mb-2 flex-wrap ">
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="gst">Seller GST</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="gst"
+            <FormControl fullWidth sx={{ minWidth: 300, flex:1 }}>
+              <TextField
+                label="Seller GST"
                 name="gst"
-                placeholder="Enter GSTIN"
+                size="small"
                 value={formData.gst}
                 onChange={handleChange}
               />
-            </div>
-            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-              <label htmlFor="Cgst">Customer GSTIN (FOR B2B)</label>
-              <input
-                className="w-full border py-2 px-4 rounded-3xl"
-                type="text"
-                id="Cgst"
+            </FormControl>
+            <FormControl fullWidth sx={{ minWidth: 300, flex:1 }}>
+              <TextField
+                label="Customer GSTIN (FOR B2B)"
                 name="Cgst"
-                placeholder="Enter Csutomer GST"
+                size="small"
                 value={formData.Cgst}
                 onChange={handleChange}
               />
-            </div>
-          </div>
-          <button disabled={isShipped} className="px-5 py-1 mx-2 bg-blue-500  rounded-3xl text-white cursor-pointer" type="submit">Submit</button>
+            </FormControl>
+            </Box>
+          </Box>
         </form>
-      </div>
-    </>
+      </DialogContent>
+      <DialogActions>
+        <Button 
+          variant="contained" 
+          onClick={handleSubmit}
+          disabled={isShipped}
+        >
+          Submit
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
 
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const pages = [];
+  
+  // Function to add page numbers to the array
+  const addPageNumber = (pageNum) => {
+    pages.push({
+      number: pageNum,
+      isCurrent: pageNum === currentPage
+    });
+  };
+
+  // Add first page
+  addPageNumber(1);
+
+  if (totalPages <= 7) {
+    // If total pages is 7 or less, show all pages
+    for (let i = 2; i < totalPages; i++) {
+      addPageNumber(i);
+    }
+  } else {
+    if (currentPage <= 4) {
+      // We're near the start
+      for (let i = 2; i <= 5; i++) {
+        addPageNumber(i);
+      }
+      pages.push({ number: '...', isCurrent: false });
+      addPageNumber(totalPages);
+    } else if (currentPage >= totalPages - 3) {
+      // We're near the end
+      pages.push({ number: '...', isCurrent: false });
+      for (let i = totalPages - 4; i < totalPages; i++) {
+        addPageNumber(i);
+      }
+    } else {
+      // We're in the middle
+      pages.push({ number: '...', isCurrent: false });
+      for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+        addPageNumber(i);
+      }
+      pages.push({ number: '...', isCurrent: false });
+      addPageNumber(totalPages);
+    }
+  }
+
+  return (    <div className="flex items-center justify-center space-x-1 sm:space-x-2 mt-4">
+      <button 
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+      >
+        <span className="hidden sm:inline">Previous</span>
+        <span className="sm:hidden">Prev</span>
+      </button>
+      
+      {pages.map((page, idx) => (
+        <button
+          key={idx}
+          onClick={() => page.number !== '...' && onPageChange(page.number)}
+          className={`min-w-[30px] px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
+            page.number === '...' ? 'cursor-default' 
+            : page.isCurrent ? 'bg-blue-500 text-white' 
+            : 'bg-white hover:bg-gray-100 border'
+          }`}
+        >
+          {page.number}
+        </button>
+      ))}
+      
+      <button 
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${currentPage === totalPages ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+      >
+        <span className="hidden sm:inline">Next</span>
+        <span className="sm:hidden">Next</span>
+      </button>
+    </div>
+  );
+};
+
+const Modal = ({ isOpen, onClose, children }) => {  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose}></div>
+      <div className="relative z-[1000] bg-white rounded-lg w-[95%] max-w-4xl max-h-[90vh] overflow-y-auto p-4">
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const Card = ({ shipment }) => {
   const [isManage, setIsManage] = useState(false);
-  const [isShipped, setIsShipped] = useState(shipment.awb ? true : false)
+  const [isShipped, setIsShipped] = useState(shipment.awb ? true : false);
+
   return (
     <>
-      {isManage ? <ManageForm setIsManage={setIsManage} shipment={shipment} isManage={isManage} isShipped={shipment.awb ? true : false} /> : null}
-      <div className="w-full h-24 bg-white relative items-center px-4 sm:px-8 flex border-b">
-        <div>
-          <div className="text-sm font-bold">{shipment.ord_id}</div>
-          <div className="text-[10px] text-gray-500">{shipment.fullName}</div>
-          <div className="text-[10px] text-gray-500">{shipment.email}</div>
-          <div className="text-[10px] text-gray-500">{shipment.date ? shipment.date.toString().split('T')[0] + ' ' + shipment.date.toString().split('T')[1].split('.')[0] : null}</div>
-        </div>
-        <div className="absolute right-4 sm:right-8 flex space-x-2">
-          <div className="px-3 py-1 bg-blue-500  rounded-3xl text-white cursor-pointer" onClick={() => setIsManage(true)}>{isShipped ? "View" : "Manage"}</div>
+      <Modal isOpen={isManage} onClose={() => setIsManage(false)}>
+        <ManageForm setIsManage={setIsManage} shipment={shipment} isManage={isManage} isShipped={shipment.awb ? true : false} />
+      </Modal>
+      
+      <div className="w-full bg-white hover:bg-gray-50 border-b">
+        <div className="grid grid-cols-12 gap-4 px-4 py-3">
+          {/* Order Info - 3 columns */}
+          <div className="col-span-3">
+            <div className="text-sm font-semibold mb-1">{shipment.ord_id}</div>
+            <div className="text-xs text-gray-500">
+              {shipment.date ? new Date(shipment.date).toLocaleString() : null}
+            </div>
+          </div>
+
+          {/* Customer Info - 3 columns */}
+          <div className="col-span-3">
+            <div className="text-sm text-gray-700">{shipment.fullName}</div>
+            <div className="text-xs text-gray-600 truncate">{shipment.email}</div>
+          </div>
+
+          {/* Shipping Info - 4 columns */}
+          <div className="col-span-4">
+            {isShipped ? (
+              <div className="space-y-1">
+                {shipment.awb && (
+                  <div className="text-xs text-gray-600">
+                    <span className="font-semibold">AWB:</span> {shipment.awb}
+                  </div>
+                )}
+                {shipment.shipping_vendor_reference_id && (
+                  <div className="text-xs text-gray-600">
+                    <span className="font-semibold">LRN:</span> {shipment.shipping_vendor_reference_id}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-xs text-gray-500">No shipping details yet</div>
+            )}
+          </div>
+
+          {/* Status - 1 column */}
+          <div className="col-span-1 flex items-center">
+            <span className={`px-2 py-1 text-xs rounded-full ${
+              isShipped ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}>
+              {isShipped ? 'Shipped' : 'Pending'}
+            </span>
+          </div>
+
+          {/* Action Button - 1 column */}
+          <div className="col-span-1 flex items-center justify-end">
+            <button 
+              className="px-4 py-1 bg-blue-500 text-white text-sm rounded-3xl hover:bg-blue-600 transition-colors" 
+              onClick={() => setIsManage(true)}
+            >
+              {isShipped ? "View" : "Manage"}
+            </button>
+          </div>
         </div>
       </div>
     </>
@@ -1069,126 +1075,256 @@ const Card = ({ shipment }) => {
 };
 
 const Listing = ({ step, setStep }) => {
-  const [shipments, setShipments] = useState([])
-  const [email, setEmail] = useState('');
+  const [shipments, setShipments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [filteredShipments, setFilteredShipments] = useState([]);
   const [filters, setFilters] = useState({
     email: "",
     orderId: "",
-    name: ""
+    name: "",
+    startDate: "",
+    endDate: ""
   });
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
+  const [abortController, setAbortController] = useState(null);
+  const [selectedShipment, setSelectedShipment] = useState(null);
+  const [isManageOpen, setIsManageOpen] = useState(false);
+  // Debounce filter changes
   useEffect(() => {
+    const timerId = setTimeout(() => {
+      setPage(1); // Reset to first page when filters change
+      setDebouncedFilters(filters);
+    }, 500); // 500ms delay
 
-    fetch(`${API_URL}/order/domestic/all`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': localStorage.getItem('token'),
-      },
-    })
-      .then(response => response.json())
-      .then(result => {
-        if (result.success) {
-          result.order.sort((a, b) => new Date(a.date) - new Date(b.date)).reverse()
-          const finalShipments = []
-          const unShippedShipments = result.order.filter(shipment => !shipment.awb)
-          const shippedShipments = result.order.filter(shipment => shipment.awb)
-          finalShipments.push(...unShippedShipments, ...shippedShipments)
-          setShipments(finalShipments);
-        } else {
-          alert("Failed to fetch parcels")
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred during Order');
-      });
-  }, []);
+    return () => clearTimeout(timerId);
+  }, [filters]);
+
+  // Fetch data with filters
   useEffect(() => {
-    if (!shipments.length) {
-      return;
-    }
-    const filteredData = shipments.filter((shipment) => {
-      return (
-        (filters.name === "" || shipment.fullName.toLowerCase().startsWith(filters.name.toLowerCase())) &&
-        (filters.email === "" || shipment.email.toString().startsWith(filters.email)) &&
-        (filters.orderId === "" || (shipment.ord_id.toLowerCase() == filters.orderId.toLowerCase()))
-      );
-    });
-    setFilteredShipments(filteredData)
-  }, [shipments, filters])
+    const fetchData = async () => {
+      if (abortController) {
+        abortController.abort();
+      }
+      const newController = new AbortController();
+      setAbortController(newController);
+
+      setIsLoading(true);
+      try {
+        const queryParams = new URLSearchParams({
+          page,
+          ...(debouncedFilters.name && { merchant_name: debouncedFilters.name }),
+          ...(debouncedFilters.email && { merchant_email: debouncedFilters.email }),
+          ...(debouncedFilters.orderId && { orderId: debouncedFilters.orderId }),
+          ...(debouncedFilters.startDate && { startDate: convertToUTCISOString(debouncedFilters.startDate) }),
+          ...(debouncedFilters.endDate && { endDate: convertToUTCISOString(`${debouncedFilters.endDate}T23:59:59.999Z`) })
+        });
+
+        const response = await fetch(`${API_URL}/order/domestic/all?${queryParams}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token'),
+          },
+          signal: newController.signal
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          setShipments(result.orders);
+          setTotalPages(result.totalPages);
+        } else {
+          alert("Failed to fetch parcels");
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Error:', error);
+          alert('An error occurred during Order fetch');
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [debouncedFilters, page]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
-  }
-  // useEffect(() => {
-  //   if (email == "") {
-  //     setFilteredShipments([]);
-  //     setTimeout(() => setFilteredShipments(shipments))
-  //     return;
-  //   }
-  //   const filtered = shipments.filter(shipment =>
-  //     ((shipment.email).startsWith(email))
-  //   );
-  //   setFilteredShipments([]);
-  //   setTimeout(() => setFilteredShipments(filtered));
-  //   console.log(filtered)
-  // }, [email])
-  return (
-    <>
-      <div
-        className={`w-full p-4 flex flex-col items-center space-y-6 ${step == 0 ? "" : "hidden"
-          }`}
-      >
-        <div className="w-full h-16 px-4  relative flex">
-          <div className="text-2xl font-medium">SHIPMENTS </div>
-          {/* <div
-              onClick={(e) => {
-                e.preventDefault();
-                setStep(1);
-              }}
-              className="px-5 py-1 bg-blue-500 absolute rounded-3xl text-white  right-4"
-            >
-              Add
-            </div> */}
-        </div>
-        <details className="w-full p-2 bg-blue-500 rounded-xl text-white">
-          <summary>Filters</summary>
-          <div className="grid space-y-2 lg:grid-rows-1 lg:grid-cols-3 lg:space-y-0 lg:space-x-4 p-2 rounded-xl w-full bg-blue-500 text-black justify-evenly">
-            <input
-              className="p-1 rounded-xl min-w-[260px] lg:min-w-0"
-              type="text"
-              name="name"
-              placeholder="Merchant Name"
-              value={filters.name}
-              onChange={handleChange}
-            />
-            <input
-              className="p-1 rounded-xl"
-              type="email"
-              name="email"
-              placeholder="Merchant Email"
-              value={filters.email}
-              onChange={handleChange}
-            />
-            <input
-              className="p-1 rounded-xl"
-              type="text"
-              name="orderId"
-              placeholder="Order Id"
-              value={filters.orderId}
-              onChange={handleChange}
-            />
-          </div>
-        </details>
-        <div className="w-full">
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
 
-          {filteredShipments.map((shipment, index) => (
-            <Card key={index} shipment={shipment} />
-          ))}
-        </div>
-      </div>
-    </>
+  const columns = [
+    { 
+      field: 'space', 
+      headerName: '', 
+      sortable: false, 
+      disableColumnMenu: true,
+      width: 5,
+    },
+    { field: 'ord_id', headerName: 'Order ID', width: 130 },
+    {
+      field: 'customer_reference_number',
+      headerName: 'Customer Reference Number',
+      width: 100,
+    },
+    { 
+      field: 'date', 
+      headerName: 'Date', 
+      width: 180,
+      renderCell: (params) => 
+        params.row.date ? new Date(params.row.date).toLocaleString() : ''
+    },
+    { field: 'fullName', headerName: 'Customer Name', width: 180 },
+    { field: 'email', headerName: 'Email', width: 200 },
+    {
+  field: 'shipping',
+  headerName: 'Shipping Details',
+  width: 250,
+  renderCell: (params) => {
+    const isShipped = Boolean(params.row.awb);
+    return (
+      <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 80 }}>
+        {isShipped ? (
+          <>
+            <div>{params.row.service_name}</div>
+            {params.row.awb && <div>AWB: {params.row.awb}</div>}
+            {params.row.lrn && <div>LRN: {params.row.lrn}</div>}
+          </>
+        ) : (
+          <div>No shipping details yet</div>
+        )}
+      </Box>
+    );
+  }
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 130,
+      renderCell: (params) => {
+        const isShipped = Boolean(params.row.awb);
+        return (
+          <Box
+            sx={{
+              bgcolor: isShipped ? 'success.100' : 'warning.100',
+              color: isShipped ? 'success.800' : 'warning.800',
+              px: 2,
+              py: 0.5,
+              borderRadius: 8,
+              fontSize: '0.875rem'
+            }}
+          >
+            {isShipped ? 'Shipped' : 'Pending'}
+          </Box>
+        );
+      }
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 130,
+      renderCell: (params) => {
+        const isShipped = Boolean(params.row.awb);
+        return (
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => {
+              setSelectedShipment(params.row);
+              setIsManageOpen(true);
+            }}
+            sx={{ borderRadius: '24px' }}
+          >
+            {isShipped ? 'View' : 'Manage'}
+          </Button>
+        );
+      }
+    }
+  ];
+
+  return (
+    <div className={`w-full p-4 flex flex-col items-center space-y-6 ${step == 0 ? "" : "hidden"}`}>
+      <Paper sx={{ width: '100%', p: 2 }}>
+        <Box sx={{ mb: 3 }}>
+          <h2 className="text-2xl font-medium">Shipments</h2>
+        </Box>
+
+{/* Filters */}
+      <Box
+        className="bg-blue-500 p-4 rounded-xl shadow-md"
+        sx={{
+          mb: 3,
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(auto-fill, minmax(200px, 1fr))',
+          },
+          gap: 2,
+        }}
+      >
+        {[
+          { label: 'Merchant Name', name: 'name' },
+          { label: 'Merchant Email', name: 'email' },
+          { label: 'Order ID', name: 'orderId' },
+          { label: 'Start Date', name: 'startDate', type: 'date' },
+          { label: 'End Date', name: 'endDate', type: 'date' },
+        ].map(({ label, name, type }) => (
+          <TextField
+            key={name}
+            label={label}
+            name={name}
+            type={type || 'text'}
+            value={filters[name]}
+            onChange={handleChange}
+            size="small"
+            InputProps={{
+              className: 'bg-white rounded-md',
+            }}
+            InputLabelProps={{
+              // shrink: true,
+              sx: {
+                backgroundColor: 'white',
+                px: 0.5,
+                width: '100%',
+                borderRadius: 1,
+              },
+            }}
+          />
+        ))}
+      </Box>
+  {/* DataGrid */}
+        <Box sx={{ height: 600, width: '100%' }}>
+          <DataGrid
+            rows={shipments}
+            columns={columns}
+            loading={isLoading}
+            hideFooter={true}
+            disableSelectionOnClick
+            getRowId={(row) => row.ord_id}
+            rowHeight={80}
+          />
+        </Box>
+
+        {/* Custom Pagination */}
+        <Pagination 
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      </Paper>
+
+      {selectedShipment && (
+        <ManageForm
+          isManage={isManageOpen}
+          setIsManage={setIsManageOpen}
+          shipment={selectedShipment}
+          isShipped={Boolean(selectedShipment.awb)}
+        />
+      )}
+    </div>
   );
 };
 
