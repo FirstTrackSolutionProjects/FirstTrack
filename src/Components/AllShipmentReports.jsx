@@ -589,13 +589,22 @@ const Listing = () => {
             <IconButton
               onClick={async () => {
                 try {
+                  const payload = {
+                    merchant_email: filters.merchant_email,
+                    merchant_name: filters.merchant_name,
+                    awb: filters.awb,
+                    ord_id: filters.ord_id,
+                    serviceId: filters.serviceId,
+                    startDate: filters.startDate ? convertToUTCISOString(new Date(filters.startDate).setHours(0,0,0,0)) : '',
+                    endDate: filters.endDate ? convertToUTCISOString(new Date(filters.endDate).setHours(23,59,59,999)) : ''
+                  }
                   const response = await fetch(`${API_URL}/shipment/domestic/reports/download/admin`, {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
                       'Authorization': localStorage.getItem('token'),
                     },
-                    body: JSON.stringify(filters)
+                    body: JSON.stringify(payload)
                   });
                   const data = await response.json();
                   if (!data.success) {

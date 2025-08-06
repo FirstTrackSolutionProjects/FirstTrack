@@ -131,8 +131,8 @@ const AllTransactions =  () => {
       try {
         setDownloading(true)
         const payload = {
-          startDate: convertToUTCISOString(filters.startDate),
-          endDate: convertToUTCISOString(`${filters.endDate}T23:59:59.999Z`),
+          startDate: filters.startDate ? convertToUTCISOString(new Date(filters.startDate).setHours(0,0,0,0)) : '',
+          endDate: filters.endDate ? convertToUTCISOString(new Date(filters.endDate).setHours(23,59,59,999)) : '',
           merchant_email: filters.merchant_email
         }
         const response = await fetch(`${API_URL}/wallet/report/download/all`, {
