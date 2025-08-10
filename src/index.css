@@ -1,3 +1,22 @@
-@tailwind base;
+/* Custom dark, thin scrollbar for sidebar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ababab #1f2937; /* thumb, track */
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: #1f2937;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 8px;
+  border: 2px solid #1f2937;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: #1f2937;
+}@tailwind base;
 @tailwind components;
 @tailwind utilities;
