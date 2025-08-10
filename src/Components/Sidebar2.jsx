@@ -38,15 +38,20 @@ const Sidebar2 = () => {
       </button>
 
        {/* Sidebar for md screen */}
-       <div className="bg-gray-900 h-full w-64 text-white hidden md:block left-0 overflow-y-auto custom-scrollbar">
-      <ul className="p-4 ">
-        {sidebarItems.map((item) => {
-          if ((item.admin && !admin) || (item.merchantOnly && admin)) {
-            return;
-          }
-          return(<SidebarItem item={item} setShowRecharge={setShowRecharge}/>)
-        })}
-      </ul>
+      <div
+        className="bg-gray-900 h-full w-64 text-white hidden md:flex flex-col left-0 shadow-xl border-r border-gray-800"
+      >
+        {/* Sidebar content - scrollable */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-6 pt-2 custom-scrollbar" style={{scrollBehavior: 'smooth'}}>
+          <ul className="space-y-2">
+            {sidebarItems.map((item) => {
+              if ((item.admin && !admin) || (item.merchantOnly && admin)) {
+                return;
+              }
+              return (<SidebarItem key={item.label || item.name} item={item} setShowRecharge={setShowRecharge} />)
+            })}
+          </ul>
+        </div>
       </div>
        {/* Sidebar for beloe md screen */}
       <div
