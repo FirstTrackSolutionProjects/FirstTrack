@@ -148,25 +148,25 @@ const FullDetails = () => {
     control,
     name: 'boxes'
   });
-  useEffect(() => {
+  // useEffect(() => {
 
-    const pinToAdd = async () => {
-      try {
-        await fetch(`https://api.postalpincode.in/pincode/${watch('postcode')}`)
-          .then(response => response.json())
-          .then(result => {
-            const city = result[0].PostOffice[0].District
-            const state = result[0].PostOffice[0].State
-            setValue('city', city)
-            setValue('state', state)
-          })
-      } catch (e) {
-        setValue('city', '')
-        setValue('state', '')
-      }
-    }
-    if (watch('postcode').length == 6) pinToAdd()
-  }, [watch('postcode')])
+  //   const pinToAdd = async () => {
+  //     try {
+  //       await fetch(`https://api.postalpincode.in/pincode/${watch('postcode')}`)
+  //         .then(response => response.json())
+  //         .then(result => {
+  //           const city = result[0].PostOffice[0].District
+  //           const state = result[0].PostOffice[0].State
+  //           setValue('city', city)
+  //           setValue('state', state)
+  //         })
+  //     } catch (e) {
+  //       setValue('city', '')
+  //       setValue('state', '')
+  //     }
+  //   }
+  //   if (watch('postcode').length == 6) pinToAdd()
+  // }, [watch('postcode')])
   useEffect(() => {
     const pinToAdd = async () => {
       try {
