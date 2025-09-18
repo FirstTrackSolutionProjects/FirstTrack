@@ -159,55 +159,55 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
     customer_reference_number: shipment?.customer_reference_number
   })
 
-  useEffect(() => {
-    const pinToAdd = async () => {
-      try {
-        await fetch(`https://api.postalpincode.in/pincode/${formData.postcode}`)
-          .then(response => response.json())
-          .then(result => {
-            const city = result[0].PostOffice[0].District
-            const state = result[0].PostOffice[0].State
-            setFormData((prev) => ({
-              ...prev,
-              city: city,
-              state: state
-            }))
-          })
-      } catch (e) {
-        setFormData((prev) => ({
-          ...prev,
-          city: '',
-          state: ''
-        }))
-      }
-    }
-    if (formData.postcode.length == 6) pinToAdd()
-  }, [formData.postcode])
+  // useEffect(() => {
+  //   const pinToAdd = async () => {
+  //     try {
+  //       await fetch(`https://api.postalpincode.in/pincode/${formData.postcode}`)
+  //         .then(response => response.json())
+  //         .then(result => {
+  //           const city = result[0].PostOffice[0].District
+  //           const state = result[0].PostOffice[0].State
+  //           setFormData((prev) => ({
+  //             ...prev,
+  //             city: city,
+  //             state: state
+  //           }))
+  //         })
+  //     } catch (e) {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         city: '',
+  //         state: ''
+  //       }))
+  //     }
+  //   }
+  //   if (formData.postcode.length == 6) pinToAdd()
+  // }, [formData.postcode])
   
-  useEffect(() => {
-    const pinToAdd = async () => {
-      try {
-        await fetch(`https://api.postalpincode.in/pincode/${formData.Bpostcode}`)
-          .then(response => response.json())
-          .then(result => {
-            const city = result[0].PostOffice[0].District
-            const state = result[0].PostOffice[0].State
-            setFormData((prev) => ({
-              ...prev,
-              Bcity: city,
-              Bstate: state
-            }))
-          })
-      } catch (e) {
-        setFormData((prev) => ({
-          ...prev,
-          Bcity: '',
-          Bstate: ''
-        }))
-      }
-    }
-    if (formData.Bpostcode.length == 6) pinToAdd()
-  }, [formData.Bpostcode])
+  // useEffect(() => {
+  //   const pinToAdd = async () => {
+  //     try {
+  //       await fetch(`https://api.postalpincode.in/pincode/${formData.Bpostcode}`)
+  //         .then(response => response.json())
+  //         .then(result => {
+  //           const city = result[0].PostOffice[0].District
+  //           const state = result[0].PostOffice[0].State
+  //           setFormData((prev) => ({
+  //             ...prev,
+  //             Bcity: city,
+  //             Bstate: state
+  //           }))
+  //         })
+  //     } catch (e) {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         Bcity: '',
+  //         Bstate: ''
+  //       }))
+  //     }
+  //   }
+  //   if (formData.Bpostcode.length == 6) pinToAdd()
+  // }, [formData.Bpostcode])
 
   const addProduct = () => {
     setOrders([...orders, { box_no: 1, product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: '' }]);
