@@ -167,24 +167,24 @@ const FullDetails = () => {
   //   }
   //   if (watch('postcode').length == 6) pinToAdd()
   // }, [watch('postcode')])
-  useEffect(() => {
-    const pinToAdd = async () => {
-      try {
-        await fetch(`https://api.postalpincode.in/pincode/${watch('Bpostcode')}`)
-          .then(response => response.json())
-          .then(result => {
-            const city = result[0].PostOffice[0].District
-            const state = result[0].PostOffice[0].State
-            setValue('Bcity', city)
-            setValue('Bstate', state)
-          })
-      } catch (e) {
-        setValue('Bcity', '')
-        setValue('Bstate', '')
-      }
-    }
-    if (watch('Bpostcode').length == 6) pinToAdd()
-  }, [watch('Bpostcode')])
+  // useEffect(() => {
+  //   const pinToAdd = async () => {
+  //     try {
+  //       await fetch(`https://api.postalpincode.in/pincode/${watch('Bpostcode')}`)
+  //         .then(response => response.json())
+  //         .then(result => {
+  //           const city = result[0].PostOffice[0].District
+  //           const state = result[0].PostOffice[0].State
+  //           setValue('Bcity', city)
+  //           setValue('Bstate', state)
+  //         })
+  //     } catch (e) {
+  //       setValue('Bcity', '')
+  //       setValue('Bstate', '')
+  //     }
+  //   }
+  //   if (watch('Bpostcode').length == 6) pinToAdd()
+  // }, [watch('Bpostcode')])
 
   useEffect(() => {
     const getWarehouses = async () => {
