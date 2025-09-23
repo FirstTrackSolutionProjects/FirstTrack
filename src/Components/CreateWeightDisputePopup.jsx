@@ -105,10 +105,12 @@ const CreateWeightDisputePopup = ({ open, onClose, onSubmit }) => {
                 },
                 body: JSON.stringify(formData)
             });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            if (data.success){
+                toast.success('Weight Dispute added successfully');
+            } else {
+                toast.error(data.message || 'Failed to add weight dispute');
             }
-            toast.success('Weight Dispute added successfully');
             onClose();
         } catch (error) {
             toast.error('Failed to add weight dispute');
