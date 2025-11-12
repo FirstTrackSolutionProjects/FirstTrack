@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from '../Components/Image'
+import HeroAction from '../Components/HeroAction'
 import Service from '../Components/Service'
 import PriceCalc from '../Components/PriceCalc';
 import TrustedPartnerSection from '../Components/TrustedPartner';
@@ -32,22 +33,45 @@ const Testimonials = () => {
 };
 
 
-
 const WhyChooseUs = () => {
-  return (
-    <section className="py-8 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-2xl md:text-4xl font-bold text-center mb-12">Why Choose Us</h2>
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
-        <div className="grid grid-cols-1  md:grid-cols-4 gap-4 md:gap-8">
+  return (
+    <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-800 mb-12">
+          Why Choose <span className="text-green-600">Us</span>
+        </h2>
+
+        <div
+          ref={ref}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10"
+        >
           {whyChooseUs.map((item, index) => (
             <div
               key={index}
-              className="p-3 md:p-6 bg-gray-50 shadow-md rounded-lg hover:shadow-lg transition duration-300 text-center"
+              className={`bg-white border border-gray-100 shadow-sm hover:shadow-xl rounded-2xl p-6 flex flex-col items-center text-center transform transition-all duration-700 ${
+                inView
+                  ? `opacity-100 translate-y-0 delay-[${index * 150}ms]`
+                  : "opacity-0 translate-y-8"
+              }`}
             >
-              <img src={item.image} className='mx-auto h-12 w-12 md:w-20 md:h-20 object-contain my-2'></img>
-              <h3 className="text-lg md:text-xl font-semibold mb-2">{item.title}</h3>
-              <p className="text-sm md:text-base text-gray-600">{item.description}</p>
+              <div className="w-20 h-20 bg-green-50 flex items-center justify-center rounded-full mb-5 shadow-sm">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                />
+              </div>
+              <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
+                {item.title}
+              </h3>
+              <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+                {item.description}
+              </p>
             </div>
           ))}
         </div>
@@ -55,6 +79,9 @@ const WhyChooseUs = () => {
     </section>
   );
 };
+
+
+
 
 const Calc =()=>{
   return(
@@ -143,6 +170,7 @@ const Home = () => {
   return (
     <div className='font-poppins z-10'>
       <Image/>
+      <HeroAction/>
       <Service/>
       <WhyChooseUs/>
       <Counter/>

@@ -605,40 +605,67 @@ export const testimonials = [
       avatar: "images/female.webp",
     },
   ];
+  
 
   export const whyChooseUs = [
-    { title: "Reliable Service", description: "Our reputation speaks for itself.", image:"images/service1.jpg" },
-    { title: "Secure Transportation", description: "Ensuring safety of all deliveries." , image:"images/service2.JPG"},
-    { title: "Timely Delivery", description: "We pride ourselves on promptness.", image:"images/service3.JPG" },
-    { title: "24/7 Support", description: "Customer support around the clock.", image:"images/service4.JPG" },
-  ];
+  {
+    title: "Trusted Reliability",
+    description:
+      "Count on us for consistent, dependable logistics solutions built on years of proven performance.",
+    image: "images/service1.jpg",
+  },
+  {
+    title: "Secure Handling",
+    description:
+      "Every shipment is managed with utmost care and advanced safety protocols to ensure complete protection.",
+    image: "images/service2.JPG",
+  },
+  {
+    title: "On-Time Every Time",
+    description:
+      "We value your time — our optimized network ensures fast, accurate, and punctual deliveries, always.",
+    image: "images/service3.JPG",
+  },
+  {
+    title: "Round-the-Clock Assistance",
+    description:
+      "Our dedicated support team is available 24/7 to resolve queries and provide real-time shipment updates.",
+    image: "images/service4.JPG",
+  },
+];
 
-  export const services = [
-    {
-      id: 1,
-      title: "Global Shipping",
-      description: "We ensure timely and secure delivery across the world.",
-      icon: "🚚",
-    },
-    {
-      id: 2,
-      title: "Warehousing",
-      description: "Safe and affordable warehousing solutions for your business.",
-      icon: "🏬",
-    },
-    {
-      id: 3,
-      title: "Cargo Services",
-      description: "Fast and reliable cargo transportation services.",
-      icon: "✈️",
-    },
-    {
-      id: 4,
-      title: "Freight Management",
-      description: "Optimize your logistics with our expert freight management services.",
-      icon: "⚓",
-    },
-  ];
+
+ export const services = [
+  {
+    id: 1,
+    title: "International Shipping",
+    description:
+      "Seamless global delivery with real-time tracking and guaranteed on-time arrivals across continents.",
+    icon: "🌍",
+  },
+  {
+    id: 2,
+    title: "Smart Warehousing",
+    description:
+      "Modern, secure, and temperature-controlled storage solutions designed for efficiency and safety.",
+    icon: "🏢",
+  },
+  {
+    id: 3,
+    title: "Air & Sea Cargo",
+    description:
+      "Flexible cargo transport options via air and sea, ensuring speed, safety, and cost-effectiveness.",
+    icon: "🚢",
+  },
+  {
+    id: 4,
+    title: "Supply Chain Management",
+    description:
+      "End-to-end logistics planning and freight coordination that optimizes routes and reduces delivery time.",
+    icon: "📦",
+  },
+];
+
 
   export const counts =[
     {
