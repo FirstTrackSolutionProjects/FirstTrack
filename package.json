@@ -24,7 +24,7 @@
     "@hookform/resolvers": "^3.9.1",
     "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
-    "@mui/x-data-grid": "^8.5.2",
+    "@mui/x-data-grid": "^8.17.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",

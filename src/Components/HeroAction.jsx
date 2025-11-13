@@ -9,9 +9,11 @@ const HeroAction = () => {
   return (
     <div className="w-full text-center mt-6 mb-10">
       <div className="flex justify-center space-x-4">
+        <Link to="/about">
         <button className="bg-gray-700 text-sm md:text-base text-white py-3 px-6 rounded-lg transition duration-300 hover:bg-gray-800">
           DISCOVER MORE
         </button>
+        </Link>
 
         {isAuthenticated ? (
           <Link to="/dashboard">
