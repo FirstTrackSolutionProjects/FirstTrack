@@ -16,7 +16,7 @@ const AboutUs = () => {
       <div className="relative w-full h-[400px] p-2">
       {/* Background Image */}
       <img
-        src="images/about2.jpg" 
+        src="/images/about2.jpg" 
         alt="About Us Background"
         className="w-full h-full object-cover"
       />
@@ -32,12 +32,8 @@ const AboutUs = () => {
      {/* Company Intro Section (NEW) */}
       <section className="py-8 max-w-5xl mx-auto px-4">
         <p className="text-gray-700 text-lg leading-relaxed text-center">
-          <strong>First Track Solution Technologies Private Limited</strong>, established in 
-          <strong> October 2022</strong>, has been committed to transforming the logistics 
-          and shipping industry with innovative, reliable, and customer-focused solutions. 
-          Over the years, we have grown with a vision to simplify global shipping, 
-          ensuring fast deliveries, transparent tracking, and seamless service for 
-          businesses and individuals worldwide.
+        <strong>First Track</strong>, a proud venture of <strong>First Track Solutions Technologies Pvt Ltd</strong>, is a dedicated logistics platform committed to delivering speed, safety, and operational excellence across the supply chain. Officially registered in Bhubaneswar, Odisha in <strong>October 2022</strong>, the platform was created with a clear vision: to introduce next-generation tracking and highly reliable transport solutions to businesses nationwide.
+        At <strong>First Track</strong>, we recognize that effective logistics is the backbone of commerce. We believe every shipment represents critical time and capital, and our dedicated technology and vast carrier network ensure that every movement—from warehousing to last-mile delivery—is executed with precision and transparency.
         </p>
       </section>
 
@@ -105,7 +101,7 @@ const AboutUs = () => {
               alt="Team Member"
               className="w-32 h-32 mx-auto rounded-full"
             />
-            <h3 className="mt-4 text-xl font-semibold">ABC</h3>
+            <h3 className="mt-4 text-xl font-semibold">Tejash Parekh</h3>
             <p className="text-gray-600">CEO & Founder</p>
           </div>
           {/* Add other team members similarly */}
