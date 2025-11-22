@@ -97,7 +97,7 @@ const Footer =()=>{
                 </div>
             </div>
             <div className="bg-black justify-between text-white text-sm flex-1 md:flex p-8">
-                <div><span className="text-gray-400">Copyright &copy; 2024 </span><span className="font-bold"> Developed By First Track Solution Technologies</span></div>
+                <div><span className="text-gray-400">Copyright &copy; 2024 </span><span className="font-bold"> First Track Solution Technologies. All rights reserved</span></div>
 
                 <div className=" mt-5 md:mt-0 md:flex mr-10">
                 <Link to='/' onClick={scrollToTop} className="">Home&nbsp; |&nbsp;</Link>
