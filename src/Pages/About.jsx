@@ -16,7 +16,7 @@ const AboutUs = () => {
       <div className="relative w-full h-[400px] p-2">
       {/* Background Image */}
       <img
-        src="images/about2.jpg" // Replace with your image URL
+        src="images/about2.jpg" 
         alt="About Us Background"
         className="w-full h-full object-cover"
       />
@@ -29,7 +29,17 @@ const AboutUs = () => {
       </div>
     </div>
 
-  
+     {/* Company Intro Section (NEW) */}
+      <section className="py-8 max-w-5xl mx-auto px-4">
+        <p className="text-gray-700 text-lg leading-relaxed text-center">
+          <strong>First Track Solution Technologies Private Limited</strong>, established in 
+          <strong> October 2022</strong>, has been committed to transforming the logistics 
+          and shipping industry with innovative, reliable, and customer-focused solutions. 
+          Over the years, we have grown with a vision to simplify global shipping, 
+          ensuring fast deliveries, transparent tracking, and seamless service for 
+          businesses and individuals worldwide.
+        </p>
+      </section>
 
       {/* Mission & Values */}
       <section className="py-5 md:py-12 bg-gray-100">

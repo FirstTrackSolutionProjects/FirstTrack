@@ -8,6 +8,7 @@ import Contact from './Pages/Contact'
 import FAQ from './Components/FAQ'
 import PrivacyPolicy from './Components/PrivacyPolicy'
 import Terms from './Components/Terms'
+import RefundCancellation from './Components/RefundCancellation'
 import DomesticTracking from './Pages/Tracking'
 import Price from './Pages/Price'
 import Blogs from './Pages/Blogs'
@@ -33,6 +34,7 @@ const App = () => {
         <Route path='/faq' element={<FAQ/>}></Route>
         <Route path='/privacy' element={<PrivacyPolicy/>}></Route>
         <Route path='/terms' element={<Terms/>}></Route>
+        <Route path='/refund-cancel' element={<RefundCancellation/>}></Route>
         <Route path='/login' element={<Login/>}></Route>
         <Route path='/register' element={<Register/>}></Route>
         <Route path='/dashboard/*' element={<Dashboard/>}></Route>
