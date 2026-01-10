@@ -1536,6 +1536,7 @@ const Listing = ({ step, setStep }) => {
       
       const link = document.createElement('a');
       link.href = result.label;
+      link.download = `Label_${shipment.ord_id}.pdf`;
       link.target = '_blank';
       link.style.display = 'none';
       document.body.appendChild(link);
