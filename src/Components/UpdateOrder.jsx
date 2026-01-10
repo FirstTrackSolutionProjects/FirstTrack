@@ -1536,6 +1536,7 @@ const Listing = ({ step, setStep }) => {
       
       const link = document.createElement('a');
       link.href = result.label;
+      link.download = `Label_${shipment.ord_id}.pdf`;
       link.target = '_blank';
       link.style.display = 'none';
       document.body.appendChild(link);
@@ -1797,7 +1798,7 @@ const Listing = ({ step, setStep }) => {
             )}
             
             {/* Cancel Button - only for shipped, non-cancelled, specific services */}
-            {isShipped && !isProcessing && !isCancelled && [1,2,5,6,7,8].includes(serviceId) && (
+            {isShipped && !isProcessing && !isCancelled && [1,2,5,6,7,8,11].includes(serviceId) && (
               <Button
                 variant="outlined"
                 color="error"
