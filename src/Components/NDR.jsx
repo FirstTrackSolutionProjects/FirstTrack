@@ -146,6 +146,29 @@ const EkartStatusCard = ({ report, status }) => {
   )
 }
 
+const ReportCard = ({ report, status }) => {
+  return (
+  <>
+      <div className="flex flex-col">
+      <p className="mt-5">AWB : {report.awb}</p>
+      {report?.lrn ? <p>LRN : {report.lrn}</p> : null}
+      {status?.length ?
+        (status).map((scan, index) => {
+          return (
+            <div className='flex flex-col justify-center'>
+              <div className='font-bold'>{scan.status}</div>
+              {scan?.description ? <div>{scan.description}</div> : null}
+              {scan?.location ? <div>{scan.location}</div> : null}
+              <div>{scan.timestamp}</div>
+            </div>
+          )
+        }) : "Shipment is not yet picked up"
+      }
+      </div>
+  </>
+  )
+}
+
 
 const ViewDialog = ({ isOpen, onClose, report }) => {
   const [status, setStatus] = useState(null);
@@ -208,7 +231,7 @@ const ViewDialog = ({ isOpen, onClose, report }) => {
       case 11:
         return <EkartStatusCard report={report} status={status} />;
       default:
-        return null;
+        return <ReportCard report={report} status={status} />;
     }
   };
 
