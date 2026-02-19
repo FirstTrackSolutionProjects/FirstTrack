@@ -69,6 +69,7 @@ const Footer =()=>{
                     <div><Link to='/about' onClick={scrollToTop} className="my-2 text-sm">About Us</Link></div>
                     <div><Link to='/blog' onClick={scrollToTop} className="my-2 text-sm">Blog</Link></div>
                     <div><Link to='/privacy' onClick={scrollToTop} className="my-2 text-sm">Privacy & Policy</Link></div>
+                    <div><Link to='/ticket' onClick={scrollToTop} className="my-2 text-sm">Ticket Raise</Link></div>
                     <div><Link to='/terms' onClick={scrollToTop} className="my-2 text-sm">Terms of Use</Link></div>
                     <div><Link to='/refund-cancel' onClick={scrollToTop} className="my-2 text-sm">Refund & Cancellation</Link></div>
                     <div className="text-xl font-semibold my-4">Follow Us:</div>
