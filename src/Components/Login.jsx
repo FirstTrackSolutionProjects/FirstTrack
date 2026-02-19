@@ -12,6 +12,8 @@ const LoginForm = () => {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  // const [acceptTerms, setAcceptTerms] = useState(false);
+
   const navigate = useNavigate();
 
   const closeEmailModal = () => {
@@ -30,12 +32,19 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // if (!acceptTerms) {
+    // toast.error("Please accept Terms & Conditions");
+    // return;
+    // }
+
     try {
       const formData = {
         email,
         password
       }
       const loginResponse = await loginService(formData)
+
       if (loginResponse.success) {
         login(loginResponse.token)
         toast.success("Login Successfull")
@@ -107,11 +116,40 @@ const LoginForm = () => {
               </a>
             </div>
 
+            {/* Terms & Conditions Checkbox */}
+            {/* <div className="flex items-start">
+              <div className="flex items-center h-5">
+                <input
+                  id="terms"
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  required
+                />
+              </div>
+              <div className="ml-2 text-sm">
+                <label htmlFor="terms" className="text-gray-600">
+                  I agree to the{" "}
+                  <Link to="/terms" className="text-blue-600 hover:underline">
+                    Terms & Conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="text-blue-600 hover:underline">
+                    Privacy Policy
+                  </Link>
+                </label>
+              </div>
+            </div> */}
+
+
             {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-green-600 focus:outline-none "
+                // disabled={!acceptTerms}
+                className={"w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none bg-black hover:bg-green-600"}
+                
               >
                 Sign in
               </button>

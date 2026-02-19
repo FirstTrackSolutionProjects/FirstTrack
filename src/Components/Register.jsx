@@ -27,6 +27,9 @@ const RegisterForm = () => {
 
   const [errors, setErrors] = useState({});
 
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
+
   const closeEmailModal = () => {
     setEmailModalOpen(false);
   }
@@ -77,6 +80,12 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!acceptTerms) {
+    toast.error("Please accept Terms & Conditions");
+    return;
+  }
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length === 0) {
       try {
@@ -243,12 +252,41 @@ const RegisterForm = () => {
               </div>
             </div>
 
+            {/* Terms & Conditions */}
+            <div className="flex items-start">
+              <div className="flex items-center h-5">
+                <input
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  className="h-4 w-4 text-green-600 border-gray-300 rounded"
+                />
+              </div>
+              <div className="ml-2 text-sm">
+                <label className="text-gray-600">
+                  I agree to the{" "}
+                  <Link to="/terms" className="text-blue-600 hover:underline">
+                    Terms & Conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="text-blue-600 hover:underline">
+                    Privacy Policy
+                  </Link>
+                </label>
+              </div>
+            </div>
+
+
             {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                className="w-full py-2 px-4 bg-black text-white rounded-md shadow-md hover:bg-green-600"
-              >
+                disabled={!acceptTerms}
+               className={`w-full py-2 px-4 rounded-md shadow-md text-white
+                ${acceptTerms 
+                ? "bg-black hover:bg-green-600" 
+                : "bg-gray-400 cursor-not-allowed"}`}
+                >
                 Register
               </button>
             </div>
