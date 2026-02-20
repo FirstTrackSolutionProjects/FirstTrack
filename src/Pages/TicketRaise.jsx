@@ -139,7 +139,7 @@ export default function TicketRaise() {
   // Welcome Message
   useEffect(() => {
     const timer = setTimeout(() => {
-      addBot("👋 Welcome to Shipwale Support!");
+      addBot("👋 Welcome to FirstTrack Support!");
       setTimeout(() => {
         addBot("How can I help you?");
         setCurrentOptions([
@@ -197,7 +197,7 @@ export default function TicketRaise() {
 
   const handleSolved = (answer) => {
     if (answer === "Yes") {
-      addBot("🙏 Thank you for contacting Shipwale Support!");
+      addBot("🙏 Thank you for contacting FirstTrack Support!");
     } else {
       addBot("📝 Ticket created successfully. Our team will contact you.");
       setTimeout(() => navigate("/"), 2000);
@@ -221,7 +221,7 @@ export default function TicketRaise() {
 
         {/* Header */}
         <div className="bg-[#075e54] text-white px-4 py-3 flex justify-between items-center">
-          <p className="font-semibold">Shipwale Support</p>
+          <p className="font-semibold">First Track Support</p>
           <button onClick={() => navigate("/")} className="text-xl">✕</button>
         </div>
 
