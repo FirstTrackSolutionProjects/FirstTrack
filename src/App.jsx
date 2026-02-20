@@ -16,8 +16,9 @@ import Login from './Components/Login'
 import Register from './Components/Register'
 import Dashboard from './Components/Dashboard'
 import Verify from './Pages/Verify'
-import TicketRaise from './Pages/TicketRaise'
+// import TicketRaise from './Pages/TicketRaise'
 import { ToastContainer } from 'react-toastify'
+import FloatingAssistant from './Components/FloatingAssistant'
 
 const App = () => {
   return (
@@ -40,8 +41,9 @@ const App = () => {
         <Route path='/register' element={<Register/>}></Route>
         <Route path='/dashboard/*' element={<Dashboard/>}></Route>
         <Route path='/verify' element={<Verify/>}></Route>
-        <Route path='/ticket' element={<TicketRaise/>}></Route>
+        {/* <Route path='/ticket' element={<TicketRaise/>}></Route> */}
       </Routes>
+      <FloatingAssistant />
       <Footer/>
     </div>
   )

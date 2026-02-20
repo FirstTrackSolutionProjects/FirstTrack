@@ -27,6 +27,10 @@ import UpdateProfileRequestSubmissions from '../Components/UpdateProfileRequestS
 import WeightDisputes from '../Components/WeightDisputes';
 import PendingCancellations from '../Components/PendingCancellations/PendingCancellations';
 import PendingRefunds from '../Components/PendingRefunds/PendingRefunds';
+import Support from '../Pages/Support';
+import AdminSupport from '../Pages/AdminSupport';
+import AdminAnalytics from '../Pages/AdminAnalytics';
+import { MessageSquareText, TruckElectricIcon, BarChart3 } from 'lucide-react';
 
 export const Admincards = [
   {
@@ -583,6 +587,33 @@ export const menuItems = [
               dropDownOptions : [{}]
           },
       ]
+  },
+  {
+      icon : MessageSquareText,
+      name : "My Support Tickets",
+      isDropdown : false,
+      merchantOnly : true,
+      url : 'support',
+      component : Support,
+      dropDownOptions : [{}]
+  },
+  {
+      icon : TruckElectricIcon,
+      name : "Support Management",
+      isDropdown : false,
+      admin : true,
+      url : 'admin/support',
+      component : AdminSupport,
+      dropDownOptions : [{}]
+  },
+  {
+      icon : BarChart3,
+      name : "Support Analytics",
+      isDropdown : false,
+      admin : true,
+      url : 'admin/analytics',
+      component : AdminAnalytics,
+      dropDownOptions : [{}]
   },
   {
       icon : FaDoorOpen,
