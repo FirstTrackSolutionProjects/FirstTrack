@@ -77,37 +77,66 @@ export default function UserSupportPage() {
     }
 
     return (
-        <div className="p-4 md:p-8">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800">Your Support Tickets</h1>
-            <div className="space-y-4">
+        <div className="p-6 md:p-10 max-w-6xl mx-auto">
+            <div className="flex justify-between items-center mb-10">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Support Center</h1>
+                    <p className="text-gray-500 mt-1">Manage and track your assistance requests.</p>
+                </div>
+                <button 
+                    onClick={handleRaiseNewTicket}
+                    className="bg-[#075e54] text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                >
+                    + Raise New Ticket
+                </button>
+            </div>
+
+            {/* Metric Summary Bar */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <p className="text-sm text-gray-500 font-medium">Total Tickets</p>
+                    <p className="text-2xl font-bold text-gray-800">{tickets.length}</p>
+                </div>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <p className="text-sm text-gray-500 font-medium">Open Tickets</p>
+                    <p className="text-2xl font-bold text-blue-600">{tickets.filter(t => t.status === 'OPEN').length}</p>
+                </div>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <p className="text-sm text-gray-500 font-medium">Resolved</p>
+                    <p className="text-2xl font-bold text-green-600">{tickets.filter(t => t.status === 'RESOLVED').length}</p>
+                </div>
+            </div>
+
+            <div className="grid gap-4">
                 {tickets.map((ticket) => (
                     <div 
                         key={ticket.ticket_id} 
-                        className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer flex justify-between items-center"
+                        className="group bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-[#075e54]/30 transition-all cursor-pointer flex justify-between items-center"
                         onClick={() => handleViewTicket(ticket.ticket_id)}
                     >
-                        <div>
-                            <p className="text-sm font-medium text-gray-500">Ticket #{ticket.ticket_id}</p>
-                            <h2 className="text-lg font-semibold text-gray-700">{ticket.category}</h2>
-                            <p className="text-gray-500 truncate max-w-sm">{ticket.sub_category || ticket.description}</p>
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 bg-slate-50 rounded-xl flex items-center justify-center text-[#075e54] group-hover:bg-[#075e54] group-hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-gray-400 uppercase">#{ticket.ticket_id}</span>
+                                    <h2 className="text-lg font-semibold text-gray-800">{ticket.category}</h2>
+                                </div>
+                                <p className="text-gray-500 text-sm max-w-md truncate">{ticket.description}</p>
+                            </div>
                         </div>
-                        <div className="flex flex-col items-end">
-                            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusClasses(ticket.status)} mb-2`}>
+                        <div className="flex flex-col items-end gap-2">
+                            <span className={`px-4 py-1.5 text-[11px] font-bold rounded-full uppercase tracking-wider ${getStatusClasses(ticket.status)}`}>
                                 {ticket.status.replace('_', ' ')}
                             </span>
-                            <p className="text-xs text-gray-400">
-                                Opened: {new Date(ticket.created_at).toLocaleDateString()}
+                            <p className="text-[11px] text-gray-400 font-medium">
+                                Created {new Date(ticket.created_at).toLocaleDateString()}
                             </p>
                         </div>
                     </div>
                 ))}
             </div>
-            <button 
-                onClick={handleRaiseNewTicket} // <-- FIXED
-                className="mt-6 bg-[#075e54] text-white py-2 px-4 rounded hover:bg-green-700 transition"
-            >
-                Raise a New Ticket
-            </button>
         </div>
     );
 }
