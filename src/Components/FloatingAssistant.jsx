@@ -27,37 +27,40 @@ export default function FloatingAssistant() {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 z-1000"> 
+        <div className="fixed bottom-6 right-6 z-[1000] font-inter"> 
             {/* Chat Modal Window */}
             {isOpen && (
                 <div 
-                    className="bg-white shadow-2xl rounded-lg overflow-hidden 
-                                w-80 h-[450px] md:w-96 md:h-[600px] 
-                                mb-4 border border-gray-200 flex flex-col"
+                    className="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-3xl overflow-hidden 
+                                w-[320px] h-[500px] md:w-[400px] md:h-[600px] 
+                                mb-5 border border-gray-100 flex flex-col animate-in slide-in-from-bottom-5 duration-300"
                 >
-                    {/* Header */}
-                    <div className="bg-[#075e54] text-white px-4 py-3 flex justify-between items-center shrink-0">
-                        <p className="font-semibold text-sm">First Track Support</p>
-                        <button onClick={handleClose} className="text-xl hover:text-red-300 transition">
+                    {/* Header: Deep Charcoal */}
+                    <div className="bg-[#1f2937] text-white px-6 py-5 flex justify-between items-center shrink-0">
+                        <div>
+                            <p className="font-bold text-base tracking-tight">First Track Support</p>
+                            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Always on track</p>
+                        </div>
+                        <button onClick={handleClose} className="p-2 hover:bg-white/10 rounded-full transition">
                             <X size={20} />
                         </button>
                     </div>
 
                     {/* Chatbot Content */}
-                    <div className="grow">
+                    <div className="grow overflow-hidden bg-[#f8fafc]">
                         <TicketChatbot onClose={handleClose} />
                     </div>
                 </div>
             )}
 
-            {/* Floating Button */}
+            {/* Floating Button: Brand Green */}
             <button
                 onClick={toggleOpen}
-                className={`w-14 h-14 rounded-full shadow-lg text-white transition-all duration-300 flex items-center justify-center 
-                            ${isOpen ? 'bg-red-600 hover:bg-red-700' : 'bg-[#075e54] hover:bg-green-700'}`}
+                className={`w-16 h-16 rounded-2xl shadow-xl text-white transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95
+                            ${isOpen ? 'bg-red-500 rotate-90' : 'bg-[#22c55e]'}`}
                 aria-label={isOpen ? "Close Support Chat" : "Open Support Chat"}
             >
-                {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+                {isOpen ? <X size={28} /> : <MessageCircle size={28} fill="currentColor" className="text-white" />}
             </button>
         </div>
     );
