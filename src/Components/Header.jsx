@@ -82,7 +82,7 @@ const Header = () => {
               </>
           ):null}
           <div className='flex items-center'>
-            {name} <span className='bg-red-500 text-white text-xl p-3 cursor-pointer rounded-xl mx-3' onClick={logout}><FaDoorOpen /></span>
+            <Link to="/dashboard" className="hover:text-blue-800 cursor-pointer">{name}</Link> <span className='bg-red-500 text-white text-xl p-3 cursor-pointer rounded-xl mx-3' onClick={logout}><FaDoorOpen /></span>
           </div>
           </div>:null}
         {/* Menu button for small screens */}
@@ -107,7 +107,7 @@ const Header = () => {
         </div>
         <div className="flex items-center space-x-4">
           {isAuthenticated?<div className="flex items-center justify-between w-full bg-gray-200 mx-2 rounded-xl">
-  <span className='mx-2 font-bold text-lg'>{name}</span>
+  <Link to="/dashboard" onClick={toggleSidebar} className='mx-2 font-bold text-lg hover:text-blue-500'>{name}</Link>
   <span
     className="bg-red-500 text-white text-xl p-3 cursor-pointer rounded-xl"
     onClick={logout}
