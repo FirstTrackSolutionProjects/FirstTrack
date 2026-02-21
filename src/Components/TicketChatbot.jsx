@@ -1,4 +1,4 @@
-// ShipWale\src\components\TicketChatbot.jsx
+// FirstTrack\src\components\TicketChatbot.jsx
 
 import { useEffect, useRef, useState } from "react";
 // Removed useNavigate
