@@ -45,7 +45,6 @@ export default function AdminSupport() {
     }, [loadTickets]);
 
     const handleViewTicket = (ticketId) => {
-        // Navigates to the admin conversation page
         navigate(`/dashboard/admin/support/${ticketId}`);
     };
 
@@ -54,8 +53,7 @@ export default function AdminSupport() {
 
         try {
             await updateTicketStatus(ticketId, newStatus);
-            toast.success(`Ticket #${ticketId} status set to ${newStatus}.`);
-            // Optimistically update UI or refresh
+            toast.success(`Ticket #${ticketId} status updated to ${newStatus}.`);
             setTickets(prev => prev.map(t => 
                 t.ticket_id === ticketId ? { ...t, status: newStatus } : t
             ));
@@ -65,73 +63,74 @@ export default function AdminSupport() {
     };
 
     if (loading) {
-        return <div className="p-8 text-center">Loading all support tickets for admin...</div>;
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22c55e]"></div>
+            </div>
+        );
     }
 
     return (
-        <div className="p-4 md:p-6 bg-white shadow-lg rounded-lg">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800">Admin Support Dashboard</h1>
-            <p className="text-sm text-gray-600 mb-4">Total Tickets: {tickets.length}</p>
+        <div className="p-6 md:p-10 max-w-7xl mx-auto font-inter">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                <div>
+                    <h1 className="text-3xl font-black text-[#1f2937] tracking-tight uppercase">Support Management</h1>
+                    <p className="text-gray-400 text-sm mt-1">Review and manage support requests from all merchants.</p>
+                </div>
+                <div className="bg-white px-6 py-3 rounded-2xl shadow-sm border border-gray-100">
+                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest block">System Total</span>
+                    <span className="text-2xl font-black text-[#1f2937]">{tickets.length} <span className="text-sm font-medium text-gray-400">Tickets</span></span>
+                </div>
+            </div>
 
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {tickets.map((ticket) => (
-                            <tr 
-                                key={ticket.ticket_id}
-                                className="cursor-pointer hover:bg-gray-50 transition" 
-                                onClick={() => handleViewTicket(ticket.ticket_id)} // <--- CLICK HANDLER ADDED
+            <div className="grid gap-4">
+                {tickets.map((ticket) => (
+                    <div 
+                        key={ticket.ticket_id} 
+                        className="group bg-white p-5 rounded-3xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#22c55e]/30 transition-all cursor-pointer flex flex-col md:flex-row md:items-center gap-6"
+                        onClick={() => handleViewTicket(ticket.ticket_id)}
+                    >
+                        {/* Status Icon */}
+                        <div className={`h-14 w-14 shrink-0 rounded-2xl flex items-center justify-center transition-all ${
+                            ticket.status === 'OPEN' ? 'bg-yellow-50 text-yellow-600' :
+                            ticket.status === 'IN_PROGRESS' ? 'bg-blue-50 text-blue-500' :
+                            ticket.status === 'RESOLVED' ? 'bg-green-50 text-green-500' : 'bg-gray-100 text-gray-400'
+                        }`}>
+                            <span className="font-black text-sm">#{ticket.ticket_id}</span>
+                        </div>
+
+                        {/* Main Content */}
+                        <div className="flex-grow min-w-0">
+                            <div className="flex items-center gap-3 mb-1">
+                                <h2 className="text-lg font-bold text-[#1f2937] truncate">{ticket.category}</h2>
+                                <span className={`px-3 py-1 text-[10px] font-black rounded-full uppercase tracking-tighter ${getStatusClasses(ticket.status)}`}>
+                                    {ticket.status.replace('_', ' ')}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                                <span className="font-bold text-[#1f2937] bg-gray-100 px-2 py-0.5 rounded-md">{ticket.fullName}</span>
+                                <span>•</span>
+                                <p className="truncate italic">"{ticket.description}"</p>
+                            </div>
+                        </div>
+
+                        {/* Controls & Date */}
+                        <div className="flex flex-row md:flex-col items-center md:items-end justify-between gap-4 shrink-0" onClick={e => e.stopPropagation()}>
+                            <p className="text-[11px] text-gray-300 font-bold uppercase tracking-widest">
+                                {new Date(ticket.created_at.endsWith('Z') ? ticket.created_at : ticket.created_at + 'Z').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            </p>
+                            <select
+                                className="bg-gray-50 border-none text-[11px] font-black uppercase tracking-widest px-4 py-2 rounded-xl focus:ring-2 focus:ring-[#22c55e] transition-all cursor-pointer outline-none"
+                                value={ticket.status}
+                                onChange={(e) => handleStatusChange(ticket.ticket_id, e.target.value)}
                             >
-                                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    #{ticket.ticket_id}
-                                </td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {ticket.fullName} (UID: {ticket.uid})
-                                </td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {ticket.category}
-                                </td>
-                                {/* Note: We stop propagation on the select box */}
-                                <td className="px-4 py-4 max-w-xs truncate text-sm text-gray-500" title={ticket.description}>
-                                    {ticket.description}
-                                </td>
-                                <td className="px-4 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClasses(ticket.status)}`}>
-                                        {ticket.status.replace('_', ' ')}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium" onClick={(e) => e.stopPropagation()}> 
-                                    <select
-                                        className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        value={ticket.status}
-                                        // Stop propagation so clicking the dropdown doesn't trigger the row navigation
-                                        onChange={(e) => { 
-                                            e.stopPropagation();
-                                            handleStatusChange(ticket.ticket_id, e.target.value);
-                                        }}
-                                    >
-                                        <option value="DEFAULT" disabled>Change Status</option>
-                                        {STATUS_OPTIONS.map(status => (
-                                            <option key={status} value={status}>
-                                                {status.replace('_', ' ')}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                {STATUS_OPTIONS.map(status => (
+                                    <option key={status} value={status}>{status.replace('_', ' ')}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

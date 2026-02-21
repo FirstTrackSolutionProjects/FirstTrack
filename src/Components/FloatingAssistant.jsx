@@ -27,7 +27,7 @@ export default function FloatingAssistant() {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 z-[1000] font-inter"> 
+        <div className="fixed bottom-6 right-6 z-[1000] font-inter flex flex-col items-end"> 
             {/* Chat Modal Window */}
             {isOpen && (
                 <div 
@@ -56,11 +56,10 @@ export default function FloatingAssistant() {
             {/* Floating Button: Brand Green */}
             <button
                 onClick={toggleOpen}
-                className={`w-16 h-16 rounded-2xl shadow-xl text-white transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95
-                            ${isOpen ? 'bg-red-500 rotate-90' : 'bg-[#22c55e]'}`}
+                className="w-16 h-16 rounded-2xl shadow-xl text-white transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95 bg-[#22c55e]"
                 aria-label={isOpen ? "Close Support Chat" : "Open Support Chat"}
             >
-                {isOpen ? <X size={28} /> : <MessageCircle size={28} fill="currentColor" className="text-white" />}
+                <MessageCircle size={28} fill="currentColor" className="text-white" />
             </button>
         </div>
     );

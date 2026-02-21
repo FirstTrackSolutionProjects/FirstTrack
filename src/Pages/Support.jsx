@@ -129,7 +129,7 @@ export default function UserSupportPage() {
                                 {ticket.status.replace('_', ' ')}
                             </span>
                             <p className="text-[11px] text-gray-400 font-medium">
-                                {new Date(ticket.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                                {new Date(ticket.created_at.endsWith('Z') ? ticket.created_at : ticket.created_at + 'Z').toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
                             </p>
                         </div>
                     </div>

@@ -144,10 +144,10 @@ export default function TicketChatbot({ onClose }) {
   const addUser = (text) =>
     setMessages((prev) => [...prev, { from: "user", text }]);
 
-  // Scroll to bottom whenever messages update
+  // Scroll to bottom whenever content updates, using block: "nearest" to prevent page-level scrolling
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [messages, currentOptions, showInput, isLoading]);
 
 
   useEffect(() => {
@@ -264,27 +264,27 @@ export default function TicketChatbot({ onClose }) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-slate-50 overflow-hidden font-inter">
+    <div className="w-full h-full flex flex-col bg-[#f8fafc] overflow-hidden font-inter">
       {/* CHAT BODY */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+      <div className="flex-1 overflow-y-auto px-6 py-8 space-y-5">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`px-4 py-3 rounded-2xl text-sm shadow-sm max-w-[85%] leading-relaxed
+            <div className={`px-5 py-3.5 rounded-[24px] text-[13px] shadow-sm max-w-[90%] leading-[1.6] transition-all
               ${msg.from === "user" 
-                ? "bg-[#075e54] text-white rounded-tr-none" 
-                : "bg-white text-gray-700 border border-gray-100 rounded-tl-none"}`}>
+                ? "bg-[#22c55e] text-white rounded-tr-none font-medium" 
+                : "bg-white text-gray-700 border border-gray-100 rounded-tl-none shadow-[0_4px_12px_rgba(0,0,0,0.03)]"}`}>
               {msg.text}
             </div>
           </div>
         ))}
 
         {currentOptions.length > 0 && !isLoading && (
-          <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex flex-wrap gap-2.5 pt-2 animate-in fade-in slide-in-from-bottom-2 duration-400">
             {currentOptions.map((opt) => (
               <button
                 key={opt}
                 onClick={() => handleOption(opt)}
-                className="bg-white border border-[#075e54] text-[#075e54] px-4 py-2 rounded-full text-xs font-medium hover:bg-[#075e54] hover:text-white transition-all duration-200 shadow-sm"
+                className="bg-white border-2 border-gray-50 text-[#1f2937] px-4 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#22c55e] hover:text-white hover:border-[#22c55e] transition-all duration-300 shadow-sm"
                 disabled={isLoading}
               >
                 {opt}
@@ -294,21 +294,27 @@ export default function TicketChatbot({ onClose }) {
         )}
 
         {showInput && !isLoading && (
-          <div className="flex items-end gap-2 mt-4 bg-white p-2 rounded-xl border border-gray-200 shadow-inner">
+          <div className="flex items-end gap-3 mt-6 bg-white p-3 rounded-[24px] border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Describe your issue..."
-              className="flex-1 px-3 py-2 text-sm bg-transparent outline-none resize-none"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  submitDetails();
+                }
+              }}
+              placeholder="Type issue details..."
+              className="flex-1 px-3 py-2 text-[13px] bg-transparent outline-none resize-none font-medium placeholder:text-gray-300"
               rows="2"
               disabled={isLoading}
             />
             <button
               onClick={submitDetails}
-              className="bg-[#075e54] text-white p-2 rounded-lg hover:opacity-90 transition-opacity"
+              className="bg-[#1f2937] text-white p-3.5 rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-lg"
               disabled={isLoading}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
           </div>
         )}

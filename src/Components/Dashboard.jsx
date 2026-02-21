@@ -9,11 +9,11 @@ import AdminTicketDetail from '../Pages/AdminTicketDetail';
 import TicketDetail from '../Pages/TicketDetail';
 
 const Dashboard = () => {
-  const { role, isAuthenticated, verified } = useAuth();
+  const { admin, isAuthenticated, verified } = useAuth();
   const navigate = useNavigate();
 
   // Handle Admin check (Adjust based on your actual AuthContext variable name)
-  const isAdmin = role === 'ADMIN'; 
+  const isAdmin = !!admin; 
 
   if (!isAuthenticated) {
     navigate('/login');

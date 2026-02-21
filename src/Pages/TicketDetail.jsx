@@ -51,8 +51,8 @@ export default function TicketDetail() {
     }, [loadData]);
 
     useEffect(() => {
-        // Scroll to bottom when messages update
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        // Scroll to bottom when messages update, using block: "nearest" to prevent page-level scrolling
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }, [messages]);
 
 
@@ -121,7 +121,7 @@ export default function TicketDetail() {
                                                     {msg.sent_by_admin ? (msg.fullName || 'Support Agent') : 'You'}
                                                 </span>
                                                 <span className={`text-[10px] ${msg.sent_by_admin ? 'text-gray-300' : 'text-white/60'}`}>
-                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    {new Date(msg.created_at.endsWith('Z') ? msg.created_at : msg.created_at + 'Z').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
                                             <p className="whitespace-pre-wrap">{msg.message_text}</p>
@@ -137,6 +137,12 @@ export default function TicketDetail() {
                                 <textarea
                                     value={replyText}
                                     onChange={(e) => setReplyText(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleReplySubmit(e);
+                                        }
+                                    }}
                                     placeholder="Type your message..."
                                     className="w-full p-5 pr-20 bg-gray-50 border-none rounded-[24px] focus:ring-2 focus:ring-[#22c55e] transition-all resize-none text-sm placeholder:text-gray-400"
                                     rows="3"
