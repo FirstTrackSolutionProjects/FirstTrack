@@ -32,7 +32,7 @@ export default function FloatingAssistant() {
             {isOpen && (
                 <div 
                     className="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-3xl overflow-hidden 
-                                w-[320px] h-[500px] md:w-[400px] md:h-[600px] 
+                                w-[90vw] h-[90vh] max-w-[400px] max-h-[600px] 
                                 mb-5 border border-gray-100 flex flex-col animate-in slide-in-from-bottom-5 duration-300"
                 >
                     {/* Header: Deep Charcoal */}
