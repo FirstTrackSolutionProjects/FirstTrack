@@ -52,7 +52,7 @@ const Header = () => {
         {/* Logo and Company Name */}
         <Link to='/'><div className="flex items-center">
           <img src="/images/logo.svg" alt="Logo" className="w-16 h-16 md:w-20 md:h-20" />
-          <span className="text-base sm:text-lg md:text-xl font-bold ml-2 text-[#212121]">FIRST <span className="text-[#4ADE80]">TRACK LOGISTICS</span></span>
+          <span className="text-base sm:text-lg md:text-xl font-bold ml-2 text-[#212121]">FIRST <span className="text-[#4ADE80]">TRACK</span></span>
         </div></Link>
 
         {/* Menu for md and above */}
