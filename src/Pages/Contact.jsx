@@ -1,82 +1,84 @@
 import React from 'react';
-import { FaFacebookSquare,FaInstagramSquare,FaYoutubeSquare , FaLinkedin, FaTwitterSquare} from 'react-icons/fa';
+import { FaFacebookSquare, FaInstagramSquare, FaYoutubeSquare, FaLinkedin, FaTwitterSquare } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt, faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { FaWhatsapp } from "react-icons/fa6";
-import {faTwitterSquare, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-
-
+import { FaWhatsapp } from "react-icons/fa6"; // Using FaWhatsapp from react-icons/fa6 consistently
 
 const ContactUs = () => {
   return (
-    <div className="font-inter text-gray-800 p-3 md:p-0">
+    <div className="font-inter text-gray-800 p-3 md:p-0 min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="relative w-full h-[200px] md:h-[400px] p-2">
-      {/* Background Image */}
-      <img
-        src="images/contact.jpg" // Replace with your image URL
-        alt="About Us Background"
-        className="w-full h-full object-cover"
-      />
+      <div className="relative w-full h-[200px] md:h-[400px] overflow-hidden">
+        {/* Background Image */}
+        <img
+          src="images/contact.jpg" // Replace with your image URL
+          alt="Contact Us Background"
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+        />
 
-      {/* Full-width background with centered text */}
-      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <h1 className="text-white text-3xl md:text-6xl font-bold">
-          Contact Us
-        </h1>
+        {/* Full-width background with centered text and subtle gradient */}
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-blue-600/40 to-black/50">
+          <h1 className="text-white text-4xl md:text-7xl font-extrabold text-center drop-shadow-lg leading-tight">
+            Contact Us
+          </h1>
+        </div>
       </div>
-    </div>
 
       {/* Contact Form & Info Section */}
-      <section className="py-12">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section className="py-16 md:py-20 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <div className="p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-3xl font-semibold mb-6">Get In Touch!!</h2>
-            <form className="space-y-4">
+          <div className="p-8 bg-white rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl">
+            <h2 className="text-4xl font-bold text-gray-900 mb-8">Get In Touch!</h2>
+            <form className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-1">Name</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  id="name"
+                  className="mt-1 block w-full p-3 border border-gray-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 focus:ring-2 transition-all duration-200 outline-none"
                   placeholder="Your Name"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-1">Email</label>
                 <input
                   type="email"
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  id="email"
+                  className="mt-1 block w-full p-3 border border-gray-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 focus:ring-2 transition-all duration-200 outline-none"
                   placeholder="you@example.com"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <label htmlFor="phone" className="block text-sm font-semibold text-gray-800 mb-1">Phone</label>
                 <input
                   type="tel"
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  id="phone"
+                  className="mt-1 block w-full p-3 border border-gray-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 focus:ring-2 transition-all duration-200 outline-none"
                   placeholder="Your Phone Number"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Subject</label>
+                <label htmlFor="subject" className="block text-sm font-semibold text-gray-800 mb-1">Subject</label>
                 <input
                   type="text"
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Subject"
+                  id="subject"
+                  className="mt-1 block w-full p-3 border border-gray-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 focus:ring-2 transition-all duration-200 outline-none"
+                  placeholder="Subject of your message"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Message</label>
+                <label htmlFor="message" className="block text-sm font-semibold text-gray-800 mb-1">Message</label>
                 <textarea
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  rows="5"
+                  id="message"
+                  className="mt-1 block w-full p-3 border border-gray-200 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 focus:ring-2 transition-all duration-200 outline-none"
+                  rows="6"
                   placeholder="Your Message"
                 ></textarea>
               </div>
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
               >
                 Send Message
               </button>
@@ -84,45 +86,47 @@ const ContactUs = () => {
           </div>
 
           {/* Contact Info */}
-          <div className="p-6 bg-blue-50 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
-            <p className="text-gray-600 mb-4">Feel free to reach out to us!</p>
-            <ul className="space-y-4">
-              <li>
-              <FontAwesomeIcon icon={faMapMarkerAlt} className="text-blue-500 mr-3" />
-                <span> BMC Bhawani Mall, Saheed Nagar Bhubaneswar, Odisha-751007.</span>
+          <div className="p-8 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl">
+            <h2 className="text-4xl font-bold text-gray-900 mb-8">Contact Information</h2>
+            <p className="text-gray-700 text-lg mb-6 leading-relaxed">
+              We'd love to hear from you! Whether you have a question, need support, or just want to connect, feel free to reach out.
+            </p>
+            <ul className="space-y-5 text-gray-700 text-lg">
+              <li className="flex items-start">
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="text-blue-600 text-2xl mr-4 mt-1 flex-shrink-0" />
+                <span>BMC Bhawani Mall, Saheed Nagar Bhubaneswar, Odisha-751007.</span>
               </li>
-              <li>
-              <FontAwesomeIcon icon={faPhone} className="text-blue-500 mr-3" />
-                <span> +91-8240742313</span>
+              <li className="flex items-center">
+                <FontAwesomeIcon icon={faPhone} className="text-blue-600 text-2xl mr-4 flex-shrink-0" />
+                <span>+91-8240742313</span>
               </li>
-              <li>
-              <FontAwesomeIcon icon={faWhatsapp} className="text-blue-500 text-xl mr-3" />
-                <span> +91-9040170727</span>
+              <li className="flex items-center">
+                {/* Using FaWhatsapp from react-icons/fa6 for consistency */}
+                <FaWhatsapp className="text-green-600 text-3xl mr-4 flex-shrink-0" />
+                <span>+91-9040170727</span>
               </li>
-              <li>
-              <FontAwesomeIcon icon={faEnvelope} className="text-blue-500 mr-3" />
-                <span> info@firsttrack.site</span>
+              <li className="flex items-center">
+                <FontAwesomeIcon icon={faEnvelope} className="text-blue-600 text-2xl mr-4 flex-shrink-0" />
+                <span>info@firsttrack.site</span>
               </li>
             </ul>
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold">Follow Us On:</h3>
-              <div className="flex space-x-4 mt-4">
-              
-                <a href="#" className="text-blue-500">
-                  <FaFacebookSquare className='w-7 h-7'/>
+            <div className="mt-10">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-5">Follow Us On:</h3>
+              <div className="flex space-x-5 mt-4">
+                <a href="#" className="text-blue-700 hover:text-blue-800 transform hover:scale-125 transition-transform duration-300 ease-in-out" aria-label="Facebook">
+                  <FaFacebookSquare className='w-9 h-9'/>
                 </a>
-                <a href="#" className="text-pink-600">
-                  <FaInstagramSquare className='w-7 h-7'/>
+                <a href="#" className="text-pink-600 hover:text-pink-700 transform hover:scale-125 transition-transform duration-300 ease-in-out" aria-label="Instagram">
+                  <FaInstagramSquare className='w-9 h-9'/>
                 </a>
-                <a href="#" className="text-blue-500">
-                  <FaTwitterSquare className='w-7 h-7'/>
+                <a href="#" className="text-blue-500 hover:text-blue-600 transform hover:scale-125 transition-transform duration-300 ease-in-out" aria-label="Twitter">
+                  <FaTwitterSquare className='w-9 h-9'/>
                 </a>
-                <a href="#" className="text-red-500">
-                  <FaYoutubeSquare className='w-7 h-7'/>
+                <a href="#" className="text-red-600 hover:text-red-700 transform hover:scale-125 transition-transform duration-300 ease-in-out" aria-label="YouTube">
+                  <FaYoutubeSquare className='w-9 h-9'/>
                 </a>
-                <a href="#" className="text-blue-700">
-                  <FaLinkedin className='w-7 h-7'/>
+                <a href="#" className="text-blue-800 hover:text-blue-900 transform hover:scale-125 transition-transform duration-300 ease-in-out" aria-label="LinkedIn">
+                  <FaLinkedin className='w-9 h-9'/>
                 </a>
               </div>
             </div>
@@ -131,30 +135,31 @@ const ContactUs = () => {
       </section>
 
       {/* Map Section */}
-      <section className="py-12">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-semibold text-center mb-8">Our Location</h2>
-          <iframe
-            src="https://maps.google.com/maps?q=First%20Track&t=&z=13&ie=UTF8&iwloc=&output=embed"
-            className="w-full h-96 border-0 rounded-lg"
-            allowFullScreen=""
-            loading="lazy"
-          ></iframe>
+      <section className="py-16 md:py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-center text-gray-900 mb-10">Our Location</h2>
+          <div className="w-full h-[400px] md:h-[500px] rounded-xl overflow-hidden shadow-xl border-4 border-white transition-all duration-300 hover:shadow-2xl">
+            <iframe
+              src="https://maps.google.com/maps?q=First%20Track&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              className="w-full h-full border-0"
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
       </section>
 
-      {/* Floating WhatsApp Button (Only for Contact Page) */}
-            <a
-              href="https://wa.me/919040170727?text=Hello%20I%20am%20interested%20in%20your%20services"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg z-50 transition-transform duration-300 hover:scale-110"
-            >
-              <FaWhatsapp className="w-6 h-6" />
-            </a>
-
-
-      
+      {/* Floating WhatsApp Button */}
+      <a
+        href="https://wa.me/919040170727?text=Hello%20I%20am%20interested%20in%20your%20services"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white p-5 rounded-full shadow-lg z-50 transition-transform duration-300 hover:scale-110 flex items-center justify-center group"
+        aria-label="Chat on WhatsApp"
+      >
+        <FaWhatsapp className="w-8 h-8 group-hover:rotate-6 transition-transform duration-300" />
+      </a>
     </div>
   );
 };

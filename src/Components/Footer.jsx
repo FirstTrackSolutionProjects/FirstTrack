@@ -13,98 +13,100 @@ const Footer =()=>{
     return(
         <div className="font-inter">
         {/* Call to Action */}
-      <section className="py-5 md:py-12 bg-blue-900 text-white text-center">
-        <h3 className="text-2xl font-semibold">Let’s Connect!</h3>
-        <div className="my-4">We are always ready to assist you with your logistics needs. Contact us today!</div>
+      <section className="py-10 md:py-16 bg-gradient-to-r from-blue-800 to-blue-600 text-white text-center">
+        <h3 className="text-3xl font-bold mb-4">Let’s Connect!</h3>
+        <p className="text-lg mb-8 max-w-2xl mx-auto px-4">We are always ready to assist you with your logistics needs. Contact us today!</p>
         <a
       href={whatsappUrl}
       target="_blank"
-      rel="noopener noreferrer" ><div className=" mx-auto w-fit px-5 py-2 bg-white text-blue-500 rounded-full hover:bg-gray-100">
+      rel="noopener noreferrer"
+      className="inline-block mx-auto w-fit px-8 py-3 bg-white text-blue-700 font-semibold rounded-full hover:bg-gray-100 hover:shadow-lg transition-all duration-300 ease-in-out">
           Get in Touch
-        </div></a>
+        </a>
       </section>
             
         
-        <div className="text-black bg-gradient-to-r from-gray-50 to-gray-300 w-full mt-2 h-fit">
-            <div className="grid md:grid-cols-4  font-inter ">
-                <div className="w-full h-full items-center justify-center p-7 my-auto">
-                    <Link to="/"><img onClick={scrollToTop} src="images/logo.svg" className="w-24 h-24 object-cover rounded-full"></img></Link>
-                    <div className="text-balance font-inter text-sm my-5">
+        <div className="text-black bg-gray-100 w-full mt-2 h-fit">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 py-12 font-inter">
+                <div className="w-full p-4">
+                    <Link to="/"><img onClick={scrollToTop} src="images/logo.svg" alt="First Track Logo" className="w-24 h-24 object-cover rounded-full mb-6"></img></Link>
+                    <p className="text-gray-700 text-sm mb-6 leading-relaxed">
                     First Track delivers fast, reliable, and seamless logistics solutions, ensuring timely and secure shipments worldwide.
-                    </div>
-                    <Link to="/about" ><div onClick={scrollToTop} className="bg-gray-600 text-white font-bold w-28 p-3 text-center rounded-full">About Us</div></Link>
+                    </p>
+                    <Link to="/about" ><button onClick={scrollToTop} className="bg-blue-700 text-white font-medium w-fit px-5 py-2 text-center rounded-full hover:bg-blue-800 transition-colors duration-300">About Us</button></Link>
                 </div>
-                <div className="w-full h-full items-center justify-center my-auto p-7">
-                <div className="text-xl font-semibold mb-4">Contact Us</div>
-                    <div className="flex items-center mb-4 text-balance">
-                        <FaMapMarkerAlt className="h-5 w-4 mr-3" />
-                        <span className=" text-sm">BMC Bhawani Mall, Saheed Nagar Bhubaneswar, Odisha-751007.</span>
+                <div className="w-full p-4">
+                <div className="text-xl font-semibold mb-6">Contact Us</div>
+                    <div className="flex items-start mb-4">
+                        <FaMapMarkerAlt className="h-5 w-4 mr-3 text-blue-600 flex-shrink-0 mt-1" />
+                        <span className="text-gray-700 text-sm">BMC Bhawani Mall, Saheed Nagar Bhubaneswar, Odisha-751007.</span>
                     </div>
                     
                     <div className="flex items-center mb-4">
-                        <FaPhoneAlt className="h-5 w-4 mr-3" />
-                        <span className="text-sm">+91-8240742313</span>
+                        <FaPhoneAlt className="h-5 w-4 mr-3 text-blue-600 flex-shrink-0" />
+                        <span className="text-gray-700 text-sm">+91-8240742313</span>
                     </div>
 
                     <div className="flex items-center mb-4">
-                        <FaWhatsapp className="h-5 w-4 mr-3" />
-                        <span className="text-sm">+91-9040170727</span>
+                        <FaWhatsapp className="h-5 w-4 mr-3 text-blue-600 flex-shrink-0" />
+                        <span className="text-gray-700 text-sm">+91-9040170727</span>
                     </div>
                     
                     <div className="flex items-center">
-                        <FaEnvelope className="h-5 w-4 mr-3" />
-                        <span className="text-justify text-sm">Email: info@firsttrack.site</span>
+                        <FaEnvelope className="h-5 w-4 mr-3 text-blue-600 flex-shrink-0" />
+                        <span className="text-gray-700 text-sm">info@firsttrack.site</span>
                     </div>
                 </div>
 
-                <div className="w-full h-full items-center justify-center my-auto p-7">
-                    <div className="text-xl font-semibold mb-4">Our Services</div>
-                    <Link to="/services" onClick={scrollToTop}><div className="my-2 text-sm">Pick & Drop</div></Link>
-                    <Link to="/services" onClick={scrollToTop}><div className="my-2 text-sm">Packaging</div></Link>
-                    <Link to="/services" onClick={scrollToTop}><div className="my-2 text-sm">International & Domestic Services</div></Link>
+                <div className="w-full p-4">
+                    <div className="text-xl font-semibold mb-6">Our Services</div>
+                    <Link to="/services" onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">Pick & Drop</Link>
+                    <Link to="/services" onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">Packaging</Link>
+                    <Link to="/services" onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">International & Domestic Services</Link>
                 </div>
-                <div className="w-full h-full items-center justify-center my-auto p-7">
-                    <div className="text-xl font-semibold mb-4">Quick Links</div>
-                    <div><Link to='/faq' onClick={scrollToTop} className="my-2 text-sm">FAQ</Link></div>
-                    <div><Link to='/about' onClick={scrollToTop} className="my-2 text-sm">About Us</Link></div>
-                    <div><Link to='/blog' onClick={scrollToTop} className="my-2 text-sm">Blog</Link></div>
-                    <div><Link to='/privacy' onClick={scrollToTop} className="my-2 text-sm">Privacy & Policy</Link></div>
-                    <div><Link to='/terms' onClick={scrollToTop} className="my-2 text-sm">Terms of Use</Link></div>
-                    <div><Link to='/refund-cancel' onClick={scrollToTop} className="my-2 text-sm">Refund & Cancellation</Link></div>
-                    <div className="text-xl font-semibold my-4">Follow Us:</div>
-                    <div className="flex justify-evenly">
+                <div className="w-full p-4">
+                    <div className="text-xl font-semibold mb-6">Quick Links</div>
+                    <Link to='/faq' onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">FAQ</Link>
+                    <Link to='/about' onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">About Us</Link>
+                    <Link to='/blog' onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">Blog</Link>
+                    <Link to='/privacy' onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">Privacy & Policy</Link>
+                    <Link to='/terms' onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">Terms of Use</Link>
+                    <Link to='/refund-cancel' onClick={scrollToTop} className="block my-2 text-sm text-gray-700 hover:text-blue-600 transition-colors duration-200">Refund & Cancellation</Link>
+                    <div className="text-xl font-semibold my-6">Follow Us:</div>
+                    <div className="flex space-x-6 text-gray-600">
                         
-                    <a href="https://www.facebook.com/share/J8N1Q5i9hVkNpB6w/?mibextid=qi2Omg" target="_blank" rel="noopener noreferrer" >
+                    <a href="https://www.facebook.com/share/J8N1Q5i9hVkNpB6w/?mibextid=qi2Omg" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transform hover:scale-110 transition-all duration-300">
                     <FaFacebook className="h-6 w-6"/></a>
                     
-                    <a href="https://x.com/Firsttrack123" target="_blank" rel="noopener noreferrer" >
+                    <a href="https://x.com/Firsttrack123" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transform hover:scale-110 transition-all duration-300">
                     <FaTwitter className="h-6 w-6"/></a>
 
-                    <a href="https://www.instagram.com/p/C1RPln-Jzds/?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw%3D%3D" target="_blank" rel="noopener noreferrer" >
+                    <a href="https://www.instagram.com/p/C1RPln-Jzds/?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw%3D%3D" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transform hover:scale-110 transition-all duration-300">
                     <FaInstagram className="h-6 w-6"/></a>
 
-                    <a href="https://www.linkedin.com/in/first-track-solution-technologies-9a53482a6/" target="_blank" rel="noopener noreferrer" >
+                    <a href="https://www.linkedin.com/in/first-track-solution-technologies-9a53482a6/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transform hover:scale-110 transition-all duration-300">
                     <FaLinkedin className="h-6 w-6"/></a>
 
-                    <a href="https://www.youtube.com/@FirstTrackSolutionTechnologies?si=dhN3TWFsW1m4QsZm" target="_blank" rel="noopener noreferrer" >
+                    <a href="https://www.youtube.com/@FirstTrackSolutionTechnologies?si=dhN3TWFsW1m4QsZm" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 transform hover:scale-110 transition-all duration-300">
                     <FaYoutube className="h-6 w-6"/></a>
-
-                    
-                    
-                    
-                    
                     </div>
                 </div>
             </div>
-            <div className="bg-black justify-between text-white text-sm flex-1 md:flex p-8">
-                <div><span className="text-gray-400">Copyright &copy; 2024 </span><span className="font-bold"> First Track Solution Technologies. All rights reserved</span></div>
+            <div className="bg-gray-900 justify-between text-gray-300 text-sm flex-col md:flex-row flex items-center p-8">
+                <div className="mb-4 md:mb-0 text-center md:text-left">
+                    <span className="text-gray-400">Copyright &copy; 2024 </span><span className="font-bold text-white"> First Track Solution Technologies. All rights reserved</span>
+                </div>
 
-                <div className=" mt-5 md:mt-0 md:flex mr-10">
-                <Link to='/' onClick={scrollToTop} className="">Home&nbsp; |&nbsp;</Link>
-                <Link to='/contact' onClick={scrollToTop} className="md:mx-1">Contact Us&nbsp;  |&nbsp;</Link>
-                <Link to='/about' onClick={scrollToTop} className="md:mx-1">About Us&nbsp;  |&nbsp;</Link>
-                <Link to='/privacy' onClick={scrollToTop} className="md:mx-1">Privacy Policy&nbsp;  |&nbsp;</Link>
-                <Link to='/terms' onClick={scrollToTop} className="md:mx-1">Terms Of Use</Link>
+                <div className="flex flex-wrap justify-center md:justify-end gap-x-4 gap-y-2">
+                <Link to='/' onClick={scrollToTop} className="hover:text-white transition-colors duration-200">Home</Link>
+                <span className="hidden md:inline">|</span>
+                <Link to='/contact' onClick={scrollToTop} className="hover:text-white transition-colors duration-200">Contact Us</Link>
+                <span className="hidden md:inline">|</span>
+                <Link to='/about' onClick={scrollToTop} className="hover:text-white transition-colors duration-200">About Us</Link>
+                <span className="hidden md:inline">|</span>
+                <Link to='/privacy' onClick={scrollToTop} className="hover:text-white transition-colors duration-200">Privacy Policy</Link>
+                <span className="hidden md:inline">|</span>
+                <Link to='/terms' onClick={scrollToTop} className="hover:text-white transition-colors duration-200">Terms Of Use</Link>
                 </div>
                 
             </div>
