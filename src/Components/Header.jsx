@@ -1,52 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai'; // Menu icon
 import { IoMdClose } from 'react-icons/io'; // Close icon
-import { Link, useLocation, NavLink } from 'react-router-dom'; // Added NavLink
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaDoorOpen } from 'react-icons/fa';
-import WalletRechargeModal from './WalletRechargeModal';
-import { FaWallet } from 'react-icons/fa'; // Added Wallet icon
+import WalletRechargeModal from './WalletRechargeModal' 
 
-const API_URL = import.meta.env.VITE_APP_API_URL;
+const API_URL = import.meta.env.VITE_APP_API_URL
 
 const Header = () => {
   const location = useLocation();
-  const { isAuthenticated, name, logout, verified } = useAuth();
+  const {isAuthenticated, name, logout, verified} = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showRecharge, setShowRecharge] = useState(false);
-
   const closeRechargeModal = () => {
-    setShowRecharge(false);
-  };
-
+    setShowRecharge(false)
+  }
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const [balance, setBalance] = useState(0.00);
-
-  // Helper function to format balance for display (e.g., 1.5K, 12.3L, 1.2Cr)
-  const formatBalance = (num) => {
-    if (typeof num !== 'number' || isNaN(num)) {
-      return '0.00';
-    }
-    const absNum = Math.abs(num);
-
-    if (absNum < 1000) {
-      return num.toFixed(2);
-    }
-    if (absNum >= 10000000) { // Crores (1 Crore = 10,000,000)
-      return (num / 10000000).toFixed(1) + 'Cr';
-    }
-    if (absNum >= 100000) { // Lakhs (1 Lakh = 100,000)
-      return (num / 100000).toFixed(1) + 'L';
-    }
-    if (absNum >= 1000) { // Thousands
-      return (num / 1000).toFixed(1) + 'K';
-    }
-    return num.toFixed(2); // Fallback for very small numbers, though already covered
-  };
-
   useEffect(() => {
     const fetchBalance = async () => {
       try {
@@ -70,8 +44,8 @@ const Header = () => {
         console.error("Error fetching balance:", error);
       }
     };
-    if (isAuthenticated && verified) {
-      fetchBalance();
+    if (isAuthenticated && verified){
+        fetchBalance();
     }
   }, [isAuthenticated, verified]);
 
