@@ -10,20 +10,20 @@ const HeroAction = () => {
     <div className="w-full text-center mt-6 mb-10">
       <div className="flex flex-wrap justify-center gap-4">
         <Link to="/about">
-        <button className="bg-gray-700 text-sm md:text-base text-white py-3 px-6 rounded-lg transition duration-300 hover:bg-gray-800">
-          DISCOVER MORE
-        </button>
+          <button className="bg-[#1f2937] text-sm md:text-base text-white py-3 px-6 rounded-lg transition duration-300 hover:bg-gray-800 shadow-md hover:shadow-lg transform hover:-translate-y-1"> {/* Consistent button style */}
+            DISCOVER MORE
+          </button>
         </Link>
 
         {isAuthenticated ? (
           <Link to="/dashboard">
-            <button className="bg-white text-sm md:text-base text-gray-700 py-3 px-6 rounded-lg shadow hover:bg-gray-100 transition duration-300">
+            <button className="bg-[#22c55e] text-sm md:text-base text-white py-3 px-6 rounded-lg shadow-md hover:bg-[#1eab4e] transition duration-300 hover:shadow-lg transform hover:-translate-y-1"> {/* Consistent green button style */}
               DASHBOARD
             </button>
           </Link>
         ) : (
           <Link to="/login">
-            <button className="bg-green-500 text-sm md:text-base text-gray-700 py-3 px-6 rounded-lg shadow hover:bg-gray-100 transition duration-300">
+            <button className="bg-[#22c55e] text-sm md:text-base text-white py-3 px-6 rounded-lg shadow-md hover:bg-[#1eab4e] transition duration-300 hover:shadow-lg transform hover:-translate-y-1"> {/* Consistent green button style */}
               LOGIN
             </button>
           </Link>

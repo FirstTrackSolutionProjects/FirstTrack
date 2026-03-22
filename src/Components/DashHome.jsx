@@ -16,9 +16,10 @@ const DashHome = () => {
     } 
   }, [verified]);
   const [summary, setSummary] = useState(null)
-  useEffect(()=>{
-    console.log(summary)
-  },[summary])
+  // Removed console.log for summary
+  // useEffect(()=>{
+  //   console.log(summary)
+  // },[summary])
 
   
   useEffect(() => {
@@ -29,18 +30,19 @@ const DashHome = () => {
             'Content-Type': 'application/json',
             'Authorization': localStorage.getItem('token'),
           }
-        }).then(response => response.json()).then(response => {setSummary(response); console.log(response)});
+        }).then(response => response.json()).then(response => {setSummary(response); /* Removed console.log(response) */});
       }
       getStatistics()
   },[])
 
   return (
-    <div className='bg-gray-200'>
-      <div className='text-center '>
-      <div className='flex gap-1 mt-5 text-xl justify-center'>Welcome <span className='font-semibold'>{name}</span>! </div> 
+    <div className='bg-[#f8fafc] min-h-full p-4 md:p-8'> {/* Adjusted background to match dashboard, added padding */}
+      <div className='text-center mb-8'>
+        <h1 className='text-3xl md:text-4xl font-extrabold text-[#1f2937]'>Welcome <span className='text-[#22c55e]'>{name}</span>!</h1> {/* More prominent welcome message */}
+        <p className='text-gray-500 mt-2 text-lg'>Here's a quick overview of your logistics performance.</p>
       </div>
-      {/*Card*/}
-        <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-8 p-5 '>
+      {/*Card Grid */}
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8'> {/* Enhanced grid for more columns on larger screens and increased gap */}
             {admin ? <DashCard title="Total Merchants" count={summary?summary.merchant:0} /> : null}
             <DashCard title="Total Warehouses" count={summary?summary.warehouse:0} />
             <DashCard title="Total Shipments" count={summary?summary.shipment:0} />

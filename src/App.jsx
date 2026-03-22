@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './Components/Header'
 import Footer from './Components/Footer'
 import Home from './Pages/Home'
@@ -21,9 +21,12 @@ import { ToastContainer } from 'react-toastify'
 import FloatingAssistant from './Components/FloatingAssistant'
 
 const App = () => {
+  const location = useLocation();
+  const hideFooter = location.pathname.startsWith('/dashboard');
+
   return (
-    <div className='App'>
-      <ToastContainer />
+    <div className='App font-inter text-gray-800'> {/* Added default font and text color for consistency */}
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" /> {/* Enhanced ToastContainer props */}
       <Header/>
       <Routes>
       
@@ -44,7 +47,7 @@ const App = () => {
         {/* <Route path='/ticket' element={<TicketRaise/>}></Route> */}
       </Routes>
       <FloatingAssistant />
-      <Footer/>
+      {!hideFooter && <Footer/>}
     </div>
   )
 }

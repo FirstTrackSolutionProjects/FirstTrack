@@ -1,6 +1,6 @@
 //Here lies all the constant objects of the site
 // constants/index.js
-import { FaTachometerAlt, FaWallet, FaHistory, FaUsers,FaFileAlt,FaMoneyBillAlt, FaChevronDown, FaChevronUp, FaBars, FaTimes, FaBox, FaDollyFlatbed, FaClipboardList, FaHouseUser, FaDoorOpen } from 'react-icons/fa';
+import { FaTachometerAlt, FaWallet, FaHistory, FaUsers,FaFileAlt,FaMoneyBillAlt, FaChevronDown, FaChevronUp, FaBars, FaTimes, FaBox, FaDollyFlatbed, FaClipboardList, FaHouseUser, FaDoorOpen, FaGlobe, FaUndo, FaTruck, FaUserCircle, FaLock } from 'react-icons/fa';
 import { MdSettings } from 'react-icons/md';
 import VerificationRequests from "../Components/VerificationRequests"
 import DashHome from '../Components/DashHome';
@@ -272,7 +272,7 @@ export const menuItems = [
       icon : FaTachometerAlt,
       name : "Dashboard",
       isDropdown : false,
-      url : '',
+      url : '', // Empty URL for the root dashboard route
       component : DashHome,
       dropDownOptions : [{}]
   },
@@ -280,7 +280,7 @@ export const menuItems = [
       icon : FaWallet,
       name : "Wallet Recharge",
       isDropdown : false,
-      url : 'wallet-recharge',
+      url : 'wallet-recharge', // This URL is handled by an onClick in SidebarItem
       dropDownOptions : [{}]
   },
   // {
@@ -299,14 +299,14 @@ export const menuItems = [
       merchantOnly : true,
       url : 'order/create',
       dropDownOptions : [{
-          icon : "/logo.webp",
+          icon : FaTruck,
           name : "Domestic",
           isDropdown : false,
           url : 'order/domestic/create',
           component : CreateOrder,
           dropDownOptions : [{}]
       },{
-          icon : "/logo.webp",
+          icon : FaGlobe,
           name : "International",
           isDropdown : false,
           url : 'order/international/create',
@@ -330,19 +330,19 @@ export const menuItems = [
       merchantOnly : true,
       url : 'parcels',
       dropDownOptions : [{
-          icon : "/logo.webp",
+          icon : FaTruck,
           name : "Domestic",
           isDropdown : false,
           url : 'parcels/domestic',
-          component : UpdateOrder,
+          component : UpdateOrder, // This might be for viewing/updating, assuming it's correct
           dropDownOptions : [{}]
       },
       {
-          icon : "/logo.webp",
+          icon : FaGlobe,
           name : "International",
           isDropdown : false,
           url : 'parcels/international',
-          component : UpdateOrderInternational,
+          component : UpdateOrderInternational, // This might be for viewing/updating, assuming it's correct
           dropDownOptions : [{}]
       },]
   },
@@ -355,7 +355,7 @@ export const menuItems = [
       dropDownOptions : [{}]
   },
   {
-      icon : "/logo.webp",
+      icon : FaClipboardList, // Changed icon for Weight Disputes
       name : "Weight Disputes",
       isDropdown : false,
       url : 'weight-disputes',
@@ -363,15 +363,14 @@ export const menuItems = [
       dropDownOptions : [{}]
   },
   {
-      icon : "/logo.webp",
+      icon : FaMoneyBillAlt, // Changed icon for Cancellations/Refunds
       name : "Cancellations/Refunds",
       isDropdown : true,
       admin : true,
-      // url : 'cancellations-refunds',
-      // component : DashboardMain,
+      url : 'cancellations-refunds', // Added a base URL for the dropdown for active state logic
       dropDownOptions : [
           {
-              icon : "/logo.webp",
+              icon : FaTimes,
               name : "Pending Cancellations",
               isDropdown : false,
               url : 'pending-cancellations',
@@ -379,7 +378,7 @@ export const menuItems = [
               dropDownOptions : [{}]
           },
           {
-              icon : "/logo.webp",
+              icon : FaUndo,
               name : "Pending Refunds",
               isDropdown : false,
               url : 'pending-refunds',
@@ -393,16 +392,16 @@ export const menuItems = [
       name : "Reports",
       isDropdown : true,
       merchantOnly : true,
-      url : 'shipment/reports',
+      url : 'shipment/reports', // Base URL for the dropdown
       dropDownOptions : [{
-          icon : "/logo.webp",
+          icon : FaFileAlt,
           name : "Domestic Reports",
           isDropdown : false,
           url : 'shipment/domestic/reports',
           component : NDR,
           dropDownOptions : [{}]
       },{
-          icon : "/logo.webp",
+          icon : FaFileAlt,
           name : "International Reports",
           isDropdown : false,
           url : 'shipment/international/reports',
@@ -415,9 +414,9 @@ export const menuItems = [
       name : "Merchant Manage",
       isDropdown : true,
       admin : true,
-      url : 'manage/merchant',
+      url : 'manage/merchant', // Base URL for the dropdown
       dropDownOptions : [{
-          icon : "/logo.webp",
+          icon : FaUsers,
           name : "Verified Merchants",
           isDropdown : false,
           url : 'manage/merchant/verified',
@@ -425,7 +424,7 @@ export const menuItems = [
           dropDownOptions : [{}]
       },
       {
-          icon : "/logo.webp",
+          icon : FaUsers,
           name : "Non-Verified Merchants",
           isDropdown : false,
           url : 'manage/merchant/non-verified',
@@ -433,7 +432,7 @@ export const menuItems = [
           dropDownOptions : [{}]
       },
       {
-          icon : "/logo.webp",
+          icon : FaMoneyBillAlt,
           name : "Merchant Transactions",
           isDropdown : false,
           url : 'manage/merchant/transactions',
@@ -441,19 +440,19 @@ export const menuItems = [
           dropDownOptions : [{}]
       },
       {
-          icon : "/logo.webp",
+          icon : FaBox, // Reusing FaBox for Shipments, changed from "/logo.webp"
           name : "Shipments",
           isDropdown : true,
-          url : 'manage/merchant/shipments',
+          url : 'manage/merchant/shipments', // Base URL for the dropdown
           dropDownOptions : [{
-              icon : "/logo.webp",
+              icon : FaTruck,
               name : "Domestic",
               isDropdown : false,
               url : 'manage/merchant/shipments/domestic',
               component : AllParcels,
               dropDownOptions : [{}]
           },{
-              icon : "/logo.webp",
+              icon : FaTruck,
               name : "International",
               isDropdown : false,
               url : 'manage/merchant/shipments/international',
@@ -462,18 +461,19 @@ export const menuItems = [
           },]
       },
       {
-          icon : FaClipboardList,
+          icon : FaClipboardList, // Reusing FaClipboardList for Shipment Reports, changed from "/logo.webp"
           name : "Shipment Reports",
           isDropdown : true,
+          url : 'manage/merchant/shipment-reports', // Added a base URL for this dropdown
           dropDownOptions : [{
-              icon : "/logo.webp",
+              icon : FaFileAlt,
               name : "Domestic Reports",
               isDropdown : false,
               url : 'manage/merchant/shipments/domestic/reports',
               component : AllShipmentReports,
               dropDownOptions : [{}]
           },{
-              icon : "/logo.webp",
+              icon : FaFileAlt,
               name : "International Reports",
               isDropdown : false,
               url : 'manage/merchant/shipments/international/reports',
@@ -482,34 +482,14 @@ export const menuItems = [
           },]
       }]
   },
-  // {
-  //     icon : "/logo.webp",
-  //     name : "Users",
-  //     admin : true,
-  //     isDropdown : true,
-  //     menuID : [10],
-  //     dropDownOptions : [{
-  //         icon : "/logo.webp",
-  //         name : "Accounts",
-  //         isDropdown : false,
-  //         menuID : [10,0],
-  //         dropDownOptions : [{}]
-  //     },{
-  //         icon : "/logo.webp",
-  //         name : "Admin",
-  //         isDropdown : false,
-  //         menuID : [10,1],
-  //         dropDownOptions : [{}]
-  //     },]
-  // },
   {
       icon : FaFileAlt,
       name : "Submission",
       isDropdown : true,
       admin : true,
-      url : 'submissions',
+      url : 'submissions', // Base URL for the dropdown
       dropDownOptions : [{
-          icon : "/logo.webp",
+          icon : FaFileAlt,
           name : "Merchant Verification",
           isDropdown : false,
           admin : true,
@@ -518,7 +498,7 @@ export const menuItems = [
           dropDownOptions : [{}]
       },
       {
-          icon : "/logo.webp",
+          icon : FaFileAlt,
           name : "Update Profile Requests",
           isDropdown : false,
           admin : true,
@@ -527,7 +507,7 @@ export const menuItems = [
           dropDownOptions : [{}]
       },
       {
-          icon : "/logo.webp",
+          icon : FaFileAlt,
           name : "Contact Submission",
           isDropdown : false,
           admin : true,
@@ -535,19 +515,10 @@ export const menuItems = [
           component : ContactSubmissions,
           dropDownOptions : [{}]
       },
-      // {
-      //     icon : "/logo.webp",
-      //     name : "KYC Requests",
-      //     isDropdown : false,
-      //     admin : true,
-      //     url : 'submissions/kyc-requests',
-      //     component : "",
-      //     dropDownOptions : [{}]
-      // }
   ]
   },
   {
-      icon : FaWallet,
+      icon : FaMoneyBillAlt, // Changed icon for Manual Recharge
       name : "Manual Recharge",
       isDropdown : false,
       admin : true,
@@ -559,10 +530,10 @@ export const menuItems = [
       icon : MdSettings,
       name : "Settings",
       isDropdown : true,
-      url : 'settings',
+      url : 'settings', // Base URL for the dropdown
       dropDownOptions : [
           {
-              icon : "/logo.webp",
+              icon : FaUserCircle,
               name : "Profile",
               isDropdown : false,
               url : 'settings/profile',
@@ -570,7 +541,7 @@ export const menuItems = [
               dropDownOptions : [{}]
           },
           {
-              icon : "/logo.webp",
+              icon : FaUserCircle,
               name : "Profile Update",
               isDropdown : false,
               url : 'settings/profile-update-request',
@@ -579,7 +550,7 @@ export const menuItems = [
               dropDownOptions : [{}]
           },
           {
-              icon : "/logo.webp",
+              icon : FaLock,
               name : "Change Password",
               isDropdown : false,
               url : 'settings/change-password',
