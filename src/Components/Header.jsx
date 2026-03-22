@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai'; // Menu icon
 import { IoMdClose } from 'react-icons/io'; // Close icon
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaDoorOpen } from 'react-icons/fa';
 import WalletRechargeModal from './WalletRechargeModal' 
+import { FaWallet } from 'react-icons/fa'; // Added FaWallet icon
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -48,6 +49,11 @@ const Header = () => {
         fetchBalance();
     }
   }, [isAuthenticated, verified]);
+
+  // Helper function to format balance
+  const formatBalance = (value) => {
+    return parseFloat(value).toFixed(2);
+  };
 
   // Helper for NavLink styling (desktop)
   const getNavLinkClass = ({ isActive }) =>

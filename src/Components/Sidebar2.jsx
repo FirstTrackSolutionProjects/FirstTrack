@@ -71,7 +71,7 @@ const Sidebar2 = () => {
         {/* Close button (Icon) - fixed at the top */}
         <div className="sticky top-0 left-0 z-50 bg-[#1f2937] flex justify-between items-center p-4 border-b border-gray-700"> {/* Added padding and border */}
           <div className="flex items-center">
-            <img src="/images/logo-white.svg" alt="First Track Logistics Logo" className="w-8 h-8 mr-2" />
+            <img src="/images/logo3.jpg" alt="First Track Logistics Logo" className="w-8 h-8 mr-2" />
             <span className="text-xl font-extrabold text-white">FIRST <span className="text-[#22c55e]">TRACK</span></span>
           </div>
           <button
