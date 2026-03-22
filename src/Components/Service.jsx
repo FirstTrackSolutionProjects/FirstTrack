@@ -17,7 +17,7 @@ const Service = () => {
           Our Capabilities
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
           {services.map((service, index) => (
             <div
               key={service.id}
@@ -86,19 +86,19 @@ const Grid = () => {
           <div className="grid grid-cols-2 gap-3">
             <img
               src="images/blog1.jpeg"
-              className="object-cover w-full h-44 rounded-lg shadow-md"
+              className="object-cover w-full aspect-[4/3] rounded-lg shadow-md"
               alt="Warehouse"
             />
             <img
               src="images/blog2.jpeg"
-              className="object-cover w-full h-44 rounded-lg shadow-md"
+              className="object-cover w-full aspect-[4/3] rounded-lg shadow-md"
               alt="Cargo"
             />
           </div>
           <div>
             <img
               src="images/blog3.jpg"
-              className="object-cover w-full h-52 rounded-lg shadow-md"
+              className="object-cover w-full aspect-[16/9] rounded-lg shadow-md"
               alt="Shipping"
             />
           </div>
