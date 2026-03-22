@@ -47,9 +47,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className='h-[calc(100vh-86px)] flex font-inter bg-gray-200'>
+    <div className='h-[calc(100vh-86px)] flex font-inter bg-[#f8fafc] text-gray-800'> {/* Adjusted background to a lighter, softer shade */}
       <Sidebar2 />
-      <main className="flex-grow justify-center items-center overflow-y-auto">
+      <main className="flex-grow overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar"> {/* Added generous padding and a custom scrollbar class */}
         <Routes>
           {/* Dynamically generated routes from constants */}
           {generateRoutes(menuItems, isAdmin)}

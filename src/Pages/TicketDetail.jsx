@@ -40,7 +40,7 @@ export default function TicketDetail() {
             setMessages(messageData);
         } catch (error) {
             toast.error(error.message);
-            navigate('/dashboard/support'); // Changed path for consistency
+            navigate('/support'); 
         } finally {
             setLoading(false);
         }
@@ -51,8 +51,8 @@ export default function TicketDetail() {
     }, [loadData]);
 
     useEffect(() => {
-        // Scroll to bottom when messages update, using block: "end" for more reliable scroll-to-bottom
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+        // Scroll to bottom when messages update, using block: "nearest" to prevent page-level scrolling
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }, [messages]);
 
 
@@ -75,7 +75,7 @@ export default function TicketDetail() {
     };
 
     if (loading) {
-        return <div className="p-8 text-center text-gray-600">Loading ticket <span className="font-semibold">#{id}</span> details...</div>;
+        return <div className="p-8 text-center">Loading ticket #{id} details...</div>;
     }
 
     if (!ticket) {
@@ -92,12 +92,12 @@ export default function TicketDetail() {
                 <div className="flex-grow lg:w-2/3">
                     <button 
                         onClick={() => navigate('/dashboard/support')} 
-                        className="text-sm font-bold text-gray-400 hover:text-[#1f2937] mb-6 flex items-center gap-2 uppercase tracking-wide transition-colors"
+                        className="text-sm font-bold text-gray-400 hover:text-[#1f2937] mb-6 flex items-center gap-2 uppercase tracking-widest transition-colors"
                     >
                         ← Back to Support Dashboard
                     </button>
 
-                    <div className="bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden flex flex-col min-h-[500px] max-h-[85vh]">
+                    <div className="bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden flex flex-col h-[700px]">
                         <div className="p-8 border-b border-gray-50 bg-white">
                             <h1 className="text-xl font-black text-[#1f2937] tracking-tight">Conversation History</h1>
                         </div>
@@ -105,22 +105,22 @@ export default function TicketDetail() {
                         <div className="flex-grow overflow-y-auto p-8 space-y-6 bg-[#fbfcfd]">
                             {messages.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                                    <p className="text-base font-semibold">No messages yet.</p>
-                                    <p className="text-sm text-center">Your conversation with support will appear here.</p>
+                                    <p className="text-sm font-medium">No messages yet.</p>
+                                    <p className="text-xs text-center">Your conversation with support will appear here.</p>
                                 </div>
                             ) : (
                                 messages.map((msg) => (
                                     <div key={msg.message_id} className={`flex ${msg.sent_by_admin ? 'justify-start' : 'justify-end'}`}>
-                                        <div className={`max-w-[85%] p-5 rounded-[24px] shadow-sm text-sm leading-relaxed ${
+                                        <div className={`max-w-[85%] p-5 rounded-[24px] shadow-sm text-[13px] leading-relaxed ${
                                             msg.sent_by_admin 
                                                 ? 'bg-white text-gray-800 border border-gray-100 rounded-tl-none' 
                                                 : 'bg-[#22c55e] text-white rounded-tr-none font-medium'
                                         }`}>
                                             <div className="flex items-center justify-between mb-2 gap-6">
-                                                <span className={`font-semibold text-xs uppercase tracking-wide ${msg.sent_by_admin ? 'text-gray-400' : 'text-white/80'}`}>
+                                                <span className={`font-black text-[10px] uppercase tracking-widest ${msg.sent_by_admin ? 'text-gray-400' : 'text-white/80'}`}>
                                                     {msg.sent_by_admin ? (msg.fullName || 'Support Agent') : 'You'}
                                                 </span>
-                                                <span className={`text-xs ${msg.sent_by_admin ? 'text-gray-300' : 'text-white/60'}`}>
+                                                <span className={`text-[10px] ${msg.sent_by_admin ? 'text-gray-300' : 'text-white/60'}`}>
                                                     {new Date(msg.created_at.endsWith('Z') ? msg.created_at : msg.created_at + 'Z').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
@@ -144,7 +144,7 @@ export default function TicketDetail() {
                                         }
                                     }}
                                     placeholder="Type your message..."
-                                    className="w-full p-5 pr-20 bg-gray-50 border-none rounded-[24px] focus:ring-2 focus:ring-[#22c55e] transition-all resize-none text-base placeholder:text-gray-400"
+                                    className="w-full p-5 pr-20 bg-gray-50 border-none rounded-[24px] focus:ring-2 focus:ring-[#22c55e] transition-all resize-none text-sm placeholder:text-gray-400"
                                     rows="3"
                                     disabled={submitting}
                                 />
@@ -163,37 +163,37 @@ export default function TicketDetail() {
                 {/* RIGHT: Ticket Meta Column */}
                 <div className="lg:w-1/3 space-y-6">
                     <div className="bg-white p-8 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
-                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-8">Ticket Information</h3>
+                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-8">Ticket Information</h3>
 
                         <div className="space-y-8">
                             <div>
-                                <p className="text-xs text-gray-300 mb-1.5 font-black uppercase tracking-wider">Ticket ID</p>
+                                <p className="text-[10px] text-gray-300 mb-1.5 font-black uppercase tracking-widest">Ticket ID</p>
                                 <p className="text-lg font-black text-[#1f2937]">#{ticket.ticket_id}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-300 mb-2 font-black uppercase tracking-wider">Status</p>
-                                <span className={`px-4 py-1.5 text-xs font-black rounded-full uppercase tracking-tight ${getStatusClasses(ticket.status)}`}>
+                                <p className="text-[10px] text-gray-300 mb-2 font-black uppercase tracking-widest">Status</p>
+                                <span className={`px-4 py-1.5 text-[10px] font-black rounded-full uppercase tracking-tighter ${getStatusClasses(ticket.status)}`}>
                                     {ticket.status.replace('_', ' ')}
                                 </span>
                             </div>
                             <div>
-                                <p className="text-xs text-gray-300 mb-1.5 font-black uppercase tracking-wider">Category</p>
+                                <p className="text-[10px] text-gray-300 mb-1.5 font-black uppercase tracking-widest">Category</p>
                                 <p className="text-sm font-bold text-[#1f2937]">{ticket.category}</p>
                             </div>
                             {ticket.order_id && (
                                 <div>
-                                    <p className="text-xs text-gray-300 mb-1.5 font-black uppercase tracking-wider">Order ID</p>
+                                    <p className="text-[10px] text-gray-300 mb-1.5 font-black uppercase tracking-widest">Order ID</p>
                                     <p className="text-sm font-bold text-[#1f2937]">#{ticket.order_id}</p>
                                 </div>
                             )}
                             <div>
-                                <p className="text-xs text-gray-300 mb-1.5 font-black uppercase tracking-wider">Created On</p>
+                                <p className="text-[10px] text-gray-300 mb-1.5 font-black uppercase tracking-widest">Created On</p>
                                 <p className="text-sm font-bold text-[#1f2937]">{new Date(ticket.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                             </div>
                             <div className="pt-6 border-t border-gray-50">
-                                <p className="text-xs text-gray-300 mb-3 font-black uppercase tracking-wider">Initial Issue</p>
+                                <p className="text-[10px] text-gray-300 mb-3 font-black uppercase tracking-widest">Initial Issue</p>
                                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                    <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap font-medium">{ticket.description}</p>
+                                    <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap font-medium">{ticket.description}</p>
                                 </div>
                             </div>
                         </div>
