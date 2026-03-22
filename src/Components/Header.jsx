@@ -48,29 +48,26 @@ const Header = () => {
     {showRecharge ? <WalletRechargeModal onClose={closeRechargeModal} /> : null}
     <header className="bg-gray-100 shadow-md w-full font-inter">
       {/* Container for logo and navigation */}
-      <div className="max-w-7xl mx-auto px-4 md:px-12 flex justify-between items-center py-1">
+      <div className="max-w-7xl mx-auto px-4 md:px-12 flex  justify-between md:justify-around  items-center py-1">
         {/* Logo and Company Name */}
         <Link to='/'><div className="flex items-center">
-          <img src="/images/logo.svg" alt="Logo" className="w-16 h-16 md:w-20 md:h-20" />
-          <span className="text-base sm:text-lg md:text-xl font-bold ml-2 text-[#212121]">FIRST <span className="text-[#4ADE80]">TRACK</span></span>
+          <img src="/images/logo.svg" alt="Logo" className="w-20 h-20 " />
+          
         </div></Link>
 
         {/* Menu for md and above */}
-        <nav className="hidden md:flex flex-grow justify-center">
-          <div className="space-x-6 text-base font-semibold">
+        <nav className="-ml-20 hidden md:flex space-x-6 text-base font-semibold">
           <Link to="/" className="hover:text-blue-800">HOME</Link>
           <Link to="/track" className="hover:text-blue-800">TRACKING</Link>
           <Link to="/blog" className="hover:text-blue-800">BLOGS</Link>
           <Link to="/pricing" className="hover:text-blue-800">PRICING</Link>
           <Link to="/about" className="hover:text-blue-800">ABOUT</Link>
           <Link to="/contact" className="hover:text-blue-800">CONTACT</Link>
-          </div>
         </nav>
-        {/* Balance view for small screens */}
-        <div className='md:hidden'>
+        <div className='md:hidden' onClick={()=>setShowRecharge(true)}>
           {verified && location.pathname.startsWith('/dashboard')? (<>
-              <div onClick={()=>setShowRecharge(true)} className={`relative bg-green-600 ${balance < 250 ? "text-red-400" : "text-white"} flex items-center font-medium rounded-tl-xl rounded-br-xl px-2 min-w-12 py-1 text-sm cursor-pointer border-l-4 border-t-4 border-green-900`}>
-              {balance < 250 && <p className="absolute -mt-4 top-0 right-[2px] text-red-400 text-xl">!</p>}
+              <div onClick={()=>setShowRecharge(true)} className={`relative bg-green-600 ${balance < 250 ? "text-red-400" : "text-white"} flex items-center font-medium rounded-tl-xl rounded-br-xl px-3 min-w-14 py-2 cursor-pointer border-l-4 border-t-4 border-green-900`}>
+              {balance < 250 && <p className="absolute -mt-5 top-0 right-[2px] text-red-400 text-3xl">!</p>}
                 <p>{`₹${balance}`}</p>
               </div>
               </>
@@ -91,7 +88,7 @@ const Header = () => {
         {/* Menu button for small screens */}
         <div className="md:hidden z-30">
           <button onClick={toggleSidebar}>
-            <AiOutlineMenu className='text-green-700' size={24} />
+            <AiOutlineMenu className='text-green-700' size={30} />
           </button>
         </div>
       </div>

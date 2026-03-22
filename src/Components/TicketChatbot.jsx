@@ -266,7 +266,7 @@ export default function TicketChatbot({ onClose }) {
   return (
     <div className="w-full h-full flex flex-col bg-[#f8fafc] overflow-hidden font-inter">
       {/* CHAT BODY */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5 sm:px-6 sm:py-8">
+      <div className="flex-1 overflow-y-auto px-6 py-8 space-y-5">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
             <div className={`px-5 py-3.5 rounded-[24px] text-[13px] shadow-sm max-w-[90%] leading-[1.6] transition-all
