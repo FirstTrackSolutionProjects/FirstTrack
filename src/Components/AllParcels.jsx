@@ -15,13 +15,10 @@ import {
   Box,
   Paper,
   IconButton,
-  useMediaQuery, // Added for responsive design
-  useTheme,      // Added for responsive design
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import CloseIcon from '@mui/icons-material/Close';
 import convertToUTCISOString from "../helpers/convertToUTCISOString";
-import { v4 as uuidv4 } from 'uuid'; // Added for unique ID generation for invoice upload
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
@@ -837,44 +834,22 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
                   onChange={handleChange}
                 />
               </FormControl>
-              <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
-                <InputLabel shrink htmlFor="invoice-upload">Invoice</InputLabel>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 3 }}>
-                  <input
-                    accept="application/pdf,image/*"
-                    style={{ display: 'none' }}
-                    id="invoice-upload"
-                    type="file"
-                    onChange={handleInvoice}
-                  />
-                  <label htmlFor="invoice-upload">
-                    <Button variant="outlined" component="span" size="small" sx={{ borderRadius: '24px' }}>
-                      {invoice ? invoice.name : "Choose File"}
-                    </Button>
-                  </label>
-                  {formData.invoiceUrl && (
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      href={import.meta.env.VITE_APP_BUCKET_URL + formData.invoiceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      size="small"
-                      sx={{ whiteSpace: 'nowrap', borderRadius: '24px' }}
-                    >
-                      View
-                    </Button>
-                  )}
-                  <Button
-                    variant="contained"
-                    onClick={uploadInvoice}
-                    color="primary"
-                    size="small"
-                    sx={{ whiteSpace: 'nowrap', borderRadius: '24px' }}
-                    disabled={!invoice} // Disable update if no file is selected
-                  >
-                    Upload
-                  </Button>
+              <FormControl fullWidth sx={{ minWidth: 300, flex:1 }}>
+                <label>Invoice</label>
+                <input
+                  type="file"
+                  onChange={handleInvoice}
+                />
+                <Box className="flex items-center mt-2">
+                  <a type="button" className="m-2 w-20 px-5 py-2 border rounded-3xl bg-blue-600 text-white" target="_blank" href={import.meta.env.VITE_APP_BUCKET_URL + formData.invoiceUrl}>View</a>
+                <Button
+                  variant="contained"
+                  onClick={uploadInvoice}
+                  className="bg-blue-500"
+                  sx={{ borderRadius: '24px' }}
+                >
+                  Update
+                </Button>
                 </Box>
               </FormControl>
               <FormControl fullWidth sx={{ minWidth: 300 }}>
@@ -939,7 +914,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = [];
-
+  
   // Function to add page numbers to the array
   const addPageNumber = (pageNum) => {
     pages.push({
@@ -981,147 +956,121 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     }
   }
 
-  return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, mt: 4 }}>
-      <Button
-        variant="outlined"
-        size="small"
+  return (    <div className="flex items-center justify-center space-x-1 sm:space-x-2 mt-4">
+      <button 
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        sx={{ borderRadius: '24px', minWidth: { xs: 70, sm: 80 } }}
+        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
       >
-        Prev
-      </Button>
-
+        <span className="hidden sm:inline">Previous</span>
+        <span className="sm:hidden">Prev</span>
+      </button>
+      
       {pages.map((page, idx) => (
-        <Button
+        <button
           key={idx}
-          variant={page.isCurrent ? 'contained' : 'outlined'}
-          size="small"
           onClick={() => page.number !== '...' && onPageChange(page.number)}
-          disabled={page.number === '...'}
-          sx={{
-            borderRadius: '24px',
-            minWidth: 35,
-            padding: '4px 8px', // Adjust padding for smaller size
-            fontSize: { xs: '0.75rem', sm: '0.875rem' }
-          }}
+          className={`min-w-[30px] px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
+            page.number === '...' ? 'cursor-default' 
+            : page.isCurrent ? 'bg-blue-500 text-white' 
+            : 'bg-white hover:bg-gray-100 border'
+          }`}
         >
           {page.number}
-        </Button>
+        </button>
       ))}
-
-      <Button
-        variant="outlined"
-        size="small"
+      
+      <button 
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        sx={{ borderRadius: '24px', minWidth: { xs: 70, sm: 80 } }}
+        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${currentPage === totalPages ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
       >
-        Next
-      </Button>
-    </Box>
+        <span className="hidden sm:inline">Next</span>
+        <span className="sm:hidden">Next</span>
+      </button>
+    </div>
   );
 };
 
-// Removed custom Modal component as MUI Dialog is used for ManageForm
-
-const Card = ({ shipment, onManageClick }) => {
-  const isShipped = Boolean(shipment.awb);
+const Modal = ({ isOpen, onClose, children }) => {  if (!isOpen) return null;
 
   return (
-    <Paper
-      elevation={1}
-      sx={{
-        mb: 2,
-        borderRadius: 2,
-        overflow: 'hidden',
-        transition: 'box-shadow 0.3s ease-in-out',
-        '&:hover': {
-          boxShadow: 4,
-          cursor: 'pointer', // Indicate clickable
-        },
-      }}
-      onClick={() => onManageClick(shipment)} // Trigger manage on card click
-    >
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr', // Stacks on very small screens
-            sm: 'repeat(2, 1fr)', // 2 columns on small screens
-            md: 'repeat(4, 1fr)', // 4 columns on medium screens
-            lg: 'repeat(12, 1fr)' // 12 columns on large screens for alignment
-          },
-          gap: { xs: 1, sm: 2, md: 3 },
-          p: 2,
-          alignItems: 'center',
-        }}
-      >
-        {/* Order Info */}
-        <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 1', md: 'span 1', lg: 'span 3' } }}>
-          <div className="text-base font-bold text-blue-700 mb-1">{shipment.ord_id}</div>
-          {shipment.customer_reference_number && (
-            <div className="text-xs text-gray-600 mb-1">Ref: {shipment.customer_reference_number}</div>
-          )}
-          <div className="text-xs text-gray-500">
-            {shipment.date ? new Date(shipment.date).toLocaleString() : 'N/A'}
-          </div>
-        </Box>
+    <div className="fixed inset-0 z-[999] flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose}></div>
+      <div className="relative z-[1000] bg-white rounded-lg w-[95%] max-w-4xl max-h-[90vh] overflow-y-auto p-4">
+        {children}
+      </div>
+    </div>
+  );
+};
 
-        {/* Customer Info */}
-        <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 1', md: 'span 1', lg: 'span 3' } }}>
-          <div className="text-sm font-medium text-gray-800">{shipment.fullName}</div>
-          <div className="text-xs text-gray-600 truncate">{shipment.email}</div>
-        </Box>
+const Card = ({ shipment }) => {
+  const [isManage, setIsManage] = useState(false);
+  const [isShipped, setIsShipped] = useState(shipment.awb ? true : false);
 
-        {/* Shipping Info */}
-        <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 2', md: 'span 3', lg: 'span 4' } }}>
-          {isShipped ? (
-            <div className="space-y-1">
-              {shipment.service_name && (
-                <div className="text-xs text-gray-600">
-                  <span className="font-semibold">Service:</span> {shipment.service_name}
-                </div>
-              )}
-              {shipment.awb && (
-                <div className="text-xs text-gray-600">
-                  <span className="font-semibold">AWB:</span> {shipment.awb}
-                </div>
-              )}
-              {shipment.shipping_vendor_reference_id && (
-                <div className="text-xs text-gray-600">
-                  <span className="font-semibold">LRN:</span> {shipment.shipping_vendor_reference_id}
-                </div>
-              )}
+  return (
+    <>
+      <Modal isOpen={isManage} onClose={() => setIsManage(false)}>
+        <ManageForm setIsManage={setIsManage} shipment={shipment} isManage={isManage} isShipped={shipment.awb ? true : false} />
+      </Modal>
+      
+      <div className="w-full bg-white hover:bg-gray-50 border-b">
+        <div className="grid grid-cols-12 gap-4 px-4 py-3">
+          {/* Order Info - 3 columns */}
+          <div className="col-span-3">
+            <div className="text-sm font-semibold mb-1">{shipment.ord_id}</div>
+            <div className="text-xs text-gray-500">
+              {shipment.date ? new Date(shipment.date).toLocaleString() : null}
             </div>
-          ) : (
-            <div className="text-xs text-gray-500">No shipping details yet</div>
-          )}
-        </Box>
+          </div>
 
-        {/* Status */}
-        <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 1', md: 'span 1', lg: 'span 1' }, display: 'flex', alignItems: 'center' }}>
-          <span className={`px-2 py-1 text-xs rounded-full ${
-            isShipped ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-          }`}>
-            {isShipped ? 'Shipped' : 'Pending'}
-          </span>
-        </Box>
+          {/* Customer Info - 3 columns */}
+          <div className="col-span-3">
+            <div className="text-sm text-gray-700">{shipment.fullName}</div>
+            <div className="text-xs text-gray-600 truncate">{shipment.email}</div>
+          </div>
 
-        {/* Action Button */}
-        <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 1', md: 'span 1', lg: 'span 1' }, display: 'flex', justifyContent: { xs: 'flex-start', lg: 'flex-end' }, alignItems: 'center' }}>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={(e) => { e.stopPropagation(); onManageClick(shipment); }} // Stop propagation to prevent card click from firing twice
-            sx={{ borderRadius: '24px' }}
-          >
-            {isShipped ? "View" : "Manage"}
-          </Button>
-        </Box>
-      </Box>
-    </Paper>
+          {/* Shipping Info - 4 columns */}
+          <div className="col-span-4">
+            {isShipped ? (
+              <div className="space-y-1">
+                {shipment.awb && (
+                  <div className="text-xs text-gray-600">
+                    <span className="font-semibold">AWB:</span> {shipment.awb}
+                  </div>
+                )}
+                {shipment.shipping_vendor_reference_id && (
+                  <div className="text-xs text-gray-600">
+                    <span className="font-semibold">LRN:</span> {shipment.shipping_vendor_reference_id}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-xs text-gray-500">No shipping details yet</div>
+            )}
+          </div>
+
+          {/* Status - 1 column */}
+          <div className="col-span-1 flex items-center">
+            <span className={`px-2 py-1 text-xs rounded-full ${
+              isShipped ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+            }`}>
+              {isShipped ? 'Shipped' : 'Pending'}
+            </span>
+          </div>
+
+          {/* Action Button - 1 column */}
+          <div className="col-span-1 flex items-center justify-end">
+            <button 
+              className="px-4 py-1 bg-blue-500 text-white text-sm rounded-3xl hover:bg-blue-600 transition-colors" 
+              onClick={() => setIsManage(true)}
+            >
+              {isShipped ? "View" : "Manage"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -1130,7 +1079,7 @@ const Listing = ({ step, setStep }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  // const [filteredShipments, setFilteredShipments] = useState([]); // This state was unused, removed.
+  const [filteredShipments, setFilteredShipments] = useState([]);
   const [filters, setFilters] = useState({
     email: "",
     orderId: "",
@@ -1142,7 +1091,6 @@ const Listing = ({ step, setStep }) => {
   const [abortController, setAbortController] = useState(null);
   const [selectedShipment, setSelectedShipment] = useState(null);
   const [isManageOpen, setIsManageOpen] = useState(false);
-
   // Debounce filter changes
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -1207,48 +1155,48 @@ const Listing = ({ step, setStep }) => {
   };
 
   const columns = [
-    {
-      field: 'ord_id',
-      headerName: 'Order ID',
-      width: 150,
-      renderCell: (params) => (
-        <span className="font-semibold text-blue-700">{params.value}</span>
-      ),
+    { 
+      field: 'space', 
+      headerName: '', 
+      sortable: false, 
+      disableColumnMenu: true,
+      width: 5,
     },
+    { field: 'ord_id', headerName: 'Order ID', width: 130 },
     {
       field: 'customer_reference_number',
-      headerName: 'Customer Ref No.',
-      width: 150,
+      headerName: 'Customer Reference Number',
+      width: 100,
     },
-    {
-      field: 'date',
-      headerName: 'Date',
+    { 
+      field: 'date', 
+      headerName: 'Date', 
       width: 180,
-      renderCell: (params) =>
-        params.row.date ? new Date(params.row.date).toLocaleString() : '',
+      renderCell: (params) => 
+        params.row.date ? new Date(params.row.date).toLocaleString() : ''
     },
     { field: 'fullName', headerName: 'Customer Name', width: 180 },
     { field: 'email', headerName: 'Email', width: 200 },
     {
-      field: 'shipping',
-      headerName: 'Shipping Details',
-      width: 250,
-      renderCell: (params) => {
-        const isShipped = Boolean(params.row.awb);
-        return (
-          <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%', py: 1 }}>
-            {isShipped ? (
-              <>
-                {params.row.service_name && <div>{params.row.service_name}</div>}
-                {params.row.awb && <div className="text-sm">AWB: <span className="font-medium">{params.row.awb}</span></div>}
-                {params.row.shipping_vendor_reference_id && <div className="text-sm">LRN: <span className="font-medium">{params.row.shipping_vendor_reference_id}</span></div>}
-              </>
-            ) : (
-              <div className="text-xs text-gray-500">No shipping details yet</div>
-            )}
-          </Box>
-        );
-      },
+  field: 'shipping',
+  headerName: 'Shipping Details',
+  width: 250,
+  renderCell: (params) => {
+    const isShipped = Boolean(params.row.awb);
+    return (
+      <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 80 }}>
+        {isShipped ? (
+          <>
+            <div>{params.row.service_name}</div>
+            {params.row.awb && <div>AWB: {params.row.awb}</div>}
+            {params.row.lrn && <div>LRN: {params.row.lrn}</div>}
+          </>
+        ) : (
+          <div>No shipping details yet</div>
+        )}
+      </Box>
+    );
+  }
     },
     {
       field: 'status',
@@ -1259,27 +1207,23 @@ const Listing = ({ step, setStep }) => {
         return (
           <Box
             sx={{
-              bgcolor: isShipped ? 'success.light' : 'warning.light', // Use theme colors
-              color: isShipped ? 'success.dark' : 'warning.dark',
+              bgcolor: isShipped ? 'success.100' : 'warning.100',
+              color: isShipped ? 'success.800' : 'warning.800',
               px: 2,
               py: 0.5,
               borderRadius: 8,
-              fontSize: '0.875rem',
-              display: 'inline-flex', // Ensure the box wraps content tightly
-              alignItems: 'center',
+              fontSize: '0.875rem'
             }}
           >
             {isShipped ? 'Shipped' : 'Pending'}
           </Box>
         );
-      },
+      }
     },
     {
       field: 'actions',
       headerName: 'Actions',
       width: 130,
-      sortable: false,
-      disableColumnMenu: true,
       renderCell: (params) => {
         const isShipped = Boolean(params.row.awb);
         return (
@@ -1295,112 +1239,77 @@ const Listing = ({ step, setStep }) => {
             {isShipped ? 'View' : 'Manage'}
           </Button>
         );
-      },
-    },
+      }
+    }
   ];
-
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Use md breakpoint for tablet/mobile
-
-  const handleManageClick = (shipment) => {
-    setSelectedShipment(shipment);
-    setIsManageOpen(true);
-  };
 
   return (
     <div className={`w-full p-4 flex flex-col items-center space-y-6 ${step == 0 ? "" : "hidden"}`}>
-      <Paper sx={{ width: '100%', p: { xs: 1, sm: 2 } }}>
+      <Paper sx={{ width: '100%', p: 2 }}>
         <Box sx={{ mb: 3 }}>
           <h2 className="text-2xl font-medium">Shipments</h2>
         </Box>
 
-        {/* Filters */}
-        <Paper elevation={1} sx={{ mb: 3, p: 3, borderRadius: 2 }}>
-          <h3 className="text-xl font-semibold mb-4 text-gray-700">Filter Shipments</h3>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-                lg: 'repeat(auto-fill, minmax(200px, 1fr))',
-              },
-              gap: 2,
+{/* Filters */}
+      <Box
+        className="bg-blue-500 p-4 rounded-xl shadow-md"
+        sx={{
+          mb: 3,
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(auto-fill, minmax(200px, 1fr))',
+          },
+          gap: 2,
+        }}
+      >
+        {[
+          { label: 'Merchant Name', name: 'name' },
+          { label: 'Merchant Email', name: 'email' },
+          { label: 'Order ID', name: 'orderId' },
+          { label: 'Start Date', name: 'startDate', type: 'date' },
+          { label: 'End Date', name: 'endDate', type: 'date' },
+        ].map(({ label, name, type }) => (
+          <TextField
+            key={name}
+            label={label}
+            name={name}
+            type={type || 'text'}
+            value={filters[name]}
+            onChange={handleChange}
+            size="small"
+            InputProps={{
+              className: 'bg-white rounded-md',
             }}
-          >
-            {[
-              { label: 'Merchant Name', name: 'name' },
-              { label: 'Merchant Email', name: 'email' },
-              { label: 'Order ID', name: 'orderId' },
-              { label: 'Start Date', name: 'startDate', type: 'date' },
-              { label: 'End Date', name: 'endDate', type: 'date' },
-            ].map(({ label, name, type }) => (
-              <TextField
-                key={name}
-                label={label}
-                name={name}
-                type={type || 'text'}
-                value={filters[name]}
-                onChange={handleChange}
-                size="small"
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: type === 'date' || filters[name],
-                }}
-              />
-            ))}
-          </Box>
-        </Paper>
+            InputLabelProps={{
+              // shrink: true,
+              sx: {
+                backgroundColor: 'white',
+                px: 0.5,
+                width: '100%',
+                borderRadius: 1,
+              },
+            }}
+          />
+        ))}
+      </Box>
+  {/* DataGrid */}
+        <Box sx={{ height: 600, width: '100%' }}>
+          <DataGrid
+            rows={shipments}
+            columns={columns}
+            loading={isLoading}
+            hideFooter={true}
+            disableSelectionOnClick
+            getRowId={(row) => row.ord_id}
+            rowHeight={80}
+          />
+        </Box>
 
-        {isLoading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            Loading Shipments...
-          </Box>
-        ) : isMobile ? (
-          // Mobile view: list of Cards
-          <Box sx={{ mt: 3 }}>
-            {shipments.length > 0 ? (
-              shipments.map((shipment) => (
-                <Card key={shipment.ord_id} shipment={shipment} onManageClick={handleManageClick} />
-              ))
-            ) : (
-              <Box sx={{ textAlign: 'center', p: 4, color: 'text.secondary' }}>
-                No shipments found matching your criteria.
-              </Box>
-            )}
-          </Box>
-        ) : (
-          // Desktop view: DataGrid
-          <Box sx={{ height: 600, width: '100%', mt: 3 }}>
-            <DataGrid
-              rows={shipments}
-              columns={columns}
-              loading={isLoading}
-              hideFooter={true} // Pagination is handled separately
-              disableSelectionOnClick
-              getRowId={(row) => row.ord_id}
-              rowHeight={80}
-              // Added some DataGrid specific styling for a smoother look
-              sx={{
-                '& .MuiDataGrid-columnHeaders': {
-                  backgroundColor: '#f5f5f5',
-                  fontWeight: 'bold',
-                },
-                '& .MuiDataGrid-cell': {
-                  borderBottom: '1px solid #e0e0e0',
-                },
-                '& .MuiDataGrid-row:hover': {
-                  backgroundColor: '#f9f9f9',
-                },
-                borderRadius: 2,
-              }}
-            />
-          </Box>
-        )}
-
-        {/* Custom Pagination - applied to both views */}
-        <Pagination
+        {/* Custom Pagination */}
+        <Pagination 
           currentPage={page}
           totalPages={totalPages}
           onPageChange={(newPage) => setPage(newPage)}

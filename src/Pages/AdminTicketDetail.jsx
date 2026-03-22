@@ -99,13 +99,13 @@ export default function AdminTicketDetail() {
                         ← Support Dashboard
                     </button>
 
-                    <div className="bg-white rounded-[32px] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-gray-100 overflow-hidden flex flex-col min-h-[600px] max-h-[calc(100vh-150px)] lg:h-[750px] xl:h-[850px]">
+                    <div className="bg-white rounded-[32px] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-gray-100 overflow-hidden flex flex-col h-[750px]">
                         <div className="p-8 border-b border-gray-50 flex items-center justify-between">
                             <h1 className="text-xl font-black text-[#1f2937] tracking-tight uppercase">Admin Console</h1>
                             <div className="flex items-center gap-3">
                                 <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Update Status</span>
                                 <select
-                                    className="bg-gray-100 border-none text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all outline-none hover:bg-gray-200"
+                                    className="bg-gray-100 border-none text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl focus:ring-2 focus:ring-blue-500 transition-all outline-none"
                                     value={currentStatus}
                                     onChange={(e) => setCurrentStatus(e.target.value)}
                                 >
@@ -117,31 +117,25 @@ export default function AdminTicketDetail() {
                         </div>
 
                         <div className="flex-grow overflow-y-auto p-8 space-y-6 bg-[#fbfcfd]">
-                            {messages.length === 0 ? (
-                                <div className="flex items-center justify-center h-full text-gray-400 text-center italic p-4">
-                                    <p>No messages yet. Send the first reply to this ticket!</p>
-                                </div>
-                            ) : (
-                                messages.map((msg) => (
-                                    <div key={msg.message_id} className={`flex ${msg.sent_by_admin ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[85%] p-5 rounded-[24px] shadow-sm text-[13px] leading-relaxed ${
-                                            msg.sent_by_admin 
-                                                ? 'bg-[#1f2937] text-white rounded-tr-none font-medium' 
-                                                : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
-                                        }`}>
-                                            <div className="flex items-center justify-between mb-2 gap-6">
-                                                <span className={`font-black text-[10px] uppercase tracking-widest ${msg.sent_by_admin ? 'text-gray-400' : 'text-blue-500'}`}>
-                                                    {msg.sent_by_admin ? 'Admin Response' : (msg.fullName || 'Merchant')}
-                                                </span>
-                                                <span className={`text-[10px] ${msg.sent_by_admin ? 'text-white/40' : 'text-gray-400'}`}>
-                                                    {new Date(msg.created_at.endsWith('Z') ? msg.created_at : msg.created_at + 'Z').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </span>
-                                            </div>
-                                            <p className="whitespace-pre-wrap">{msg.message_text}</p>
+                            {messages.map((msg) => (
+                                <div key={msg.message_id} className={`flex ${msg.sent_by_admin ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[85%] p-5 rounded-[24px] shadow-sm text-[13px] leading-relaxed ${
+                                        msg.sent_by_admin 
+                                            ? 'bg-[#1f2937] text-white rounded-tr-none font-medium' 
+                                            : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
+                                    }`}>
+                                        <div className="flex items-center justify-between mb-2 gap-6">
+                                            <span className={`font-black text-[10px] uppercase tracking-widest ${msg.sent_by_admin ? 'text-gray-400' : 'text-blue-500'}`}>
+                                                {msg.sent_by_admin ? 'Admin Response' : (msg.fullName || 'Merchant')}
+                                            </span>
+                                            <span className={`text-[10px] ${msg.sent_by_admin ? 'text-white/40' : 'text-gray-300'}`}>
+                                                {new Date(msg.created_at.endsWith('Z') ? msg.created_at : msg.created_at + 'Z').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
                                         </div>
+                                        <p className="whitespace-pre-wrap">{msg.message_text}</p>
                                     </div>
-                                ))
-                            )}
+                                </div>
+                            ))}
                             <div ref={messagesEndRef} />
                         </div>
 
