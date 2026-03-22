@@ -35,7 +35,7 @@ const Sidebar2 = () => {
       {/* Menu button (Icon) - visible only below md screens */}
       <button
         onClick={toggleSidebar}
-        className="md:hidden p-3 absolute top-3 left-3 text-gray-700 hover:text-[#22c55e] transition-colors duration-200 z-40 bg-white rounded-full shadow-md" // Enhanced button styling
+        className="md:hidden p-3 absolute top-[55px] left-3 text-gray-700 hover:text-[#22c55e] transition-colors duration-200 z-40 bg-white rounded-full shadow-md" // Enhanced button styling
         aria-label="Open sidebar menu"
       >
         <FaBars className="h-6 w-6" /> {/* Menu icon */}
