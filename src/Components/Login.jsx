@@ -147,7 +147,7 @@ const LoginForm = () => {
             </div>
 
             <Link to="/register"><div className='text-center text-sm my-4 text-gray-500'> {/* Adjusted text size and color */}
-              New User? <span className='text-[#22c55e] hover:underline transition-colors duration-200'>Create a new account!</span> {/* Consistent green color */}
+              New User? <span className='text-blue-600 hover:underline transition-colors duration-200'>Create a new account!</span> {/* Consistent green color */}
             </div></Link>
           </div>
         </div>
