@@ -19,6 +19,7 @@ import Verify from './Pages/Verify'
 // import TicketRaise from './Pages/TicketRaise'
 import { ToastContainer } from 'react-toastify'
 import FloatingAssistant from './Components/FloatingAssistant'
+import BottomNavbar from './Components/BottomNavbar' // Import the new component
 
 const App = () => {
   const location = useLocation();
@@ -48,6 +49,8 @@ const App = () => {
       </Routes>
       <FloatingAssistant />
       {!hideFooter && <Footer/>}
+      {/* Conditionally render BottomNavbar */}
+      {!hideFooter && <BottomNavbar />} 
     </div>
   )
 }

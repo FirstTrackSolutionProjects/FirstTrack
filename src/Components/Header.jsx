@@ -97,7 +97,7 @@ const Header = () => {
               <div className='md:hidden flex-shrink-0'>
                 <div
                   onClick={() => setShowRecharge(true)}
-                  className={`relative bg-[#22c55e] text-white flex items-center font-medium rounded-full px-3 py-1 text-sm cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap
+                  className={`relative bg-indigo-600 text-white flex items-center font-medium rounded-full px-3 py-1 text-sm cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap
                   ${balance < 250 ? 'ring-2 ring-red-500 ring-offset-1 bg-red-500' : 'hover:scale-105'}`}
                   aria-label={`Current balance: ₹${formatBalance(balance)}. Click to recharge.`}
                 >
@@ -113,7 +113,7 @@ const Header = () => {
                 {(verified && location.pathname.startsWith('/dashboard')) && (
                   <div
                     onClick={() => setShowRecharge(true)}
-                    className={`relative bg-[#22c55e] text-white flex items-center font-medium rounded-full px-4 py-2 cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap
+                    className={`relative bg-indigo-600 text-white flex items-center font-medium rounded-full px-4 py-2 cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap
                     ${balance < 250 ? 'ring-2 ring-red-500 ring-offset-1 bg-red-500' : 'hover:scale-105'}`}
                     aria-label={`Current balance: ₹${formatBalance(balance)}. Click to recharge.`}
                   >
@@ -185,7 +185,7 @@ const Header = () => {
                 {(verified && location.pathname.startsWith('/dashboard')) && (
                   <div
                     onClick={() => { setShowRecharge(true); toggleSidebar(); }}
-                    className={`relative bg-[#22c55e] text-white flex items-center font-medium rounded-full px-3 py-1 text-sm cursor-pointer transition-all duration-200 shadow-sm w-full justify-center whitespace-nowrap
+                    className={`relative bg-indigo-600 text-white flex items-center font-medium rounded-full px-3 py-1 text-sm cursor-pointer transition-all duration-200 shadow-sm w-full justify-center whitespace-nowrap
                     ${balance < 250 ? 'ring-2 ring-red-500 ring-offset-1 bg-red-500' : 'hover:scale-105'}`}
                     aria-label={`Current balance: ₹${formatBalance(balance)}. Click to recharge.`}
                   >

@@ -32,8 +32,8 @@ const AboutUs = () => {
      {/* Company Intro Section (NEW) */}
       <section className="py-8 max-w-5xl mx-auto px-4">
         <p className="text-gray-700 text-lg leading-relaxed text-center">
-        <strong>First Track</strong>, a proud venture of <strong>First Track Solutions Technologies Pvt Ltd</strong>, is a dedicated logistics platform committed to delivering speed, safety, and operational excellence across the supply chain. Officially registered in Bhubaneswar, Odisha in <strong>October 2022</strong>, the platform was created with a clear vision: to introduce next-generation tracking and highly reliable transport solutions to businesses nationwide.
-        At <strong>First Track</strong>, we recognize that effective logistics is the backbone of commerce. We believe every shipment represents critical time and capital, and our dedicated technology and vast carrier network ensure that every movement—from warehousing to last-mile delivery—is executed with precision and transparency.
+        <span className="text-black font-bold">First</span> <span className="text-[#22c55e] font-bold">Track</span>, a proud venture of <span className="text-black font-bold">First</span> <span className="text-[#22c55e] font-bold">Track</span> Solutions Technologies Pvt Ltd, is a dedicated logistics platform committed to delivering speed, safety, and operational excellence across the supply chain. Officially registered in Bhubaneswar, Odisha in <strong>October 2022</strong>, the platform was created with a clear vision: to introduce next-generation tracking and highly reliable transport solutions to businesses nationwide.
+        At <span className="text-black font-bold">First</span> <span className="text-[#22c55e] font-bold">Track</span>, we recognize that effective logistics is the backbone of commerce. We believe every shipment represents critical time and capital, and our dedicated technology and vast carrier network ensure that every movement—from warehousing to last-mile delivery—is executed with precision and transparency.
         </p>
       </section>
 
