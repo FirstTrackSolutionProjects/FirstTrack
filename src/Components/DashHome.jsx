@@ -47,7 +47,7 @@ const DashHome = () => {
           })()}
         </h1>
         <h2 className='text-2xl md:text-3xl font-bold text-[#1f2937] mt-1'>
-          <span className='text-[#22c55e]'>{businessName || name}</span> 👋
+          <span className='text-orange-400'>{businessName || name}</span> 👋
         </h2>
         <p className='text-gray-500 mt-3 text-lg'>
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}

@@ -26,7 +26,7 @@ const App = () => {
   const hideFooter = location.pathname.startsWith('/dashboard');
 
   return (
-    <div className='App font-inter text-gray-800'> {/* Added default font and text color for consistency */}
+    <div className='App font-inter text-gray-800 pb-[72px] md:pb-0'> {/* Added default font and text color for consistency, added conditional padding-bottom for mobile navbar */}
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" /> {/* Enhanced ToastContainer props */}
       <Header/>
       <Routes>
@@ -49,8 +49,8 @@ const App = () => {
       </Routes>
       <FloatingAssistant />
       {!hideFooter && <Footer/>}
-      {/* Conditionally render BottomNavbar */}
-      {!hideFooter && <BottomNavbar />} 
+      {/* BottomNavbar should always be visible on mobile, regardless of dashboard status */}
+      <BottomNavbar /> 
     </div>
   )
 }

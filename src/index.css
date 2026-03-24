@@ -3,6 +3,19 @@
   scrollbar-width: thin;
   scrollbar-color: #ababab #1f2937; /* thumb, track */
 }
+/* Apply base styles to html, body, and root for consistent full-height layout */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll, which can sometimes interfere with fixed positioning */
+}
+
+/* Custom dark, thin scrollbar for sidebar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ababab #1f2937; /* thumb, track */
+}
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
   background: #1f2937;
@@ -17,7 +30,25 @@
 }
 .custom-scrollbar::-webkit-scrollbar-corner {
   background: #1f2937;
-}@tailwind base;
+}
+
+/* Custom animations for chatbot modal entry */
+@keyframes slide-in-from-bottom {
+  0% {
+    opacity: 0;
+    transform: translateY(20px); /* Adjust this value for more/less slide effect */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in.slide-in-from-bottom-5 {
+  animation: slide-in-from-bottom 0.3s ease-out forwards;
+}
+
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
