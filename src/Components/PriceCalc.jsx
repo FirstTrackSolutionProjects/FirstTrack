@@ -131,7 +131,7 @@ const Domestic = () => {
           : name === 'isB2B' // Special handling for isB2B select which returns string
             ? value === 'true'
             : type === 'number'
-              ? parseFloat(value) || 0
+              ? value === '' ? '' : parseFloat(value) // Allow empty string for numeric inputs
               : value,
     }));
   };
@@ -139,7 +139,12 @@ const Domestic = () => {
   const handleBoxes = (index, event) => {
     const { name, value, type } = event.target;
     const updatedBoxes = [...boxes];
-    updatedBoxes[index][name] = type === 'number' ? parseFloat(value) || 0 : value;
+    updatedBoxes[index][name] =
+      type === 'number'
+        ? value === ''
+          ? '' // Allow empty string for numeric inputs
+          : (name === 'quantity' ? parseInt(value, 10) : parseFloat(value))
+        : value;
     setBoxes(updatedBoxes);
   };
 
