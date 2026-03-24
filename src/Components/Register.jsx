@@ -286,11 +286,11 @@ const RegisterForm = () => {
               <div className="ml-2 text-sm">
                 <label className="text-gray-600">
                   I agree to the{" "}
-                  <Link to="/terms" className="text-blue-600 hover:underline transition-colors duration-200">
+                  <Link to="/terms" className="text-[#22c55e] hover:underline transition-colors duration-200">
                     Terms & Conditions
                   </Link>{" "}
                   and{" "}
-                  <Link to="/privacy" className="text-blue-600 hover:underline transition-colors duration-200">
+                  <Link to="/privacy" className="text-[#22c55e] hover:underline transition-colors duration-200">
                     Privacy Policy
                   </Link>
                 </label>
@@ -309,9 +309,10 @@ const RegisterForm = () => {
               </button>
             </div>
           </form>
-          <div className="mt-6 text-center">
-            <Link to="/login" className="text-sm text-gray-500 hover:text-[#22c55e] transition-colors duration-200"> {/* Consistent green hover */}
-              Already have an account? Sign In
+          <div className="mt-6 text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link to="/login" className="text-[#22c55e] hover:underline transition-colors duration-200">
+              Sign In
             </Link>
           </div>
         </div>
