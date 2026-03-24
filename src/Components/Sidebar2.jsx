@@ -83,7 +83,7 @@ const Sidebar2 = () => {
           </button>
         </div>
         {/* Sidebar content - scrollable */}
-        <div className="flex-1 overflow-y-auto px-4 pb-6 pt-4 custom-scrollbar" style={{scrollBehavior: 'smooth'}}> {/* Increased top padding */}
+        <div className="flex-1 overflow-y-auto px-4 pb-[90px] pt-4 custom-scrollbar" style={{scrollBehavior: 'smooth'}}> {/* Increased top padding */}
           <ul className="space-y-2">
             {sidebarItems.map((item) => {
               if ((item.admin && !admin) || (item.merchantOnly && admin)) {
