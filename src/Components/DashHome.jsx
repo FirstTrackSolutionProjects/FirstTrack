@@ -41,9 +41,10 @@ const DashHome = () => {
         <h1 className='text-3xl md:text-4xl font-extrabold text-[#1f2937]'>
           {(() => {
             const hour = new Date().getHours();
-            if (hour < 12) return 'Good Morning, ☀️';
-            if (hour < 18) return 'Good Afternoon, 🌤️';
-            return 'Good Evening, 🌙';
+            if (hour >= 0 && hour < 4.75) return 'Have A Great Night!, 🦉✨🌃'; // 12 AM to 4:44 AM
+            if (hour >= 4.75 && hour < 12) return 'Good Morning, ☀️'; // 4.45 AM to 11:59 AM
+            if (hour >= 12 && hour < 18) return 'Good Afternoon, 🌤️'; // 12 PM to 5:59 PM
+            return 'Good Evening, 🌙'; // 6 PM to 11:59 PM
           })()}
         </h1>
         <h2 className='text-2xl md:text-3xl font-bold text-[#1f2937] mt-1'>
