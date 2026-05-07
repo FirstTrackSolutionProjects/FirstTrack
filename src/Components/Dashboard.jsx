@@ -50,9 +50,9 @@ const Dashboard = () => {
       return routes;
     });
   };
-return (
-    <>
-    <div className='h-[calc(100vh-86px)] flex font-inter bg-gray-200'>
+
+  return (
+    <div className='h-[calc(100vh-86px)] flex font-inter bg-[#f8fafc] text-gray-800'> {/* Adjusted background to a lighter, softer shade */}
       <Sidebar2 />
         <main className="flex-grow justify-center items-center overflow-y-auto">
           <Routes>
@@ -63,8 +63,12 @@ return (
           </Routes>
         </main>
 
+          {/* Manually defined Detail routes */}
+          <Route path="admin/support/:id" element={<AdminTicketDetail />} />
+          <Route path="support/:id" element={<TicketDetail />} />
+        </Routes>
+      </main>
     </div>
-    </>
   );
 };
 

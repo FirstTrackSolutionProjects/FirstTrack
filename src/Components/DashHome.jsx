@@ -18,9 +18,10 @@ const DashHome = () => {
     } 
   }, [verified]);
   const [summary, setSummary] = useState(null)
-  useEffect(()=>{
-    console.log(summary)
-  },[summary])
+  // Removed console.log for summary
+  // useEffect(()=>{
+  //   console.log(summary)
+  // },[summary])
 
   
   useEffect(() => {
@@ -31,7 +32,7 @@ const DashHome = () => {
             'Content-Type': 'application/json',
             'Authorization': localStorage.getItem('token'),
           }
-        }).then(response => response.json()).then(response => {setSummary(response); console.log(response)});
+        }).then(response => response.json()).then(response => {setSummary(response); /* Removed console.log(response) */});
       }
       getStatistics()
   },[])

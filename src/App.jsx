@@ -16,14 +16,15 @@ import Login from './Components/Login'
 import Register from './Components/Register'
 import Dashboard from './Components/Dashboard'
 import Verify from './Pages/Verify'
+// import TicketRaise from './Pages/TicketRaise'
 import { ToastContainer } from 'react-toastify'
 import FloatingAssistant from './components/FloatingAssistant';
 
 const App = () => {
   const { pathname } = useLocation();
   return (
-    <div className='App'>
-      <ToastContainer />
+    <div className='App font-inter text-gray-800 pb-[72px] md:pb-0'> {/* Added default font and text color for consistency, added conditional padding-bottom for mobile navbar */}
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" /> {/* Enhanced ToastContainer props */}
       <Header/>
       <Routes>
       
@@ -41,6 +42,7 @@ const App = () => {
         <Route path='/register' element={<Register/>}></Route>
         <Route path='/dashboard/*' element={<Dashboard/>}></Route>
         <Route path='/verify' element={<Verify/>}></Route>
+        {/* <Route path='/ticket' element={<TicketRaise/>}></Route> */}
       </Routes>
       <FloatingAssistant />
       {

@@ -313,7 +313,7 @@ export const menuItems = [
       icon : FaTachometerAlt,
       name : "Dashboard",
       isDropdown : false,
-      url : '',
+      url : '', // Empty URL for the root dashboard route
       component : DashHome,
       dropDownOptions : [{}]
   },
@@ -583,7 +583,7 @@ export const menuItems = [
           icon : FaBox,
           name : "Shipments",
           isDropdown : true,
-          url : 'manage/merchant/shipments',
+          url : 'manage/merchant/shipments', // Base URL for the dropdown
           dropDownOptions : [{
               icon : FaBox,
               name : "Domestic",
@@ -601,9 +601,10 @@ export const menuItems = [
           },]
       },
       {
-          icon : FaClipboardList,
+          icon : FaClipboardList, // Reusing FaClipboardList for Shipment Reports, changed from "/logo.webp"
           name : "Shipment Reports",
           isDropdown : true,
+          url : 'manage/merchant/shipment-reports', // Added a base URL for this dropdown
           dropDownOptions : [{
               icon : FaClipboardList,
               name : "Domestic Reports",
@@ -621,26 +622,6 @@ export const menuItems = [
           },]
       }]
   },
-  // {
-  //     icon : "/logo.webp",
-  //     name : "Users",
-  //     admin : true,
-  //     isDropdown : true,
-  //     menuID : [10],
-  //     dropDownOptions : [{
-  //         icon : "/logo.webp",
-  //         name : "Accounts",
-  //         isDropdown : false,
-  //         menuID : [10,0],
-  //         dropDownOptions : [{}]
-  //     },{
-  //         icon : "/logo.webp",
-  //         name : "Admin",
-  //         isDropdown : false,
-  //         menuID : [10,1],
-  //         dropDownOptions : [{}]
-  //     },]
-  // },
   {
       icon : FaFileAlt,
       name : "Submission",
@@ -675,15 +656,6 @@ export const menuItems = [
           component : ContactSubmissions,
           dropDownOptions : [{}]
       },
-      // {
-      //     icon : "/logo.webp",
-      //     name : "KYC Requests",
-      //     isDropdown : false,
-      //     admin : true,
-      //     url : 'submissions/kyc-requests',
-      //     component : "",
-      //     dropDownOptions : [{}]
-      // }
   ]
   },
   {
@@ -749,6 +721,33 @@ export const menuItems = [
               dropDownOptions : [{}]
           },
       ]
+  },
+  {
+      icon : MessageSquareText,
+      name : "My Support Tickets",
+      isDropdown : false,
+      merchantOnly : true,
+      url : 'support',
+      component : Support,
+      dropDownOptions : [{}]
+  },
+  {
+      icon : TruckElectricIcon,
+      name : "Support Management",
+      isDropdown : false,
+      admin : true,
+      url : 'admin/support',
+      component : AdminSupport,
+      dropDownOptions : [{}]
+  },
+  {
+      icon : BarChart3,
+      name : "Support Analytics",
+      isDropdown : false,
+      admin : true,
+      url : 'admin/analytics',
+      component : AdminAnalytics,
+      dropDownOptions : [{}]
   },
   {
       icon : FaDoorOpen,
