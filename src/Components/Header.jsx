@@ -191,13 +191,19 @@ const Header = () => {
       <header className="bg-white shadow-sm w-full font-inter sticky top-0 z-30">
         {/* Container for logo and navigation */}
         <div className="max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center py-2 md:py-3">
-          {/* Logo and Company Name */}
-          <Link to='/' className="flex items-center flex-shrink-0">
-            <img src="/images/logo.svg" alt="First Track Logistics Logo" className="w-10 h-10 md:w-12 md:h-12" />
-            <span className="text-lg sm:text-xl md:text-2xl font-extrabold ml-2 text-gray-800 whitespace-nowrap">FIRST <span className="text-[#22c55e]">TRACK</span></span> {/* Updated green color to match theme */}
+          {/* Logo */}
+          <Link to="/" className="flex items-center flex-shrink-0">
+            <img
+              src="/images/logo.svg"
+              alt="First Track Logistics Logo"
+              className="w-10 h-10 md:w-12 md:h-12"
+            />
+            <span className="text-lg sm:text-xl md:text-2xl font-extrabold ml-2 text-gray-800 whitespace-nowrap">
+              FIRST <span className="text-[#22c55e]">TRACK</span>
+            </span>
           </Link>
 
-          {/* Menu for md and above */}
+          {/* Desktop nav */}
           <nav className="hidden md:flex flex-grow justify-center min-w-0">
             <div className="flex flex-wrap justify-center md:space-x-4 lg:space-x-8 text-base">
               <NavLink to="/" className={getNavLinkClass}>HOME</NavLink>
@@ -209,47 +215,71 @@ const Header = () => {
             </div>
           </nav>
 
-          {/* Right section for authenticated users / menu button */}
+          {/* Right section */}
           <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0 min-w-0">
-            {/* Balance view for small screens (and potentially desktop, conditional for dashboard) */}
-            {(isAuthenticated && verified && location.pathname.startsWith('/dashboard')) && (
-              <div className='md:hidden flex-shrink-0'>
+            {(isAuthenticated &&
+              verified &&
+              location.pathname.startsWith("/dashboard")) && (
+              <div className="md:hidden flex-shrink-0">
                 <div
                   onClick={() => setShowRecharge(true)}
-                  className={`relative bg-indigo-600 text-white flex items-center font-medium rounded-full px-3 py-1 text-sm cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap
-                  ${balance < 250 ? 'ring-2 ring-red-500 ring-offset-1 bg-red-500' : 'hover:scale-105'}`}
-                  aria-label={`Current balance: ₹${formatBalance(balance)}. Click to recharge.`}
+                  className={`relative bg-indigo-600 text-white flex items-center font-medium rounded-full px-3 py-1 text-sm cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap ${
+                    balance < 250
+                      ? "ring-2 ring-red-500 ring-offset-1 bg-red-500"
+                      : "hover:scale-105"
+                  }`}
+                  aria-label={`Current balance: ₹${formatBalance(
+                    balance
+                  )}. Click to recharge.`}
                 >
                   <FaWallet className="mr-1 text-base" />
                   <p>{`₹${formatBalance(balance)}`}</p>
-                  {balance < 250 && <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold animate-pulse">!</span>}
+                
+                  {balance < 250 && (
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold animate-pulse">
+                      !
+                    </span>
+                  )}
                 </div>
               </div>
             )}
 
-            {isAuthenticated ? (
-              <div className='md:flex items-center space-x-4 hidden flex-shrink-0 min-w-0'> {/* Authenticated user section for desktop */}
-                {(verified && location.pathname.startsWith('/dashboard')) && (
+            {isAuthenticated && (
+              <div className="md:flex items-center space-x-4 hidden flex-shrink-0 min-w-0">
+                {(verified &&
+                  location.pathname.startsWith("/dashboard")) && (
                   <div
                     onClick={() => setShowRecharge(true)}
-                    className={`relative bg-indigo-600 text-white flex items-center font-medium rounded-full px-4 py-2 cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap
-                    ${balance < 250 ? 'ring-2 ring-red-500 ring-offset-1 bg-red-500' : 'hover:scale-105'}`}
-                    aria-label={`Current balance: ₹${formatBalance(balance)}. Click to recharge.`}
+                    className={`relative bg-indigo-600 text-white flex items-center font-medium rounded-full px-4 py-2 cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap ${
+                      balance < 250
+                        ? "ring-2 ring-red-500 ring-offset-1 bg-red-500"
+                        : "hover:scale-105"
+                    }`}
+                    aria-label={`Current balance: ₹${formatBalance(
+                      balance
+                    )}. Click to recharge.`}
                   >
                     <FaWallet className="mr-2 text-lg" />
                     <p>{`₹${formatBalance(balance)}`}</p>
-                    {balance < 250 && <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm font-bold animate-pulse">!</span>}
+                  
+                    {balance < 250 && (
+                      <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm font-bold animate-pulse">
+                        !
+                      </span>
+                    )}
                   </div>
                 )}
-                <div className='flex items-center space-x-2 min-w-0'>
-                  <NavLink 
-                    to="/dashboard" 
+
+                <div className="flex items-center space-x-2 min-w-0">
+                  <NavLink
+                    to="/dashboard"
                     onClick={() => setIsSidebarOpen(false)}
                     className="font-semibold text-gray-800 hover:text-green-600 transition-colors duration-200 cursor-pointer truncate max-w-[120px] md:max-w-[150px]"
                     title={name}
                   >
                     {name}
                   </NavLink>
+              
                   <button
                     className="bg-red-500 hover:bg-red-600 transition-colors duration-200 text-white text-lg p-2 rounded-full cursor-pointer flex items-center justify-center shadow-sm flex-shrink-0"
                     onClick={logout}
@@ -259,40 +289,48 @@ const Header = () => {
                   </button>
                 </div>
               </div>
-            ) : null}
+            )}
 
-            {/* Menu button for small screens */}
+            {/* Mobile menu button */}
             <div className="md:hidden z-50 flex-shrink-0">
               <button onClick={toggleSidebar} aria-label="Open menu">
-                <AiOutlineMenu className='text-[#22c55e]' size={28} /> {/* Updated green color */}
+                <AiOutlineMenu className="text-[#22c55e]" size={28} />
               </button>
             </div>
           </div>
         </div>
-
-      {/* Sidebar for small screens */}
-      <div
-        className={` z-40 fixed top-0 right-0 w-64 bg-white h-full shadow-lg transform ${
-          isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
-        } transition-transform duration-300 ease-in-out md:hidden`}
-      >
-        <div className="p-4 flex justify-between items-center border-b">
-          <span className="text-lg font-bold"></span>
-          <button onClick={toggleSidebar}>
-            <IoMdClose size={30} />
-          </button>
-        </div>
-        <div className="flex items-center space-x-4">
-          <RoleDropdownMenu containerRef={roleDropdownDesktopRef} />
-          {isAuthenticated?<div className="flex items-center justify-between w-full bg-gray-200 mx-2 rounded-xl">
-  <span className='mx-2 font-bold text-lg'>{name}</span>
-  <span
-    className="bg-red-500 text-white text-xl p-3 cursor-pointer rounded-xl"
-    onClick={logout}
-  >
-    <FaDoorOpen />
-  </span>
-</div>:null}
+          
+        {/* Mobile sidebar */}
+        <div
+          className={`z-40 fixed top-0 right-0 w-64 bg-white h-full shadow-lg transform ${
+            isSidebarOpen ? "translate-x-0" : "translate-x-full"
+          } transition-transform duration-300 ease-in-out md:hidden`}
+        >
+          <div className="p-4 flex justify-between items-center border-b">
+            <span className="text-lg font-bold"></span>
+        
+            <button onClick={toggleSidebar}>
+              <IoMdClose size={30} />
+            </button>
+          </div>
+        
+          <div className="flex items-center space-x-4 p-2">
+            <RoleDropdownMenu containerRef={roleDropdownDesktopRef} />
+        
+            {isAuthenticated && (
+              <div className="flex items-center justify-between w-full bg-gray-200 rounded-xl">
+                <span className="mx-2 font-bold text-lg truncate">{name}</span>
+            
+                <button
+                  className="bg-red-500 text-white text-xl p-3 rounded-xl"
+                  onClick={logout}
+                  aria-label="Logout"
+                >
+                  <FaDoorOpen />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
     </>

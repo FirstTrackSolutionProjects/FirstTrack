@@ -62,12 +62,6 @@ const Dashboard = () => {
             <Route path="support/:id" element={<TicketDetail />} /> 
           </Routes>
         </main>
-
-          {/* Manually defined Detail routes */}
-          <Route path="admin/support/:id" element={<AdminTicketDetail />} />
-          <Route path="support/:id" element={<TicketDetail />} />
-        </Routes>
-      </main>
     </div>
   );
 };
