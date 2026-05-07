@@ -117,7 +117,7 @@ const NewsletterSection = () => {
             <input
               type="email"
               placeholder="Enter your email address"
-              className="w-full text-sm md:text-base md:w-auto px-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full text-sm md:text-base md:w-auto px-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
             />
             <button className="w-full text-sm md:text-base md:w-auto bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300">
               Subscribe
