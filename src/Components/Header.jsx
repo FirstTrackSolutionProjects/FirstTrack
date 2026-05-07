@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai'; // Menu icon
 import { IoMdClose } from 'react-icons/io'; // Close icon
 import { Link, useLocation } from 'react-router-dom';
@@ -19,6 +19,125 @@ const Header = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const [availableRoles, setAvailableRoles] = useState([])
+  const [rolesLoading, setRolesLoading] = useState(false)
+  const [roleMenuOpen, setRoleMenuOpen] = useState(false)
+  const [switchingRoleId, setSwitchingRoleId] = useState(null)
+  const roleDropdownDesktopRef = useRef(null)
+  const roleDropdownMobileRef = useRef(null)
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setAvailableRoles([])
+      setRoleMenuOpen(false)
+      return;
+    }
+
+    let active = true
+    const fetchRoles = async () => {
+      try {
+        setRolesLoading(true)
+        const roles = await getAvailableRoles()
+        if (!active) return
+        setAvailableRoles(Array.isArray(roles) ? roles : [])
+      } catch (e) {
+        if (!active) return
+        setAvailableRoles([])
+      } finally {
+        if (active) setRolesLoading(false)
+      }
+    }
+
+    fetchRoles()
+    return () => {
+      active = false
+    }
+  }, [isAuthenticated])
+
+  const shouldShowRoleSwitcher = useMemo(() => {
+    return isAuthenticated && Array.isArray(availableRoles) && availableRoles.length > 1
+  }, [isAuthenticated, availableRoles])
+
+  useEffect(() => {
+    if (!roleMenuOpen) return
+    const onMouseDown = (e) => {
+      const desktopEl = roleDropdownDesktopRef.current
+      const mobileEl = roleDropdownMobileRef.current
+      const clickedInsideDesktop = desktopEl?.contains?.(e.target)
+      const clickedInsideMobile = mobileEl?.contains?.(e.target)
+      if (!clickedInsideDesktop && !clickedInsideMobile) {
+        setRoleMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onMouseDown)
+    return () => document.removeEventListener('mousedown', onMouseDown)
+  }, [roleMenuOpen])
+
+  const handleSwitchRole = async (nextRole) => {
+    try {
+      const nextUserRoleId = nextRole?.user_role_id
+      if (!nextUserRoleId) throw new Error('Invalid role')
+      if (switchingRoleId) return
+
+      if (String(nextRole?.role || '').toUpperCase() === String(role || '').toUpperCase()) {
+        setRoleMenuOpen(false)
+        return
+      }
+
+      setSwitchingRoleId(nextUserRoleId)
+      const newToken = await changeRoleService(nextUserRoleId)
+      localStorage.setItem('token', newToken)
+      setRoleMenuOpen(false)
+      setMenuOpen(false)
+      window.location.reload()
+    } catch (e) {
+      toast.error(e?.message || 'Failed to change role')
+    } finally {
+      setSwitchingRoleId(null)
+    }
+  }
+
+  const RoleDropdownMenu = ({ containerRef }) => {
+    if (!shouldShowRoleSwitcher) return null
+    return (
+      <div className="relative" ref={containerRef}>
+        <button
+          type="button"
+          className="bg-white text-black flex items-center font-medium rounded-xl px-2 py-2 cursor-pointer max-w-xs truncate"
+          onClick={() => setRoleMenuOpen((o) => !o)}
+          disabled={rolesLoading}
+          title={role ? `Current role: ${role}` : 'Switch role'}
+        >
+          <span className="truncate">{role ? `Role: ${role}` : 'Switch Role'}</span>
+          <span className="ml-2">▾</span>
+        </button>
+
+        {roleMenuOpen && (
+          <div className="absolute right-0 mt-2 w-56 bg-white border rounded-xl shadow-lg z-50 overflow-hidden">
+            {availableRoles.map((r) => {
+              const isActive = String(r?.role || '').toUpperCase() === String(role || '').toUpperCase()
+              const isBusy = switchingRoleId === r?.user_role_id
+              return (
+                <button
+                  key={r?.user_role_id}
+                  type="button"
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-red-50 ${isActive ? 'bg-red-50 font-medium' : ''} ${(switchingRoleId && !isBusy) ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  onClick={() => handleSwitchRole(r)}
+                  disabled={Boolean(switchingRoleId) || isActive}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="truncate">{r?.role}</span>
+                    {isBusy ? <span className="text-xs text-gray-500">Switching…</span> : null}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   const [balance, setBalance] = useState(0.00);
   useEffect(() => {
@@ -106,6 +225,7 @@ const Header = () => {
           </button>
         </div>
         <div className="flex items-center space-x-4">
+          <RoleDropdownMenu containerRef={roleDropdownDesktopRef} />
           {isAuthenticated?<div className="flex items-center justify-between w-full bg-gray-200 mx-2 rounded-xl">
   <span className='mx-2 font-bold text-lg'>{name}</span>
   <span

@@ -1,13 +1,15 @@
 import React ,{useEffect,useState} from 'react'
 import { useNavigate } from 'react-router-dom';
 import DashCard from './DashCard';
-import { Admincards, Merchantcards } from '../Constants';
+import { Admincards, Merchantcards, USER_ROLES } from '../Constants';
 import { useAuth } from '../context/AuthContext.jsx';
+import Greeting from './Greeting.jsx';
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 const DashHome = () => {
-  const {admin, verified, name} = useAuth()
+  const {role, verified, name} = useAuth()
   const navigate = useNavigate();
+  const admin = role === USER_ROLES.ADMIN;
 
   useEffect(() => {
     
@@ -35,11 +37,12 @@ const DashHome = () => {
   },[])
 
   return (
-    <div className='bg-gray-200'>
-      <div className='text-center '>
-      <div className='flex gap-1 mt-5 text-xl justify-center'>Welcome <span className='font-semibold'>{name}</span>! </div> 
-      </div>
+    <div className='bg-gray-200 m-8'>
+      {/* <div className='text-center '> */}
+      {/* <div className='flex gap-1 mt-5 text-xl justify-center'>Welcome <span className='font-semibold'>{name}</span>! </div>  */}
+      {/* </div> */}
       {/*Card*/}
+        <Greeting />
         <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-8 p-5 '>
             {admin ? <DashCard title="Total Merchants" count={summary?summary.merchant:0} /> : null}
             <DashCard title="Total Warehouses" count={summary?summary.warehouse:0} />

@@ -22,6 +22,8 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import CloseIcon from '@mui/icons-material/Close';
 import convertToUTCISOString from "../helpers/convertToUTCISOString";
+import { DOMESTIC_ORDER_STATUS_ENUMS } from "@/Constants";
+import WarehouseSelect from "./UiComponents/WarehouseSelect";
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -50,20 +52,8 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
   const [orders, setOrders] = useState([
     { box_no: 1, product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: '' }
   ]);
-  const [warehouses, setWarehouses] = useState([])
   
   useEffect(() => {
-    const getWarehouses = async () => {
-      await fetch(`${API_URL}/warehouse/warehouses`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token'),
-        }
-      }).then(response => response.json()).then(result => setWarehouses(result.rows))
-    }
-    getWarehouses();
     fetch(`${API_URL}/order/domestic`, {
       method: 'POST',
       headers: {
@@ -150,6 +140,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
     pickupDate: shipment.pickup_date,
     pickupTime: shipment.pickup_time,
     shipmentValue: shipment.shipment_value,
+    insurance: shipment.insurance || false,
     ewaybill: shipment.ewaybill,
     invoiceNumber: shipment.invoice_number,
     invoiceDate: shipment.invoice_date,
@@ -159,55 +150,55 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
     customer_reference_number: shipment?.customer_reference_number
   })
 
-  // useEffect(() => {
-  //   const pinToAdd = async () => {
-  //     try {
-  //       await fetch(`https://api.postalpincode.in/pincode/${formData.postcode}`)
-  //         .then(response => response.json())
-  //         .then(result => {
-  //           const city = result[0].PostOffice[0].District
-  //           const state = result[0].PostOffice[0].State
-  //           setFormData((prev) => ({
-  //             ...prev,
-  //             city: city,
-  //             state: state
-  //           }))
-  //         })
-  //     } catch (e) {
-  //       setFormData((prev) => ({
-  //         ...prev,
-  //         city: '',
-  //         state: ''
-  //       }))
-  //     }
-  //   }
-  //   if (formData.postcode.length == 6) pinToAdd()
-  // }, [formData.postcode])
+  useEffect(() => {
+    const pinToAdd = async () => {
+      try {
+        await fetch(`https://api.postalpincode.in/pincode/${formData.postcode}`)
+          .then(response => response.json())
+          .then(result => {
+            const city = result[0].PostOffice[0].District
+            const state = result[0].PostOffice[0].State
+            setFormData((prev) => ({
+              ...prev,
+              city: city,
+              state: state
+            }))
+          })
+      } catch (e) {
+        setFormData((prev) => ({
+          ...prev,
+          city: '',
+          state: ''
+        }))
+      }
+    }
+    if (formData.postcode.length == 6) pinToAdd()
+  }, [formData.postcode])
   
-  // useEffect(() => {
-  //   const pinToAdd = async () => {
-  //     try {
-  //       await fetch(`https://api.postalpincode.in/pincode/${formData.Bpostcode}`)
-  //         .then(response => response.json())
-  //         .then(result => {
-  //           const city = result[0].PostOffice[0].District
-  //           const state = result[0].PostOffice[0].State
-  //           setFormData((prev) => ({
-  //             ...prev,
-  //             Bcity: city,
-  //             Bstate: state
-  //           }))
-  //         })
-  //     } catch (e) {
-  //       setFormData((prev) => ({
-  //         ...prev,
-  //         Bcity: '',
-  //         Bstate: ''
-  //       }))
-  //     }
-  //   }
-  //   if (formData.Bpostcode.length == 6) pinToAdd()
-  // }, [formData.Bpostcode])
+  useEffect(() => {
+    const pinToAdd = async () => {
+      try {
+        await fetch(`https://api.postalpincode.in/pincode/${formData.Bpostcode}`)
+          .then(response => response.json())
+          .then(result => {
+            const city = result[0].PostOffice[0].District
+            const state = result[0].PostOffice[0].State
+            setFormData((prev) => ({
+              ...prev,
+              Bcity: city,
+              Bstate: state
+            }))
+          })
+      } catch (e) {
+        setFormData((prev) => ({
+          ...prev,
+          Bcity: '',
+          Bstate: ''
+        }))
+      }
+    }
+    if (formData?.Bpostcode?.length == 6) pinToAdd()
+  }, [formData?.Bpostcode])
 
   const addProduct = () => {
     setOrders([...orders, { box_no: 1, product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: '' }]);
@@ -402,21 +393,10 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
         <form onSubmit={handleSubmit}>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
             <FormControl fullWidth sx={{ minWidth: 300 }}>
-              <InputLabel>Pickup Warehouse Name</InputLabel>
-              <Select
+              <WarehouseSelect
                 value={formData.wid}
-                onChange={handleChange}
-                size="small"
-                name="wid"
-                label="Pickup Warehouse Name"
-              >
-                <MenuItem value="">Select Warehouse</MenuItem>
-                {warehouses.map((warehouse) => (
-                  <MenuItem key={warehouse.wid} value={warehouse.wid}>
-                    {warehouse.warehouseName}
-                  </MenuItem>
-                ))}
-              </Select>
+                onChange={(wid) => setFormData(prev => ({ ...prev, wid }))}
+              />
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>
               <TextField
@@ -563,7 +543,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Shipping Postcode"
+                label="Shipping Pincode"
                 name="postcode"
                 size="small"
                 placeholder="Ex. 813210"
@@ -639,7 +619,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300,  flex: 1 }}>
               <TextField
-                label="Billing Postcode"
+                label="Billing Pincode"
                 name="Bpostcode"
                 size="small"
                 placeholder="Ex. 813210"
@@ -769,7 +749,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             <Button
               variant="contained"
               onClick={addBox}
-              sx={{ borderRadius: '24px', mt: 2 }}
+              sx={{ borderRadius: '4px', mt: 2 }}
             >
               Add More Boxes
             </Button>
@@ -841,7 +821,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             <Button
               variant="contained"
               onClick={addProduct}
-              sx={{ borderRadius: '24px', mt: 2 }}
+              sx={{ borderRadius: '4px', mt: 2 }}
             >
               Add More Product
             </Button>
@@ -856,7 +836,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             }
             label="Is this is a B2B shipment?"
           />
-          {formData.isB2B && (
+          {formData.isB2B ? (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
               <FormControl sx={{ minWidth: 150, flex:1 }}>
                 <TextField
@@ -895,12 +875,12 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
                   onChange={handleInvoice}
                 />
                 <Box className="flex items-center mt-2">
-                  <a type="button" className="m-2 w-20 px-5 py-2 border rounded-3xl bg-blue-600 text-white" target="_blank" href={import.meta.env.VITE_APP_BUCKET_URL + formData.invoiceUrl}>View</a>
+                  <a type="button" className="m-2 w-20 px-5 py-2 border rounded bg-blue-600 text-white" target="_blank" href={import.meta.env.VITE_APP_BUCKET_URL + formData.invoiceUrl}>View</a>
                   <Button
                     variant="contained"
                     onClick={uploadInvoice}
                     className="bg-blue-500"
-                    sx={{ borderRadius: '24px' }}
+                    sx={{ borderRadius: '4px' }}
                   >
                     Update
                   </Button>
@@ -915,7 +895,17 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
                 />
               </FormControl>
             </Box>
-          )}
+          ) : null}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!formData.insurance}
+                onChange={(e)=> setFormData(prev=>({...prev, insurance: e.target.checked}))}
+                name="insurance"
+              />
+            }
+            label="Do you want insurance?"
+          />
           <Box sx={{ my: 4 }}>
             <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Additional Info</div>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
@@ -980,12 +970,10 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
     const balanceData = await getBalance.json();
     const balance = balanceData.balance;
     
-    if ((parseFloat(balance) < (100 + parseFloat(price.price)))) {
-      if (shipment.pay_method !== "topay") {
-        alert('Your wallet must have over 100 rupees after shipment');
+    if ((parseFloat(balance) < (parseFloat(price.price)))) {
+        alert('Insufficient balance to create shipment');
         setIsLoading(false);
         return;
-      }
     }
     
     fetch(`${API_URL}/shipment/domestic/create`, {
@@ -997,23 +985,24 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
       },
       body: JSON.stringify({ 
         order: shipment.ord_id, 
-        price: shipment.pay_method == "topay" ? 0 : Math.round(price.price), 
+        price: Math.round(price.price), 
         serviceId: price.serviceId, 
-        courierId: price.courierId, 
-        courierServiceId: price.courierServiceId 
+        courierId: price.courierId,
+        courierServiceId: price.courierServiceId,
+        submerchantMargin: price.submerchantMargin,
       })
     }).then(response => response.json()).then(async result => {
       if (result.success) {
         setIsShipped(true);
         console.log(result);
         const message = (result?.message instanceof String) ? result?.message : null;
-        alert(message || "Your shipment has been created successfully");
+        toast.success(message || "Your shipment has been created successfully");
         getParcels();
         setIsLoading(false);
         setIsShip(false);
       } else {
         const failureReason = result.message || "Your shipment has not been created";
-        alert(failureReason);
+        toast.error(failureReason);
         console.log(result);
         setIsLoading(false);
       }
@@ -1024,6 +1013,24 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
     <Paper sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <Box>
         <div>{price.name + " " + price.weight}</div>
+        <Box sx={{ mt: 0.5 }}>
+          <Box component="span" sx={{
+            px: 1.2,
+            py: 0.3,
+            fontSize: '0.65rem',
+            fontWeight: 600,
+            borderRadius: '12px',
+            letterSpacing: 0.5,
+            display: 'inline-block',
+            textTransform: 'uppercase',
+            color: price.insurance ? '#065f46' : '#6b7280',
+            backgroundColor: price.insurance ? '#d1fae5' : '#f3f4f6',
+            border: '1px solid',
+            borderColor: price.insurance ? '#10b981' : '#d1d5db'
+          }}>
+            {price.insurance ? 'Insured' : 'Not Insured'}
+          </Box>
+        </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <div>{`₹${Math.round((price.price))}`}</div>
@@ -1031,7 +1038,7 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
           variant="contained"
           onClick={isLoading ? () => {} : () => ship()}
           disabled={isLoading}
-          sx={{ borderRadius: '24px' }}
+          sx={{ borderRadius: '4px' }}
         >
           {isLoading ? "Shipping..." : "Ship"}
         </Button>
@@ -1088,7 +1095,8 @@ const ShipList = ({ shipment, isShipOpen, setIsShipOpen, setIsShipped, getParcel
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token')
         },
         body: JSON.stringify({ 
           method: shipment.shipping_mode == "Surface" ? "S" : "E", 
@@ -1102,6 +1110,7 @@ const ShipList = ({ shipment, isShipOpen, setIsShipOpen, setIsShipped, getParcel
           quantity: boxesData.order.length, 
           boxes: boxesData.order, 
           isShipment: true, 
+          insurance: shipment.insurance,
           isB2B: shipment.is_b2b, 
           invoiceAmount: shipment.invoice_amount 
         }),
@@ -1146,23 +1155,6 @@ const ShipList = ({ shipment, isShipOpen, setIsShipOpen, setIsShipped, getParcel
 
 
 const PickupRequest = ({ setPickup }) => {
-  const [warehouses, setWarehouses] = useState([]);
-  useEffect(() => {
-    const getWarehouses = async () => {
-      const response = await fetch(`${API_URL}/warehouse/warehouses`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token'),
-        }
-      });
-      const result = await response.json();
-      setWarehouses(result.rows);
-    };
-    getWarehouses();
-  }, []);
-  
   const [formData, setFormData] = useState({
     wid: "",
     pickDate: "",
@@ -1203,20 +1195,13 @@ const PickupRequest = ({ setPickup }) => {
       <DialogContent>
         <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
           <FormControl fullWidth required>
-            <InputLabel>Pickup Warehouse Name</InputLabel>
-            <Select
-              value={formData.wid}
-              onChange={handleChange}
-              name="wid"
-              label="Pickup Warehouse Name"
-            >
-              <MenuItem value="">Select Warehouse</MenuItem>
-              {warehouses.map((warehouse) => (
-                <MenuItem key={warehouse.wid} value={warehouse.wid}>
-                  {warehouse.warehouseName}
-                </MenuItem>
-              ))}
-            </Select>
+            <InputLabel shrink>Pickup Warehouse Name</InputLabel>
+            <Box sx={{ mt: 2 }}>
+              <WarehouseSelect
+                value={formData.wid}
+                onChange={(wid) => setFormData((prev) => ({ ...prev, wid }))}
+              />
+            </Box>
           </FormControl>
           
           <FormControl fullWidth required>
@@ -1530,18 +1515,18 @@ const Listing = ({ step, setStep }) => {
           'Content-Type': 'application/json',
           'Authorization': localStorage.getItem('token')
         },
-        body: JSON.stringify({ order: shipment.ord_id })
+        body: JSON.stringify({ orders: [shipment.ord_id] })
       });
       const result = await response.json();
-      
-      const link = document.createElement('a');
-      link.href = result.label;
-      link.download = `Label_${shipment.ord_id}.pdf`;
-      link.target = '_blank';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const base64label = result?.labels?.[0];
+      if (result.success && base64label) {
+        const link = document.createElement('a');
+        link.href = `data:application/pdf;base64,${base64label}`;
+        link.download = `Label_${shipment.ord_id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     } catch (error) {
       console.error(error);
       alert("Failed to get label");
@@ -1551,6 +1536,7 @@ const Listing = ({ step, setStep }) => {
     customer_email: "",
     orderId: "",
     customer_name: "",
+    status: "",
     startDate: "",
     endDate: ""
   });
@@ -1583,6 +1569,7 @@ const Listing = ({ step, setStep }) => {
           ...(debouncedFilters.customer_name && { customer_name: debouncedFilters.customer_name }),
           ...(debouncedFilters.customer_email && { customer_email: debouncedFilters.customer_email }),
           ...(debouncedFilters.orderId && { orderId: debouncedFilters.orderId }),
+          ...(debouncedFilters.status && { status: debouncedFilters.status }),
           ...(debouncedFilters.startDate && { startDate: convertToUTCISOString(debouncedFilters.startDate) }),
           ...(debouncedFilters.endDate && { endDate: convertToUTCISOString(`${debouncedFilters.endDate}T23:59:59.999Z`) })
         });
@@ -1597,12 +1584,12 @@ const Listing = ({ step, setStep }) => {
         
         const result = await response.json();
         if (result.success) {
-          // Sort orders to prioritize unshipped orders
-          const unShippedShipments = result.order.filter(shipment => !shipment.awb);
-          const shippedShipments = result.order.filter(shipment => shipment.awb);
-          const sortedShipments = [...unShippedShipments, ...shippedShipments];
+          // // Sort orders to prioritize unshipped orders
+          // const unShippedShipments = result.order.filter(shipment => !shipment.awb);
+          // const shippedShipments = result.order.filter(shipment => shipment.awb);
+          // const sortedShipments = [...unShippedShipments, ...shippedShipments];
           
-          setShipments(sortedShipments);
+          setShipments(result.order);
           setTotalPages(result.totalPages || 1);
         } else {
           alert("Failed to fetch parcels");
@@ -1651,8 +1638,15 @@ const Listing = ({ step, setStep }) => {
       renderCell: (params) => 
         params.row.date ? new Date(params.row.date).toLocaleString() : ''
     },
-    { field: 'customer_name', headerName: 'Customer Name', width: 180 },
-    { field: 'customer_email', headerName: 'Email', width: 200 },
+    { field: 'customer_details', headerName: 'Customer Details', width: 250,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexDirection: 'column', whiteSpace: 'normal', lineHeight: 1.3, height: 80, justifyContent: 'center' }}>
+          <div className="font-bold">{params.row.customer_name}</div>
+          <div>{params.row.customer_email}</div>
+          <div>{params.row.customer_mobile}</div>
+        </Box>
+      )
+    },
     {
       field: 'shipping',
       headerName: 'Shipping Details',
@@ -1663,6 +1657,7 @@ const Listing = ({ step, setStep }) => {
           <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 80 }}>
             {isShipped ? (
               <>
+                <div>Pay Method: {params.row.pay_method} {params.row.pay_method === "COD" ? ` - ₹${parseInt(params.row.cod_amount)}` : ''}</div>
                 <div>{params.row.service_name}</div>
                 {params.row.awb && <div>AWB: {params.row.awb}</div>}
                 {params.row.shipping_vendor_reference_id && <div>LRN: {params.row.shipping_vendor_reference_id}</div>}
@@ -1726,7 +1721,7 @@ const Listing = ({ step, setStep }) => {
       headerName: 'Actions',
       width: 400,
       renderCell: (params) => {
-        const isShipped = Boolean(params.row.awb);
+        const isShipped = Boolean(params.row.is_manifested);
         const isCancelled = params.row.cancelled;
         const isDeleted = params.row.deleted;
         const isProcessing = params.row.in_process;
@@ -1743,7 +1738,7 @@ const Listing = ({ step, setStep }) => {
                   setSelectedShipment(params.row);
                   setIsManageOpen(true);
                 }}
-                sx={{ borderRadius: '24px' }}
+                sx={{ borderRadius: '4px' }}
               >
                 {isShipped ? 'View' : 'Manage'}
               </Button>
@@ -1755,7 +1750,7 @@ const Listing = ({ step, setStep }) => {
               size="small"
               onClick={() => handleClone(params.row)}
               disabled={getActionState(params.row.ord_id, 'cloning')}
-              sx={{ borderRadius: '24px' }}
+              sx={{ borderRadius: '4px' }}
             >
               {getActionState(params.row.ord_id, 'cloning') ? 'Cloning...' : 'Clone'}
             </Button>
@@ -1767,7 +1762,7 @@ const Listing = ({ step, setStep }) => {
                 size="small"
                 onClick={() => handleRefresh(params.row)}
                 disabled={getActionState(params.row.ord_id, 'refreshing')}
-                sx={{ borderRadius: '24px' }}
+                sx={{ borderRadius: '4px' }}
               >
                 {getActionState(params.row.ord_id, 'refreshing') ? 'Refreshing...' : 'Refresh'}
               </Button>
@@ -1779,7 +1774,7 @@ const Listing = ({ step, setStep }) => {
                 variant="contained"
                 size="small"
                 onClick={() => handleGetLabel(params.row)}
-                sx={{ borderRadius: '24px' }}
+                sx={{ borderRadius: '4px' }}
               >
                 Label
               </Button>
@@ -1791,21 +1786,21 @@ const Listing = ({ step, setStep }) => {
                 variant="contained"
                 size="small"
                 onClick={() => handleShip(params.row)}
-                sx={{ borderRadius: '24px' }}
+                sx={{ borderRadius: '4px' }}
               >
                 Ship
               </Button>
             )}
             
             {/* Cancel Button - only for shipped, non-cancelled, specific services */}
-            {isShipped && !isProcessing && !isCancelled && [1,2,5,6,7,8,11,12,13].includes(serviceId) && (
+            {isShipped && !isProcessing && !isCancelled && (
               <Button
                 variant="outlined"
                 color="error"
                 size="small"
                 onClick={() => handleCancel(params.row)}
                 disabled={getActionState(params.row.ord_id, 'cancelling')}
-                sx={{ borderRadius: '24px' }}
+                sx={{ borderRadius: '4px' }}
               >
                 {getActionState(params.row.ord_id, 'cancelling') ? 'Cancelling...' : 'Cancel'}
               </Button>
@@ -1819,7 +1814,7 @@ const Listing = ({ step, setStep }) => {
                 size="small"
                 onClick={() => handleDelete(params.row)}
                 disabled={getActionState(params.row.ord_id, 'deleting')}
-                sx={{ borderRadius: '24px' }}
+                sx={{ borderRadius: '4px' }}
               >
                 {getActionState(params.row.ord_id, 'deleting') ? 'Deleting...' : 'Delete'}
               </Button>
@@ -1840,7 +1835,7 @@ const Listing = ({ step, setStep }) => {
           <div className="text-2xl font-medium">SHIPMENTS</div>
           <div
             onClick={() => setPickup(true)}
-            className="px-5 py-1 bg-blue-500 absolute rounded-3xl text-white right-4"
+            className="px-5 py-1 bg-blue-500 absolute rounded text-white right-4"
           >
             Pickup Request
           </div>
@@ -1873,6 +1868,29 @@ const Listing = ({ step, setStep }) => {
               onChange={handleChange}
               sx={{ minWidth: 150 }}
             />
+            <FormControl size="small" sx={{ minWidth: '150px', mr: 1 }}>
+              <InputLabel id="status-select-label" className="bg-white w-full">Status</InputLabel>
+              <Select
+                labelId="status-select-label"
+                value={filters.status}
+                onChange={handleChange}
+                name="status"
+                label="Status"
+                sx={{
+                  backgroundColor: 'white',
+                  borderRadius: 1,
+                }}
+              >
+                <MenuItem value="">
+                  <em>All</em>
+                </MenuItem>
+                {Object.values(DOMESTIC_ORDER_STATUS_ENUMS).map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               label="Start Date"
               type="date"
@@ -1906,6 +1924,28 @@ const Listing = ({ step, setStep }) => {
             disableSelectionOnClick
             getRowId={(row) => row.ord_id}
             rowHeight={80}
+            sx={{
+              border: '1px solid #000',
+              borderRadius: 0,
+              '& .MuiDataGrid-columnHeaders': {
+                borderBottom: '1px solid #000',
+                backgroundColor: '#A34757',
+                color: '#FFF',
+              },
+              '& .MuiDataGrid-columnHeader': {
+                backgroundColor: '#A34757',
+                fontWeight: 'bold',
+              },
+              '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
+                borderRight: '1px solid #000',
+              },
+              '& .MuiDataGrid-columnHeader:first-of-type, & .MuiDataGrid-cell:first-of-type': {
+                borderLeft: '1px solid #000',
+              },
+              '& .MuiDataGrid-row': {
+                borderBottom: '1px solid #000',
+              },
+            }}
           />
         </Box>
 

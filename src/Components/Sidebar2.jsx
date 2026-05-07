@@ -6,11 +6,12 @@ import { useAuth } from '../context/AuthContext.jsx';
 import SidebarItem from './SidebarItem.jsx';
 import WalletRechargeModal from './WalletRechargeModal.jsx';
 const Sidebar2 = () => {
-  const {admin, logout} = useAuth();
+  const {role, logout} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [showRecharge, setShowRecharge] = useState(false);
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
 
   const closeRechargeModal = () => {
     setShowRecharge(false);
@@ -21,7 +22,6 @@ const Sidebar2 = () => {
 
   useEffect(()=>{
     if (location.pathname=="/dashboard/logout") logout()
-    setIsOpen(false);
   },[navigate])
 
   const sidebarItems = menuItems
@@ -34,54 +34,38 @@ const Sidebar2 = () => {
         onClick={toggleSidebar}
         className="md:hidden p-2 absolute text-gray-700  z-40"
       >
-        <FaBars className="h-8 w-6" /> {/* Menu icon */}
+        {isOpen?<FaTimes className="h-7 w-7 text-white" /> : <FaBars className="h-8 w-6" />}
       </button>
 
        {/* Sidebar for md screen */}
-      <div
-        className="bg-gray-900 h-full w-64 text-white hidden md:flex flex-col left-0 shadow-xl border-r border-gray-800"
+       <div
+        className={`${isSidebarHovered ? 'w-[250px] min-w-[250px]' : 'w-[72px] min-w-[72px]'} md:block hidden h-full relative bg-black overflow-y-auto overflow-x-hidden transition-all duration-300`}
+        onMouseEnter={() => setIsSidebarHovered(true)}
+        onMouseLeave={() => setIsSidebarHovered(false)}
       >
-        {/* Sidebar content - scrollable */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-6 pt-2 custom-scrollbar" style={{scrollBehavior: 'smooth'}}>
-          <ul className="space-y-2">
-            {sidebarItems.map((item) => {
-              if ((item.admin && !admin) || (item.merchantOnly && admin)) {
-                return;
-              }
-              return (<SidebarItem key={item.label || item.name} item={item} setShowRecharge={setShowRecharge} />)
-            })}
-          </ul>
-        </div>
+      <ul className="p-2">
+        {sidebarItems.map((item) => {
+          if (item.hidden || (item.roles !== undefined && !item.roles.includes(role))) {
+            return;
+          }
+          return(<SidebarItem item={item} setShowRecharge={setShowRecharge} sidebarExpanded={isSidebarHovered} />)
+        })}
+      </ul>
       </div>
        {/* Sidebar for beloe md screen */}
-      <div
-        className={`fixed top-0 left-0 h-full w-full bg-gray-800 text-white transform transition-transform duration-300 ease-in-out z-40 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden flex flex-col`}
-        style={{boxShadow: '2px 0 16px 0 rgba(0,0,0,0.15)'}}
+       <div
+        className={`relative ${isOpen?'w-[300px]': 'w-0'} block md:hidden h-full bg-black overflow-y-auto overflow-x-hidden transition-all duration-300`}
       >
-        {/* Close button (Icon) - fixed at the top */}
-        <div className="sticky top-0 left-0 z-50 bg-gray-800 flex justify-end p-4" style={{borderTopRightRadius: '1rem'}}>
-          <button
-            onClick={toggleSidebar}
-            className="text-white focus:outline-none"
-            aria-label="Close sidebar"
-          >
-            <FaTimes className="h-7 w-7" />
-          </button>
+        {/* Close button (Icon) */}
+        <ul className="p-4 pt-12">
+        {sidebarItems.map((item) => {
+          if (item.hidden || (item.roles !== undefined && !item.roles.includes(role))) {
+            return;
+          }
+          return(<SidebarItem item={item} setShowRecharge={setShowRecharge} toggleSidebar={toggleSidebar} />)
+        })}
+      </ul>
         </div>
-        {/* Sidebar content - scrollable */}
-        <div className="flex-1 overflow-y-auto px-4 pb-6 pt-2 custom-scrollbar" style={{scrollBehavior: 'smooth'}}>
-          <ul className="space-y-2">
-            {sidebarItems.map((item) => {
-              if ((item.admin && !admin) || (item.merchantOnly && admin)) {
-                return;
-              }
-              return (<SidebarItem key={item.label || item.name} item={item} setShowRecharge={setShowRecharge} />)
-            })}
-          </ul>
-        </div>
-      </div>
     </div>
     </>
   );

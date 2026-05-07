@@ -1,26 +1,24 @@
 
 const API_URL = import.meta.env.VITE_APP_API_URL
-const checkPendingRequest = async () => {
+const checkPendingUpdateProfileRequest = async () => {
     try {
-      const pendingVerificationRequests = await fetch(`${API_URL}/verification/request`, {
-        method: 'POST',
+      const pendingUpdateProfileRequests = await fetch(`${API_URL}/update-profile-requests`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': localStorage.getItem('token'),
         }
       });
-      if (!pendingVerificationRequests.ok) {
+      if (!pendingUpdateProfileRequests.ok) {
         throw new Error('Failed to get requests');
       }
   
-      const data = await pendingVerificationRequests.json();
-      console.log(data);
+      const data = await pendingUpdateProfileRequests.json();
       return data;
     } catch (err) {
       throw new Error(err)
     }
   };
   
-  export default checkPendingRequest;
+  export default checkPendingUpdateProfileRequest;
   

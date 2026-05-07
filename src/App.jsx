@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './Components/Header'
 import Footer from './Components/Footer'
 import Home from './Pages/Home'
@@ -17,8 +17,10 @@ import Register from './Components/Register'
 import Dashboard from './Components/Dashboard'
 import Verify from './Pages/Verify'
 import { ToastContainer } from 'react-toastify'
+import FloatingAssistant from './components/FloatingAssistant';
 
 const App = () => {
+  const { pathname } = useLocation();
   return (
     <div className='App'>
       <ToastContainer />
@@ -40,7 +42,16 @@ const App = () => {
         <Route path='/dashboard/*' element={<Dashboard/>}></Route>
         <Route path='/verify' element={<Verify/>}></Route>
       </Routes>
-      <Footer/>
+      <FloatingAssistant />
+      {
+        // NOTE: Removed '/ticket' from this conditional check
+        (pathname.startsWith('/dashboard') ||
+          pathname.startsWith('/login') ||
+          pathname.startsWith('/register') ||
+          pathname.startsWith('/tracking'))
+        ? null 
+        : <Footer />
+        }
     </div>
   )
 }

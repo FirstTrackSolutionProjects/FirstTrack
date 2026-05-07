@@ -17,6 +17,7 @@
 }
 .custom-scrollbar::-webkit-scrollbar-corner {
   background: #1f2937;
-}@tailwind base;
-@tailwind components;
-@tailwind utilities;
+}
+
+@import "tailwindcss";
+
