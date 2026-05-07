@@ -18,7 +18,7 @@ import Dashboard from './Components/Dashboard'
 import Verify from './Pages/Verify'
 // import TicketRaise from './Pages/TicketRaise'
 import { ToastContainer } from 'react-toastify'
-import FloatingAssistant from './components/FloatingAssistant';
+import FloatingAssistant from './Components/FloatingAssistant';
 
 const App = () => {
   const { pathname } = useLocation();

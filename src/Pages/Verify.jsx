@@ -17,7 +17,7 @@ import { USER_ROLES } from "../Constants";
 import { useAuth } from "../context/AuthContext";
 import checkPendingRequest from "../services/checkPendingRequest";
 import getS3PutUrlService from "../services/s3Services/getS3PutUrlService";
-import putObjectService from "../components/CustomComponents/s3Services/putObjectService";
+import putObjectService from "../Components/CustomComponents/s3Services/putObjectService";
 
 import {
   VERIFICATION_STEP_SCHEMAS,

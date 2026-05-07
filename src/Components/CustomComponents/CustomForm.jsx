@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle, cr
 import { Box, Grid, TextField, Select, MenuItem, FormControl, InputLabel, InputAdornment, Typography, Switch, FormControlLabel } from "@mui/material";
 import { toast } from "react-toastify";
 import { MuiFileInput } from 'mui-file-input';
-import MultiSelect from "@/components/CustomComponents/MultiSelect";
+import MultiSelect from "@/Components/CustomComponents/MultiSelect";
 import FileAttachmentIcon from '@/icons/FileAttachmentIcon';
 import ClearFieldIcon from "@/icons/ClearFieldIcon";
 import getS3PutUrlService from "./s3Services/getPutObjectUrlService";
 import { z } from "zod";
 import s3FileUploadService from "./s3Services/putObjectService";
 import ViewIcon from "@/icons/ViewIcon";
-import CustomButton from "@/components/CustomComponents/CustomButton";
+import CustomButton from "@/Components/CustomComponents/CustomButton";
 import CustomArrayForm from "./CustomArrayForm";
 import CustomAutocomplete from "./CustomAutocomplete";
 

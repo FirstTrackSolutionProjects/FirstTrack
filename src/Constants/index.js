@@ -28,8 +28,8 @@ import WeightDisputes from '../Components/WeightDisputes';
 import PendingCancellations from '../Components/PendingCancellations/PendingCancellations';
 import PendingRefunds from '../Components/PendingRefunds/PendingRefunds';
 import {IndianRupee, TruckElectricIcon, MessageSquareText, Banknote, RefreshCcw, ShieldCheck, Users, BarChart3, File, Key} from "lucide-react"
-import Support from '../pages/Support';
-import B2CBulkShipment from "@/components/BulkShipment/B2CBulkShipment"
+import Support from '../Pages/Support';
+import B2CBulkShipment from "@/Components/BulkShipment/B2CBulkShipment"
 import CodRemittanceAdmin from '@/Components/CodRemittance/CodRemittanceAdmin';
 import PendingRTO from '@/Components/PendingRTO/PendingRTO';
 import MySubmerchants from '@/Components/Submerchant/MySubmerchants';
