@@ -27,40 +27,37 @@ export default function FloatingAssistant() {
     }
 
     return (
-        <div className="fixed bottom-20 right-6 z-50 font-inter flex flex-col items-end"> {/* Adjusted bottom to 20 (80px) and z-index to 50 for the button */}
+        <div className="fixed bottom-6 right-6 z-1000"> 
             {/* Chat Modal Window */}
             {isOpen && (
                 <div 
-                    className="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-3xl overflow-hidden 
-                                min-w-[280px] w-[calc(100vw-2rem)] max-w-sm h-[80vh] max-h-[500px] 
-                                md:w-[320px] md:h-[500px] lg:w-[400px] lg:h-[600px] 
-                                mb-5 border border-gray-100 flex flex-col animate-in slide-in-from-bottom-5 duration-300 z-[1000]"
+                    className="bg-white shadow-2xl rounded-lg overflow-hidden 
+                                w-80 h-[450px] md:w-96 md:h-[600px] 
+                                mb-4 border border-gray-200 flex flex-col"
                 >
-                    {/* Header: Deep Charcoal */}
-                    <div className="bg-[#1f2937] text-white px-6 py-5 flex justify-between items-center shrink-0">
-                        <div>
-                            <p className="font-bold text-base tracking-tight">First Track Support</p>
-                            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Always on track</p>
-                        </div>
-                        <button onClick={handleClose} className="p-2 hover:bg-white/10 rounded-full transition">
+                    {/* Header */}
+                    <div className="bg-[#075e54] text-white px-4 py-3 flex justify-between items-center shrink-0">
+                        <p className="font-semibold text-sm">Shipwale Support</p>
+                        <button onClick={handleClose} className="text-xl hover:text-red-300 transition">
                             <X size={20} />
                         </button>
                     </div>
 
                     {/* Chatbot Content */}
-                    <div className="grow overflow-hidden bg-[#f8fafc]">
+                    <div className="grow">
                         <TicketChatbot onClose={handleClose} />
                     </div>
                 </div>
             )}
 
-            {/* Floating Button: Brand Green */}
+            {/* Floating Button */}
             <button
                 onClick={toggleOpen}
-                className="w-14 h-14 rounded-2xl shadow-xl text-white transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95 bg-[#22c55e]"
+                className={`w-14 h-14 rounded-full shadow-lg text-white transition-all duration-300 flex items-center justify-center 
+                            ${isOpen ? 'bg-red-600 hover:bg-red-700' : 'bg-[#075e54] hover:bg-green-700'}`}
                 aria-label={isOpen ? "Close Support Chat" : "Open Support Chat"}
             >
-                <MessageCircle size={24} fill="currentColor" className="text-white" />
+                {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
             </button>
         </div>
     );

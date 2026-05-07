@@ -2,34 +2,39 @@ import React, { createElement } from 'react';
 import Sidebar2 from './Sidebar2';
 import { Routes,Route } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { menuItems } from '../Constants';
+import { menuItems, USER_ROLES } from '../Constants';
 import { useNavigate } from 'react-router-dom';
-// FIX: Corrected paths to the Pages folder
 import AdminTicketDetail from '../Pages/AdminTicketDetail';
 import TicketDetail from '../Pages/TicketDetail';
 
 const Dashboard = () => {
-  const { admin, isAuthenticated, verified } = useAuth();
+  const {role, isAuthenticated, verified} = useAuth()
   const navigate = useNavigate();
+  const isKycExempt = role === USER_ROLES.ADMIN; 
+  const needsKycVerification = !verified && !isKycExempt; 
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+        navigate('/login');
+        return;
+    }
 
-  // Handle Admin check (Adjust based on your actual AuthContext variable name)
-  const isAdmin = !!admin; 
+    // 1. If the user needs verification (i.e., they are a Merchant and verified=0)
+    if (needsKycVerification) {
+         navigate('/verify');
+         return;
+    }
+    
+    // 2. If they are authenticated and either verified=1 OR they are KYC Exempt,
+    // they fall through and the dashboard renders.
 
-  if (!isAuthenticated) {
-    navigate('/login');
-    return null;
+  }, [isAuthenticated, verified, navigate, role, needsKycVerification]);
+
+  if (!isAuthenticated || needsKycVerification) {
+    return null; 
   }
-  
-  // Only check verification for Merchants, not Admins
-  if (!verified && !isAdmin) {
-    navigate('/verify');
-    return null;
-  }
-
-  const generateRoutes = (items, adminMode) => {
+  const generateRoutes = (items, role) => {
     return items.flatMap((item, index) => {
-      // Logic to filter routes based on role
-      if ((item.admin && !adminMode) || (item.merchantOnly && adminMode)) {
+      if (item.hidden || (item.roles !== undefined && !item.roles.includes(role))) {
         return [];
       }
       const routes = [
@@ -40,7 +45,7 @@ const Dashboard = () => {
         />
       ];
       if (item.dropDownOptions && item.dropDownOptions.length > 0) {
-        routes.push(...generateRoutes(item.dropDownOptions, adminMode));
+        routes.push(...generateRoutes(item.dropDownOptions, role));
       }
       return routes;
     });
@@ -49,16 +54,14 @@ const Dashboard = () => {
   return (
     <div className='h-[calc(100vh-86px)] flex font-inter bg-[#f8fafc] text-gray-800'> {/* Adjusted background to a lighter, softer shade */}
       <Sidebar2 />
-      <main className="flex-grow overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar"> {/* Added generous padding and a custom scrollbar class */}
-        <Routes>
-          {/* Dynamically generated routes from constants */}
-          {generateRoutes(menuItems, isAdmin)}
-
-          {/* Manually defined Detail routes */}
-          <Route path="admin/support/:id" element={<AdminTicketDetail />} />
-          <Route path="support/:id" element={<TicketDetail />} />
-        </Routes>
-      </main>
+        <main className="flex-grow justify-center items-center overflow-y-auto">
+          <Routes>
+            {generateRoutes(menuItems, role)}
+            <Route path="admin/support/:id" element={<AdminTicketDetail />} />
+            {/* FIX: Add the standard merchant ticket detail route */}
+            <Route path="support/:id" element={<TicketDetail />} /> 
+          </Routes>
+        </main>
     </div>
   );
 };

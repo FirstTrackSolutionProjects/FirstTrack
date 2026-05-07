@@ -1,13 +1,15 @@
 import React ,{useEffect,useState} from 'react'
 import { useNavigate } from 'react-router-dom';
 import DashCard from './DashCard';
-import { Admincards, Merchantcards } from '../Constants';
+import { Admincards, Merchantcards, USER_ROLES } from '../Constants';
 import { useAuth } from '../context/AuthContext.jsx';
+import Greeting from './Greeting.jsx';
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 const DashHome = () => {
-  const {admin, verified, name, businessName} = useAuth()
+  const {role, verified, name} = useAuth()
   const navigate = useNavigate();
+  const admin = role === USER_ROLES.ADMIN;
 
   useEffect(() => {
     
@@ -36,28 +38,13 @@ const DashHome = () => {
   },[])
 
   return (
-    <div className='bg-[#f8fafc] min-h-full p-4 md:p-8'> {/* Adjusted background to match dashboard, added padding */}
-      <div className='text-left mb-8'>
-        <h1 className='text-3xl md:text-4xl font-extrabold text-[#1f2937]'>
-          {(() => {
-            const hour = new Date().getHours();
-            if (hour >= 0 && hour < 4.75) return 'Have A Great Night!, 🦉✨🌃'; // 12 AM to 4:44 AM
-            if (hour >= 4.75 && hour < 12) return 'Good Morning, ☀️'; // 4.45 AM to 11:59 AM
-            if (hour >= 12 && hour < 18) return 'Good Afternoon, 🌤️'; // 12 PM to 5:59 PM
-            return 'Good Evening, 🌙'; // 6 PM to 11:59 PM
-          })()}
-        </h1>
-        <h2 className='text-2xl md:text-3xl font-bold text-[#1f2937] mt-1'>
-          <span className='text-orange-400'>{businessName || name}</span> 👋
-        </h2>
-        <p className='text-gray-500 mt-3 text-lg'>
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-          <span className='mx-2'>•</span>
-          {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
-        </p>
-      </div>
-      {/*Card Grid */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8'> {/* Enhanced grid for more columns on larger screens and increased gap */}
+    <div className='bg-gray-200 m-8'>
+      {/* <div className='text-center '> */}
+      {/* <div className='flex gap-1 mt-5 text-xl justify-center'>Welcome <span className='font-semibold'>{name}</span>! </div>  */}
+      {/* </div> */}
+      {/*Card*/}
+        <Greeting />
+        <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-8 p-5 '>
             {admin ? <DashCard title="Total Merchants" count={summary?summary.merchant:0} /> : null}
             <DashCard title="Total Warehouses" count={summary?summary.warehouse:0} />
             <DashCard title="Total Shipments" count={summary?summary.shipment:0} />

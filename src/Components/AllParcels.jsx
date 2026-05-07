@@ -19,6 +19,9 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import CloseIcon from '@mui/icons-material/Close';
 import convertToUTCISOString from "../helpers/convertToUTCISOString";
+import { DOMESTIC_ORDER_STATUS_ENUMS } from "@/Constants";
+
+import WarehouseSelect from "./UiComponents/WarehouseSelect";
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
@@ -29,19 +32,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
   const [orders, setOrders] = useState([
     { box_no: 1, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: '' }
   ]);
-  const [warehouses, setWarehouses] = useState([])
   useEffect(() => {
-    const getWarehouses = async () => {
-      await fetch(`${API_URL}/warehouse/warehouses/all`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token'),
-        }
-      }).then(response => response.json()).then(result => setWarehouses(result.rows))
-    }
-    getWarehouses();
     fetch(`${API_URL}/order/domestic`, {
       method: 'POST',
       headers: {
@@ -127,6 +118,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
     shippingType: shipment.shipping_mode,
     pickupDate: shipment.pickup_date,
     pickupTime: shipment.pickup_time,
+    insurance: shipment.insurance || false,
     ewaybill: shipment.ewaybill,
     invoiceNumber: shipment.invoice_number,
     invoiceDate: shipment.invoice_date,
@@ -135,55 +127,56 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
     isB2B: shipment.is_b2b,
     customer_reference_number: shipment?.customer_reference_number
   })
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   const pinToAdd = async () => {
-  //     try {
-  //       await fetch(`https://api.postalpincode.in/pincode/${formData.postcode}`)
-  //         .then(response => response.json())
-  //         .then(result => {
-  //           const city = result[0].PostOffice[0].District
-  //           const state = result[0].PostOffice[0].State
-  //           setFormData((prev) => ({
-  //             ...prev,
-  //             city: city,
-  //             state: state
-  //           }))
-  //         })
-  //     } catch (e) {
-  //       setFormData((prev) => ({
-  //         ...prev,
-  //         city: '',
-  //         state: ''
-  //       }))
-  //     }
-  //   }
-  //   if (formData.postcode.length == 6) pinToAdd()
-  // }, [formData.postcode])
-  // useEffect(() => {
-  //   const pinToAdd = async () => {
-  //     try {
-  //       await fetch(`https://api.postalpincode.in/pincode/${formData.Bpostcode}`)
-  //         .then(response => response.json())
-  //         .then(result => {
-  //           const city = result[0].PostOffice[0].District
-  //           const state = result[0].PostOffice[0].State
-  //           setFormData((prev) => ({
-  //             ...prev,
-  //             Bcity: city,
-  //             Bstate: state
-  //           }))
-  //         })
-  //     } catch (e) {
-  //       setFormData((prev) => ({
-  //         ...prev,
-  //         Bcity: '',
-  //         Bstate: ''
-  //       }))
-  //     }
-  //   }
-  //   if (formData.Bpostcode.length == 6) pinToAdd()
-  // }, [formData.Bpostcode])
+    const pinToAdd = async () => {
+      try {
+        await fetch(`https://api.postalpincode.in/pincode/${formData.postcode}`)
+          .then(response => response.json())
+          .then(result => {
+            const city = result[0].PostOffice[0].District
+            const state = result[0].PostOffice[0].State
+            setFormData((prev) => ({
+              ...prev,
+              city: city,
+              state: state
+            }))
+          })
+      } catch (e) {
+        setFormData((prev) => ({
+          ...prev,
+          city: '',
+          state: ''
+        }))
+      }
+    }
+    if (formData.postcode.length == 6) pinToAdd()
+  }, [formData.postcode])
+
+  useEffect(() => {
+    const pinToAdd = async () => {
+      try {
+        await fetch(`https://api.postalpincode.in/pincode/${formData.Bpostcode}`)
+          .then(response => response.json())
+          .then(result => {
+            const city = result[0].PostOffice[0].District
+            const state = result[0].PostOffice[0].State
+            setFormData((prev) => ({
+              ...prev,
+              Bcity: city,
+              Bstate: state
+            }))
+          })
+      } catch (e) {
+        setFormData((prev) => ({
+          ...prev,
+          Bcity: '',
+          Bstate: ''
+        }))
+      }
+    }
+    if (formData?.Bpostcode?.length == 6) pinToAdd()
+  }, [formData?.Bpostcode])
 
   const addProduct = () => {
     setOrders([...orders, { box_no: 1, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: '' }]);
@@ -359,21 +352,11 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
         <form onSubmit={handleSubmit}>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
             <FormControl fullWidth sx={{ minWidth: 300 }}>
-              <InputLabel>Pickup Warehouse Name</InputLabel>
-              <Select
+              <WarehouseSelect
+                onChange={(wid) => setFormData(prev => ({...prev, wid}))}
                 value={formData.wid}
-                onChange={handleChange}
-                size="small"
-                name="wid"
-                label="Pickup Warehouse Name"
-              >
-                <MenuItem value="">Select Warehouse</MenuItem>
-                {warehouses.map((warehouse) => (
-                  <MenuItem key={warehouse.wid} value={warehouse.wid}>
-                    {warehouse.warehouseName}
-                  </MenuItem>
-                ))}
-              </Select>
+                userId={shipment.uid}
+              />
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>
               <TextField
@@ -509,7 +492,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Shipping Postcode"
+                label="Shipping Pincode"
                 name="postcode"
                 size="small"
                 placeholder="Ex. 813210"
@@ -585,7 +568,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300,  flex: 1 }}>
               <TextField
-                label="Billing Postcode"
+                label="Billing Pincode"
                 name="Bpostcode"
                 size="small"
                 placeholder="Ex. 813210"
@@ -715,7 +698,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             <Button
               variant="contained"
               onClick={addBox}
-              sx={{ borderRadius: '24px', mt: 2 }}
+              sx={{ borderRadius: '4px', mt: 2 }}
             >
               Add More Boxes
             </Button>
@@ -787,7 +770,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             <Button
               variant="contained"
               onClick={addProduct}
-              sx={{ borderRadius: '24px', mt: 2 }}
+              sx={{ borderRadius: '4px', mt: 2 }}
             >
               Add More Product
             </Button>
@@ -802,7 +785,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             }
             label="Is this is a B2B shipment?"
           />
-          {formData.isB2B && (
+          {formData.isB2B ? (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
               <FormControl sx={{ minWidth: 150, flex:1 }}>
                 <TextField
@@ -841,12 +824,12 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
                   onChange={handleInvoice}
                 />
                 <Box className="flex items-center mt-2">
-                  <a type="button" className="m-2 w-20 px-5 py-2 border rounded-3xl bg-blue-600 text-white" target="_blank" href={import.meta.env.VITE_APP_BUCKET_URL + formData.invoiceUrl}>View</a>
+                  <a type="button" className="m-2 w-20 px-5 py-2 border rounded bg-blue-600 text-white" target="_blank" href={import.meta.env.VITE_APP_BUCKET_URL + formData.invoiceUrl}>View</a>
                 <Button
                   variant="contained"
                   onClick={uploadInvoice}
                   className="bg-blue-500"
-                  sx={{ borderRadius: '24px' }}
+                  sx={{ borderRadius: '4px' }}
                 >
                   Update
                 </Button>
@@ -861,7 +844,11 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
                 />
               </FormControl>
             </Box>
-          )}
+          ): null}
+          <FormControlLabel
+            control={<Checkbox checked={!!formData.insurance} onChange={handleChange} name="insurance" />}
+            label="Do you want insurance?"
+          />
           <Box sx={{ my: 4 }}>
             <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Additional Info</div>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
@@ -1084,6 +1071,7 @@ const Listing = ({ step, setStep }) => {
     email: "",
     orderId: "",
     name: "",
+    status: "",
     startDate: "",
     endDate: ""
   });
@@ -1117,6 +1105,7 @@ const Listing = ({ step, setStep }) => {
           ...(debouncedFilters.name && { merchant_name: debouncedFilters.name }),
           ...(debouncedFilters.email && { merchant_email: debouncedFilters.email }),
           ...(debouncedFilters.orderId && { orderId: debouncedFilters.orderId }),
+          ...(debouncedFilters.status && { status: debouncedFilters.status }),
           ...(debouncedFilters.startDate && { startDate: convertToUTCISOString(debouncedFilters.startDate) }),
           ...(debouncedFilters.endDate && { endDate: convertToUTCISOString(`${debouncedFilters.endDate}T23:59:59.999Z`) })
         });
@@ -1168,6 +1157,26 @@ const Listing = ({ step, setStep }) => {
       headerName: 'Customer Reference Number',
       width: 100,
     },
+    { field: 'merchant_details', headerName: 'Merchant Details', width: 250,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexDirection: 'column', whiteSpace: 'normal', lineHeight: 1.3, height: 120, justifyContent: 'center' }}>
+          <div className="font-bold">{params.row.fullName}</div>
+          <div>{params.row.email}</div>
+          <div>{params.row.phone}</div>
+          <div>{params.row.user_role}</div>
+          {params.row.merchant_name && <div>{params.row.merchant_name} ({params.row.merchant_email})</div>}
+        </Box>
+      )
+    },
+    { field: 'customer_details', headerName: 'Customer Details', width: 250,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexDirection: 'column', whiteSpace: 'normal', lineHeight: 1.3, height: 120, justifyContent: 'center' }}>
+          <div className="font-bold">{params.row.customer_name}</div>
+          <div>{params.row.customer_email}</div>
+          <div>{params.row.customer_mobile}</div>
+        </Box>
+      )
+    },
     { 
       field: 'date', 
       headerName: 'Date', 
@@ -1175,8 +1184,6 @@ const Listing = ({ step, setStep }) => {
       renderCell: (params) => 
         params.row.date ? new Date(params.row.date).toLocaleString() : ''
     },
-    { field: 'fullName', headerName: 'Customer Name', width: 180 },
-    { field: 'email', headerName: 'Email', width: 200 },
     {
   field: 'shipping',
   headerName: 'Shipping Details',
@@ -1184,7 +1191,7 @@ const Listing = ({ step, setStep }) => {
   renderCell: (params) => {
     const isShipped = Boolean(params.row.awb);
     return (
-      <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 80 }}>
+      <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 120 }}>
         {isShipped ? (
           <>
             <div>{params.row.service_name}</div>
@@ -1203,7 +1210,8 @@ const Listing = ({ step, setStep }) => {
       headerName: 'Status',
       width: 130,
       renderCell: (params) => {
-        const isShipped = Boolean(params.row.awb);
+        const isShipped = Boolean(params.row.is_manifested);
+        const isCancelled = Boolean(params.row.cancelled);
         return (
           <Box
             sx={{
@@ -1215,7 +1223,7 @@ const Listing = ({ step, setStep }) => {
               fontSize: '0.875rem'
             }}
           >
-            {isShipped ? 'Shipped' : 'Pending'}
+            {(isShipped && !isCancelled) ? 'Shipped' : (isCancelled ? 'Cancelled' : 'Pending')}
           </Box>
         );
       }
@@ -1234,7 +1242,7 @@ const Listing = ({ step, setStep }) => {
               setSelectedShipment(params.row);
               setIsManageOpen(true);
             }}
-            sx={{ borderRadius: '24px' }}
+            sx={{ borderRadius: '4px' }}
           >
             {isShipped ? 'View' : 'Manage'}
           </Button>
@@ -1260,7 +1268,7 @@ const Listing = ({ step, setStep }) => {
             xs: '1fr',
             sm: 'repeat(2, 1fr)',
             md: 'repeat(3, 1fr)',
-            lg: 'repeat(auto-fill, minmax(200px, 1fr))',
+            lg: 'repeat(auto-fill, minmax(180px, 1fr))',
           },
           gap: 2,
         }}
@@ -1269,10 +1277,37 @@ const Listing = ({ step, setStep }) => {
           { label: 'Merchant Name', name: 'name' },
           { label: 'Merchant Email', name: 'email' },
           { label: 'Order ID', name: 'orderId' },
+          { label: 'Status', name: 'status', type: 'select', options: Object.values(DOMESTIC_ORDER_STATUS_ENUMS) },
           { label: 'Start Date', name: 'startDate', type: 'date' },
           { label: 'End Date', name: 'endDate', type: 'date' },
-        ].map(({ label, name, type }) => (
-          <TextField
+        ].map(({ label, name, type, options=[] }) => {
+          if (type === 'select') {
+            return (<FormControl size="small" sx={{ minWidth: '150px', mr: 1 }}>
+              <InputLabel id={`${name}-select-label`} className="bg-white w-full">{label}</InputLabel>
+              <Select
+                labelId={`${name}-select-label`}
+                value={filters[name]}
+                onChange={handleChange}
+                name={name}
+                label={label}
+                sx={{
+                  backgroundColor: 'white',
+                  borderRadius: 1,
+                }}
+              >
+                <MenuItem value="">
+                  <em>All</em>
+                </MenuItem>
+                {options.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>);
+          }
+          return (
+            <TextField
             key={name}
             label={label}
             name={name}
@@ -1293,7 +1328,8 @@ const Listing = ({ step, setStep }) => {
               },
             }}
           />
-        ))}
+          )
+        })}
       </Box>
   {/* DataGrid */}
         <Box sx={{ height: 600, width: '100%' }}>
@@ -1304,7 +1340,7 @@ const Listing = ({ step, setStep }) => {
             hideFooter={true}
             disableSelectionOnClick
             getRowId={(row) => row.ord_id}
-            rowHeight={80}
+            rowHeight={120}
           />
         </Box>
 

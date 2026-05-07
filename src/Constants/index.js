@@ -1,6 +1,6 @@
 //Here lies all the constant objects of the site
 // constants/index.js
-import { FaTachometerAlt, FaWallet, FaHistory, FaUsers,FaFileAlt,FaMoneyBillAlt, FaChevronDown, FaChevronUp, FaBars, FaTimes, FaBox, FaDollyFlatbed, FaClipboardList, FaHouseUser, FaDoorOpen, FaGlobe, FaUndo, FaTruck, FaUserCircle, FaLock } from 'react-icons/fa';
+import { FaTachometerAlt, FaWallet, FaHistory, FaUsers,FaFileAlt,FaMoneyBillAlt, FaChevronDown, FaChevronUp, FaBars, FaTimes, FaBox, FaDollyFlatbed, FaClipboardList, FaHouseUser, FaDoorOpen, FaUser } from 'react-icons/fa';
 import { MdSettings } from 'react-icons/md';
 import VerificationRequests from "../Components/VerificationRequests"
 import DashHome from '../Components/DashHome';
@@ -27,10 +27,15 @@ import UpdateProfileRequestSubmissions from '../Components/UpdateProfileRequestS
 import WeightDisputes from '../Components/WeightDisputes';
 import PendingCancellations from '../Components/PendingCancellations/PendingCancellations';
 import PendingRefunds from '../Components/PendingRefunds/PendingRefunds';
+import {IndianRupee, TruckElectricIcon, MessageSquareText, Banknote, RefreshCcw, ShieldCheck, Users, BarChart3, File, Key} from "lucide-react"
 import Support from '../Pages/Support';
-import AdminSupport from '../Pages/AdminSupport';
-import AdminAnalytics from '../Pages/AdminAnalytics';
-import { MessageSquareText, TruckElectricIcon, BarChart3 } from 'lucide-react';
+import B2CBulkShipment from "@/Components/BulkShipment/B2CBulkShipment"
+import CodRemittanceAdmin from '@/Components/CodRemittance/CodRemittanceAdmin';
+import PendingRTO from '@/Components/PendingRTO/PendingRTO';
+import MySubmerchants from '@/Components/Submerchant/MySubmerchants';
+import SubmerchantRequests from '@/Components/Submerchant/SubmerchantRequests';
+import AdminSupport from '@/Pages/AdminSupport';
+import AdminAnalytics from '@/Pages/AdminAnalytics';
 
 export const Admincards = [
   {
@@ -267,6 +272,42 @@ export const MERCHANT_SIDEBAR_ITEMS = [
   // add more items if needed
 ];
 
+export const DOMESTIC_SHIPMENT_REPORT_STATUS_ENUMS = Object.freeze({
+    MANIFESTED: 'MANIFESTED',
+    NOT_PICKED: 'NOT PICKED',
+    CANCELLED: 'CANCELLED',
+    IN_TRANSIT: 'IN TRANSIT',
+    OUT_FOR_DELIVERY: 'OUT FOR DELIVERY',
+    DELIVERED: 'DELIVERED',
+    RTO: 'RTO',
+    RTO_DELIVERED: 'RTO DELIVERED'
+})
+
+export const TRANSACTION_TYPES = Object.freeze({
+    RECHARGE: 'RECHARGE',
+    MANUAL_RECHARGE: 'MANUAL RECHARGE',
+    EXPENSE: 'EXPENSE',
+    REFUND: 'REFUND',
+    EXTRA_CHARGE: 'EXTRA CHARGE',
+    RTO_CHARGE: 'RTO CHARGE',
+    WEIGHT_DISPUTE: 'WEIGHT DISPUTE',
+    BALANCE_TRANSFER: 'BALANCE TRANSFER',
+    BALANCE_WITHDRAWAL: 'BALANCE WITHDRAWAL',
+    SUBMERCHANT_MARGIN: 'SUBMERCHANT MARGIN',
+})
+
+export const USER_ROLES = Object.freeze({
+    ADMIN: 'ADMIN',
+    MERCHANT: 'MERCHANT',
+    SUBMERCHANT: 'SUBMERCHANT'
+})
+
+export const DOMESTIC_ORDER_STATUS_ENUMS = Object.freeze({
+    PENDING: 'PENDING',
+    SHIPPED: 'SHIPPED',
+    CANCELLED: 'CANCELLED'
+})
+
 export const menuItems = [
   {
       icon : FaTachometerAlt,
@@ -280,7 +321,18 @@ export const menuItems = [
       icon : FaWallet,
       name : "Wallet Recharge",
       isDropdown : false,
-      url : 'wallet-recharge', // This URL is handled by an onClick in SidebarItem
+      url : 'wallet-recharge',
+      roles: [USER_ROLES.ADMIN, USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
+      dropDownOptions : [{}]
+  },
+  {
+      icon : MessageSquareText, // Use an appropriate icon
+      name : "My Support Tickets",
+      isDropdown : false,
+      merchantOnly : true, // Assuming standard users/merchants can see their own tickets
+      url : 'support',      // Navigates to /dashboard/support
+      component : Support, 
+      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT], // Only merchants and submerchants can access
       dropDownOptions : [{}]
   },
   // {
@@ -293,23 +345,44 @@ export const menuItems = [
   //     dropDownOptions : [{}]
   // },
   {
+      
+      icon : IndianRupee,
+      name : "Bulk Shipment",
+      isDropdown : true,
+      url : 'bulk-shipment',
+      merchantOnly : true,
+      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
+      // component: Pricing,
+      dropDownOptions : [
+          {
+              icon : IndianRupee,
+              name : "B2C Bulk",
+              isDropdown : false,
+              url : 'bulk-shipment/b2c',
+              component: B2CBulkShipment,
+              dropDownOptions : [{}]
+          },
+      ]
+  },
+  {
       icon : FaBox,
       name : "Create Shipment",
       isDropdown : true,
       merchantOnly : true,
       url : 'order/create',
+      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
       dropDownOptions : [{
-          icon : FaTruck,
+          icon : FaBox,
           name : "Domestic",
           isDropdown : false,
           url : 'order/domestic/create',
           component : CreateOrder,
           dropDownOptions : [{}]
       },{
-          icon : FaGlobe,
-          name : "International",
+          icon : FaBox,
+          name : "International (Coming Soon)",
           isDropdown : false,
-          url : 'order/international/create',
+          url : null,
           component : CreateOrderInternational,
           dropDownOptions : [{}]
       },]
@@ -321,28 +394,30 @@ export const menuItems = [
       merchantOnly : true,
       url : 'warehouse',
       component : Warehouse,
+      roles: [USER_ROLES.ADMIN, USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
       dropDownOptions : [{}]
   },
   {
       icon : FaDollyFlatbed,
-      name : "Parcels",
+      name : "Shipments",
       isDropdown : true,
       merchantOnly : true,
-      url : 'parcels',
+      url : 'shipments',
+      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
       dropDownOptions : [{
-          icon : FaTruck,
+          icon : FaDollyFlatbed,
           name : "Domestic",
           isDropdown : false,
-          url : 'parcels/domestic',
-          component : UpdateOrder, // This might be for viewing/updating, assuming it's correct
+          url : 'shipments/domestic',
+          component : UpdateOrder,
           dropDownOptions : [{}]
       },
       {
-          icon : FaGlobe,
-          name : "International",
+          icon : FaDollyFlatbed,
+          name : "International ",
           isDropdown : false,
-          url : 'parcels/international',
-          component : UpdateOrderInternational, // This might be for viewing/updating, assuming it's correct
+          url : 'shipments/international',
+          component : UpdateOrderInternational,
           dropDownOptions : [{}]
       },]
   },
@@ -352,25 +427,51 @@ export const menuItems = [
       isDropdown : false,
       url : 'transaction-history',
       component : TransactionHistory,
+      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
       dropDownOptions : [{}]
   },
   {
-      icon : FaClipboardList, // Changed icon for Weight Disputes
+        
+      icon : Users,
+      name : "Merchant Transactions",
+      isDropdown : false,
+      admin : true,
+      url : 'manage/merchant/transactions',
+      roles: [USER_ROLES.ADMIN],
+      component : AllTransactions,
+      dropDownOptions : [{}]
+  },
+  {
+      icon : FaBox,
       name : "Weight Disputes",
       isDropdown : false,
       url : 'weight-disputes',
       component : WeightDisputes,
+       roles: [USER_ROLES.ADMIN, USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
       dropDownOptions : [{}]
   },
   {
-      icon : FaMoneyBillAlt, // Changed icon for Cancellations/Refunds
+        
+      icon : Banknote,
+      name : "COD Remittance",
+      isDropdown : false,
+      admin : true,
+      url : 'cod-remittance-manage',
+      component : CodRemittanceAdmin,
+      roles: [USER_ROLES.ADMIN],
+      dropDownOptions : [{}]
+  },
+  {
+      icon : RefreshCcw,
       name : "Cancellations/Refunds",
       isDropdown : true,
       admin : true,
-      url : 'cancellations-refunds', // Added a base URL for the dropdown for active state logic
+      roles: [USER_ROLES.ADMIN],
+      // url : 'cancellations-refunds',
+      // component : DashboardMain,
       dropDownOptions : [
           {
-              icon : FaTimes,
+              icon : FaBox,
               name : "Pending Cancellations",
               isDropdown : false,
               url : 'pending-cancellations',
@@ -378,7 +479,7 @@ export const menuItems = [
               dropDownOptions : [{}]
           },
           {
-              icon : FaUndo,
+              icon : FaBox,
               name : "Pending Refunds",
               isDropdown : false,
               url : 'pending-refunds',
@@ -388,33 +489,72 @@ export const menuItems = [
       ]
   },
   {
+      icon : Banknote,
+      name : "Pending RTO",
+      isDropdown : false,
+      admin: true,
+      url : 'pending-rto',
+      roles: [USER_ROLES.ADMIN],
+      component : PendingRTO,
+      dropDownOptions : [{}]
+  },
+  {
       icon : FaClipboardList,
       name : "Reports",
       isDropdown : true,
       merchantOnly : true,
-      url : 'shipment/reports', // Base URL for the dropdown
+      url : 'shipment/reports',
+      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
       dropDownOptions : [{
-          icon : FaFileAlt,
+          icon : BarChart3,
           name : "Domestic Reports",
           isDropdown : false,
           url : 'shipment/domestic/reports',
           component : NDR,
           dropDownOptions : [{}]
       },{
-          icon : FaFileAlt,
-          name : "International Reports",
+          icon : BarChart3,
+          name : "International Reports (Coming Soon)",
           isDropdown : false,
-          url : 'shipment/international/reports',
+          url : null,
           component : InternationalReports,
           dropDownOptions : [{}]
       },]
+  },
+  {
+      icon : ShieldCheck,
+      name : "My Submerchants",
+      isDropdown : false,
+      url : 'my-submerchants',
+      roles: [USER_ROLES.MERCHANT],
+      component : MySubmerchants,
+      dropDownOptions : []
+  },
+  {
+      icon : ShieldCheck,
+      name: "Submerchant Verification Requests",
+      isDropdown: false,
+      url: 'submerchant-verification-requests',
+      roles: [USER_ROLES.MERCHANT],
+      component: VerificationRequests,
+      dropDownOptions: []
+  },
+  {
+      icon : ShieldCheck,
+      name: "Submerchant Requests",
+      isDropdown: false,
+      url: 'submerchant-requests',
+      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
+      component: SubmerchantRequests,
+      dropDownOptions: []
   },
   {
       icon : FaUsers,
       name : "Merchant Manage",
       isDropdown : true,
       admin : true,
-      url : 'manage/merchant', // Base URL for the dropdown
+      url : 'manage/merchant',
+      roles: [USER_ROLES.ADMIN],
       dropDownOptions : [{
           icon : FaUsers,
           name : "Verified Merchants",
@@ -432,7 +572,7 @@ export const menuItems = [
           dropDownOptions : [{}]
       },
       {
-          icon : FaMoneyBillAlt,
+          icon : File,
           name : "Merchant Transactions",
           isDropdown : false,
           url : 'manage/merchant/transactions',
@@ -440,22 +580,22 @@ export const menuItems = [
           dropDownOptions : [{}]
       },
       {
-          icon : FaBox, // Reusing FaBox for Shipments, changed from "/logo.webp"
+          icon : FaBox,
           name : "Shipments",
           isDropdown : true,
           url : 'manage/merchant/shipments', // Base URL for the dropdown
           dropDownOptions : [{
-              icon : FaTruck,
+              icon : FaBox,
               name : "Domestic",
               isDropdown : false,
               url : 'manage/merchant/shipments/domestic',
               component : AllParcels,
               dropDownOptions : [{}]
           },{
-              icon : FaTruck,
-              name : "International",
+              icon : FaBox,
+              name : "International (Coming Soon)",
               isDropdown : false,
-              url : 'manage/merchant/shipments/international',
+              url : null,
               component : AllInternationalParcels,
               dropDownOptions : [{}]
           },]
@@ -466,17 +606,17 @@ export const menuItems = [
           isDropdown : true,
           url : 'manage/merchant/shipment-reports', // Added a base URL for this dropdown
           dropDownOptions : [{
-              icon : FaFileAlt,
+              icon : FaClipboardList,
               name : "Domestic Reports",
               isDropdown : false,
               url : 'manage/merchant/shipments/domestic/reports',
               component : AllShipmentReports,
               dropDownOptions : [{}]
           },{
-              icon : FaFileAlt,
-              name : "International Reports",
+              icon : FaClipboardList,
+              name : "International Reports (Coming Soon)",
               isDropdown : false,
-              url : 'manage/merchant/shipments/international/reports',
+              url : null,
               component : InternationalReports,
               dropDownOptions : [{}]
           },]
@@ -487,7 +627,8 @@ export const menuItems = [
       name : "Submission",
       isDropdown : true,
       admin : true,
-      url : 'submissions', // Base URL for the dropdown
+      url : 'submissions',
+      roles : [USER_ROLES.ADMIN],
       dropDownOptions : [{
           icon : FaFileAlt,
           name : "Merchant Verification",
@@ -497,15 +638,15 @@ export const menuItems = [
           component : VerificationRequests,
           dropDownOptions : [{}]
       },
-      {
-          icon : FaFileAlt,
-          name : "Update Profile Requests",
-          isDropdown : false,
-          admin : true,
-          url : 'submissions/merchant-update-profile-requests',
-          component : UpdateProfileRequestSubmissions,
-          dropDownOptions : [{}]
-      },
+      // {
+      //     icon : "/logo.webp",
+      //     name : "Update Profile Requests",
+      //     isDropdown : false,
+      //     admin : true,
+      //     url : 'submissions/merchant-update-profile-requests',
+      //     component : UpdateProfileRequestSubmissions,
+      //     dropDownOptions : [{}]
+      // },
       {
           icon : FaFileAlt,
           name : "Contact Submission",
@@ -518,11 +659,32 @@ export const menuItems = [
   ]
   },
   {
-      icon : FaMoneyBillAlt, // Changed icon for Manual Recharge
+      icon: TruckElectricIcon, // Using a distinct icon for Admin Management
+      name: "Support Management",
+      isDropdown: false,
+      admin: true,               
+      url: 'admin/support',      // Navigates to /dashboard/admin/support
+      roles: [USER_ROLES.ADMIN], // Only admins can access this
+      component: AdminSupport,    
+      dropDownOptions: [{}]
+  },
+  {
+      icon: BarChart3, 
+      name: "Support Analytics",
+      isDropdown: false,
+      admin: true,               
+      url: 'admin/analytics',      // Navigates to /dashboard/admin/analytics
+      roles: [USER_ROLES.ADMIN], // Only admins can access this
+      component: AdminAnalytics,    
+      dropDownOptions: [{}]
+  },
+  {
+      icon : FaWallet,
       name : "Manual Recharge",
       isDropdown : false,
       admin : true,
       url : 'manual-recharge',
+      roles: [USER_ROLES.ADMIN],
       component : ManualRecharge,
       dropDownOptions : [{}]
   },
@@ -530,27 +692,28 @@ export const menuItems = [
       icon : MdSettings,
       name : "Settings",
       isDropdown : true,
-      url : 'settings', // Base URL for the dropdown
+      url : 'settings',
+      roles: [USER_ROLES.ADMIN, USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
       dropDownOptions : [
           {
-              icon : FaUserCircle,
+              icon : FaUser,
               name : "Profile",
               isDropdown : false,
               url : 'settings/profile',
               component : Profile,
               dropDownOptions : [{}]
           },
+          // {
+          //     icon : "/logo.webp",
+          //     name : "Profile Update",
+          //     isDropdown : false,
+          //     url : 'settings/profile-update-request',
+          //     component : UpdateProfileRequest,
+          //     merchantOnly : true,
+          //     dropDownOptions : [{}]
+          // },
           {
-              icon : FaUserCircle,
-              name : "Profile Update",
-              isDropdown : false,
-              url : 'settings/profile-update-request',
-              component : UpdateProfileRequest,
-              merchantOnly : true,
-              dropDownOptions : [{}]
-          },
-          {
-              icon : FaLock,
+              icon : Key,
               name : "Change Password",
               isDropdown : false,
               url : 'settings/change-password',

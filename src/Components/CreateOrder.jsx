@@ -3,6 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import WarehouseSelect from './UiComponents/WarehouseSelect';
 const API_URL = import.meta.env.VITE_APP_API_URL
 
 const getTodaysDate = () => {
@@ -18,6 +19,18 @@ const getCurrentTime = () => {
   const hours = String(now.getHours()).padStart(2, '0'); // Hours in 24-hour format
   const minutes = String(now.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
+}
+
+const getPickupTime = (string) => {
+  const currentTime = getCurrentTime();
+  //Increment by 1 hour
+  let hour = parseInt(currentTime.split(':')[0]) + 1;
+  let minute = currentTime.split(':')[1];
+  if (hour >= 24) {
+    hour = hour - 24;
+  }
+  hour = String(hour).padStart(2, '0');
+  return `${hour}:${minute}`;
 }
 
 const schema = z.object({
@@ -97,6 +110,7 @@ const schema = z.object({
     (a) => parseFloat(a),
     z.number().min(1, "Shipment value must be greater than 0")
   ),
+  insurance: z.boolean().optional(),
   ewaybill: z.string().optional(),
   invoiceNumber: z.string().optional(),
   invoiceDate: z.string().optional(),
@@ -114,17 +128,17 @@ const schema = z.object({
   path: ["ewaybill"], // Error path
 });
 const FullDetails = () => {
-  const [warehouses, setWarehouses] = useState([]);
   const { register, control, handleSubmit, watch, formState: { errors }, setValue } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       pickupDate: getTodaysDate(),
-      pickupTime: getCurrentTime(),
+      pickupTime: getPickupTime(),
       payMode: 'Pre-paid',
       postcode: '',
       Bpostcode: '',
       same: true,
       shipmentValue: 0,
+      insurance: false,
       discount: 0,
       cod: 0,
       addressType: "home",
@@ -148,59 +162,43 @@ const FullDetails = () => {
     control,
     name: 'boxes'
   });
-  // useEffect(() => {
-
-  //   const pinToAdd = async () => {
-  //     try {
-  //       await fetch(`https://api.postalpincode.in/pincode/${watch('postcode')}`)
-  //         .then(response => response.json())
-  //         .then(result => {
-  //           const city = result[0].PostOffice[0].District
-  //           const state = result[0].PostOffice[0].State
-  //           setValue('city', city)
-  //           setValue('state', state)
-  //         })
-  //     } catch (e) {
-  //       setValue('city', '')
-  //       setValue('state', '')
-  //     }
-  //   }
-  //   if (watch('postcode').length == 6) pinToAdd()
-  // }, [watch('postcode')])
-  // useEffect(() => {
-  //   const pinToAdd = async () => {
-  //     try {
-  //       await fetch(`https://api.postalpincode.in/pincode/${watch('Bpostcode')}`)
-  //         .then(response => response.json())
-  //         .then(result => {
-  //           const city = result[0].PostOffice[0].District
-  //           const state = result[0].PostOffice[0].State
-  //           setValue('Bcity', city)
-  //           setValue('Bstate', state)
-  //         })
-  //     } catch (e) {
-  //       setValue('Bcity', '')
-  //       setValue('Bstate', '')
-  //     }
-  //   }
-  //   if (watch('Bpostcode').length == 6) pinToAdd()
-  // }, [watch('Bpostcode')])
-
   useEffect(() => {
-    const getWarehouses = async () => {
-      const response = await fetch(`${API_URL}/warehouse/warehouses`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token'),
-        }
-      });
-      const result = await response.json();
-      setWarehouses(result.rows);
-    };
-    getWarehouses();
-  }, []);
+
+    const pinToAdd = async () => {
+      try {
+        await fetch(`https://api.postalpincode.in/pincode/${watch('postcode')}`)
+          .then(response => response.json())
+          .then(result => {
+            const city = result[0].PostOffice[0].District
+            const state = result[0].PostOffice[0].State
+            setValue('city', city)
+            setValue('state', state)
+          })
+      } catch (e) {
+        setValue('city', '')
+        setValue('state', '')
+      }
+    }
+    if (watch('postcode').length == 6) pinToAdd()
+  }, [watch('postcode')])
+  useEffect(() => {
+    const pinToAdd = async () => {
+      try {
+        await fetch(`https://api.postalpincode.in/pincode/${watch('Bpostcode')}`)
+          .then(response => response.json())
+          .then(result => {
+            const city = result[0].PostOffice[0].District
+            const state = result[0].PostOffice[0].State
+            setValue('Bcity', city)
+            setValue('Bstate', state)
+          })
+      } catch (e) {
+        setValue('Bcity', '')
+        setValue('Bstate', '')
+      }
+    }
+    if (watch('Bpostcode').length == 6) pinToAdd()
+  }, [watch('Bpostcode')])
 
   const onSubmit = async (data) => {
     const now = new Date();
@@ -314,30 +312,19 @@ const FullDetails = () => {
     <div className="w-full p-4 flex flex-col items-center">
       <div className="text-3xl font-medium text-center my-8">Enter Shipping Details</div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="w-full flex mb-2 flex-wrap">
-          <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-            <label htmlFor="wid">Pickup Warehouse Name</label>
-            <select
-              className="w-full border py-2 px-4 rounded-3xl"
-              id="wid"
-              {...register("wid")}
-            >
-              <option value="">Select Warehouse</option>
-              {warehouses.length ?
-                warehouses.map((warehouse, index) => (
-                  <option key={index} value={warehouse.wid}>{warehouse.warehouseName}</option>
-                )) : null
-              }
-            </select>
-            {errors.wid && <span className='text-red-500'>{errors.wid.message}</span>}
-          </div>
+        <div className="w-full flex mb-2 px-2 flex-wrap">
+          <WarehouseSelect
+            onChange={(wid)=>setValue("wid", wid)}
+            value={watch("wid")}
+          />
+          {errors.wid && <span className='text-red-500'>{errors.wid.message}</span>}
         </div>
 
         <div className="w-full flex mb-2 flex-wrap">
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="pickupDate">Pickup Date</label>
             <input required
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="date"
               min={getTodaysDate()}
               id="pickupDate"
@@ -347,7 +334,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="pickupTime">Pickup Time</label>
             <input required
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="time"
               id="pickupTime"
               {...register("pickupTime")}
@@ -358,7 +345,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="payMode">Payment Method</label>
             <select
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               id="payMode"
               {...register("payMode")}
             >
@@ -371,7 +358,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="name">Buyer's Name</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="name"
               {...register("name")}
@@ -384,7 +371,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="email">Email</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="email"
               id="email"
               {...register("email")}
@@ -395,7 +382,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="phone">Phone Number</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="phone"
               {...register("phone")}
@@ -409,7 +396,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="address">Shipping Address</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               maxLength={100}
               id="address"
@@ -421,7 +408,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="addressType">Shipping Address Type</label>
             <select
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               id="addressType"
               {...register("addressType")}
             >
@@ -433,9 +420,9 @@ const FullDetails = () => {
         </div>
         <div className="w-full flex mb-2 flex-wrap">
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-            <label htmlFor="postcode">Shipping Postcode</label>
+            <label htmlFor="postcode">Shipping Pincode</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="postcode"
               pattern='^\d{6}$'
@@ -447,7 +434,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="city">Shipping City</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="city"
               {...register("city")}
@@ -460,7 +447,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="state">Shipping State</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="state"
               {...register("state")}
@@ -471,7 +458,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="country">Shipping Country</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="country"
               value={"India"}
@@ -497,7 +484,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
                 <label htmlFor="Baddress">Billing Address</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   maxLength={100}
                   id="Baddress"
@@ -511,7 +498,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
                 <label htmlFor="BaddressType">Billing Address Type</label>
                 <select
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   id="BaddressType"
                   {...register("BaddressType")}
                 >
@@ -523,9 +510,9 @@ const FullDetails = () => {
             </div>
             <div className="w-full flex mb-2 flex-wrap">
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
-                <label htmlFor="Bpostcode">Billing Postcode</label>
+                <label htmlFor="Bpostcode">Billing Pincode</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id="Bpostcode"
                   pattern='^\d{6}$'
@@ -537,7 +524,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
                 <label htmlFor="Bcity">Billing City</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id="Bcity"
                   {...register("Bcity")}
@@ -550,7 +537,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
                 <label htmlFor="Bstate">Billing State</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id="Bstate"
                   {...register("Bstate")}
@@ -561,7 +548,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
                 <label htmlFor="Bcountry">Billing Country</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id="Bcountry"
                   value={"India"}
@@ -582,7 +569,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2  space-y-2">
                 <label htmlFor={`boxes[${index}].box_no`}>Box No.</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id={`boxes[${index}].box_no`}
                   value={index + 1}
@@ -594,7 +581,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 space-y-2">
                 <label htmlFor={`boxes[${index}].length`}>Length (in cm)</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id={`boxes[${index}].length`}
                   {...register(`boxes[${index}].length`)}
@@ -604,7 +591,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2  space-y-2">
                 <label htmlFor={`boxes[${index}].breadth`}>Width (in cm)</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id={`boxes[${index}].breadth`}
                   {...register(`boxes[${index}].breadth`)}
@@ -614,7 +601,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 space-y-2">
                 <label htmlFor={`boxes[${index}].height`}>Height (in cm)</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id={`boxes[${index}].height`}
                   {...register(`boxes[${index}].height`)}
@@ -625,13 +612,13 @@ const FullDetails = () => {
                 <label htmlFor={`boxes[${index}].weight`}>Weight</label>
                 <div className='w-full flex space-x-2'>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id={`boxes[${index}].weight`}
                   {...register(`boxes[${index}].weight`)}
                 />
                 <select
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   id={`boxes[${index}].weight_unit`}
                   {...register(`boxes[${index}].weight_unit`)}
                 >
@@ -644,7 +631,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 space-y-2">
                 <label htmlFor={`boxes[${index}].quantity`}>Quantity</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id={`boxes[${index}].quantity`}
                   {...register(`boxes[${index}].quantity`)}
@@ -659,7 +646,7 @@ const FullDetails = () => {
           <div className="w-full text-right">
             <button
               type="button"
-              className="bg-blue-500 text-white px-4 py-2 rounded-3xl"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
               onClick={() => boxes.append({ box_no: watch('boxes').length + 1, product_name: '', product_quantity: 0, selling_price: 0, discount: '', tax_in_percentage: 0 })}
             >
               Add Boxes
@@ -670,7 +657,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2  max-w-[150px] min-w-[150px] space-y-2">
                 <label htmlFor={`orders[${index}].box_no`}>Box No</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id={`orders[${index}].box_no`}
                   defaultValue={1}
@@ -681,7 +668,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[200px] space-y-2">
                 <label htmlFor={`orders[${index}].product_name`}>Product Name</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id={`orders[${index}].product_name`}
                   {...register(`orders[${index}].product_name`)}
@@ -691,7 +678,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 max-w-[150px] min-w-[150px] space-y-2">
                 <label htmlFor={`orders[${index}].product_quantity`}>Quantity</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="number"
                   id={`orders[${index}].product_quantity`}
                   {...register(`orders[${index}].product_quantity`)}
@@ -701,7 +688,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 max-w-[150px] min-w-[150px] space-y-2">
                 <label htmlFor={`orders[${index}].selling_price`}>Price</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="number"
                   id={`orders[${index}].selling_price`}
                   {...register(`orders[${index}].selling_price`)}
@@ -711,7 +698,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 max-w-[150px] min-w-[150px] space-y-2">
                 <label htmlFor={`orders[${index}].tax_in_percentage`}>Tax (in %)</label>
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="number"
                   id={`orders[${index}].tax_in_percentage`}
                   {...register(`orders[${index}].tax_in_percentage`)}
@@ -726,7 +713,7 @@ const FullDetails = () => {
           <div className="w-full text-right">
             <button
               type="button"
-              className="bg-blue-500 text-white px-4 py-2 rounded-3xl"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
               onClick={() => append({ box_no: 1, product_name: '', product_quantity: 0, selling_price: 0, discount: '', tax_in_percentage: 0 })}
             >
               Add Product
@@ -748,7 +735,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
                 <label htmlFor="invoiceNumber">Invoice Number</label>
                 <input required={watch("isB2B")}
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="text"
                   id="invoiceNumber"
                   {...register("invoiceNumber")}
@@ -758,7 +745,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
                 <label htmlFor="invoiceDate">Invoice Date</label>
                 <input required={watch("isB2B")}
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="date"
                   id="invoiceDate"
                   {...register("invoiceDate")}
@@ -770,7 +757,7 @@ const FullDetails = () => {
               <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
                 <label htmlFor="invoiceAmount">Invoice Amount</label>
                 <input required={watch("isB2B")}
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="number"
                   id="invoiceAmount"
                   {...register("invoiceAmount")}
@@ -781,7 +768,7 @@ const FullDetails = () => {
                 <label htmlFor="invoice">Invoice</label>
 
                 <input
-                  className="w-full border py-2 px-4 rounded-3xl"
+                  className="w-full border py-2 px-4 rounded"
                   type="file"
                   id="invoice"
                   onChange={handleInvoice}
@@ -789,7 +776,7 @@ const FullDetails = () => {
                 {errors.invoiceUrl && <span className='text-red-500'>{errors.invoiceUrl.message}</span>}
                 <button
                   type='button'
-                  className="bg-blue-500 text-white px-6 py-2 rounded-3xl"
+                  className="bg-blue-500 text-white px-6 py-2 rounded"
                   onClick={handleInvoiceUpload}
                 >
                   Upload
@@ -799,11 +786,22 @@ const FullDetails = () => {
             </div>
           </> : null
         }
+        <div className="flex-1 mb-2 min-w-[300px] space-y-2 flex items-center">
+            <div>
+              <input
+                className="mr-2"
+                type="checkbox"
+                id="insurance"
+                {...register("insurance")}
+              />
+              <label htmlFor="insurance">Do you want insurance?</label>
+            </div>
+          </div>
         <div className="w-full flex mb-2 flex-wrap">
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="shipmentValue">Shipment Value</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="number"
               id="shipmentValue"
               {...register("shipmentValue")}
@@ -813,7 +811,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="ewaybill">E-Waybill</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="ewaybill"
               {...register("ewaybill")}
@@ -825,7 +823,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="discount">Discount</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="number"
               id="discount"
               {...register("discount")}
@@ -835,7 +833,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="cod">COD</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="number"
               min={watch("payMode") == "Pre-paid" ? 0 : 1}
               id="cod"
@@ -848,7 +846,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="shippingType">Shipping Type</label>
             <select
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               id="shippingType"
               {...register("shippingType")}
             >
@@ -860,7 +858,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="customer_reference_number">Customer Reference Number</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="customer_reference_number"
               {...register("customer_reference_number")}
@@ -874,7 +872,7 @@ const FullDetails = () => {
           <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
             <label htmlFor="gst">Seller GSTIN</label>
             <input
-              className="w-full border py-2 px-4 rounded-3xl"
+              className="w-full border py-2 px-4 rounded"
               type="text"
               id="gst"
               {...register("gst")}
@@ -886,7 +884,7 @@ const FullDetails = () => {
         <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
           <label htmlFor="Cgst">Customer GSTIN(For B2B)</label>
           <input
-            className="w-full border py-2 px-4 rounded-3xl"
+            className="w-full border py-2 px-4 rounded"
             type="text"
             id="Cgst"
             {...register("Cgst")}
@@ -895,7 +893,7 @@ const FullDetails = () => {
         </div>
         <div className="w-full flex justify-center mt-4">
           <button
-            className="bg-green-500 text-white px-6 py-2 rounded-3xl"
+            className="bg-green-500 text-white px-6 py-2 rounded"
             type="submit"
           >
             Submit
