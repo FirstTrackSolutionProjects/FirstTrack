@@ -325,16 +325,6 @@ export const menuItems = [
       roles: [USER_ROLES.ADMIN, USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
       dropDownOptions : [{}]
   },
-  {
-      icon : MessageSquareText, // Use an appropriate icon
-      name : "My Support Tickets",
-      isDropdown : false,
-      merchantOnly : true, // Assuming standard users/merchants can see their own tickets
-      url : 'support',      // Navigates to /dashboard/support
-      component : Support, 
-      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT], // Only merchants and submerchants can access
-      dropDownOptions : [{}]
-  },
   // {
   //     icon : FaWallet,
   //     name : "KYC Update",
@@ -689,6 +679,16 @@ export const menuItems = [
       dropDownOptions : [{}]
   },
   {
+      icon : MessageSquareText, // Use an appropriate icon
+      name : "My Support Tickets",
+      isDropdown : false,
+      merchantOnly : true, // Assuming standard users/merchants can see their own tickets
+      url : 'support',      // Navigates to /dashboard/support
+      component : Support, 
+      roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT], // Only merchants and submerchants can access
+      dropDownOptions : [{}]
+  },
+  {
       icon : MdSettings,
       name : "Settings",
       isDropdown : true,
@@ -721,33 +721,6 @@ export const menuItems = [
               dropDownOptions : [{}]
           },
       ]
-  },
-  {
-      icon : MessageSquareText,
-      name : "My Support Tickets",
-      isDropdown : false,
-      merchantOnly : true,
-      url : 'support',
-      component : Support,
-      dropDownOptions : [{}]
-  },
-  {
-      icon : TruckElectricIcon,
-      name : "Support Management",
-      isDropdown : false,
-      admin : true,
-      url : 'admin/support',
-      component : AdminSupport,
-      dropDownOptions : [{}]
-  },
-  {
-      icon : BarChart3,
-      name : "Support Analytics",
-      isDropdown : false,
-      admin : true,
-      url : 'admin/analytics',
-      component : AdminAnalytics,
-      dropDownOptions : [{}]
   },
   {
       icon : FaDoorOpen,
