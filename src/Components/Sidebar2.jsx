@@ -28,22 +28,39 @@ const Sidebar2 = () => {
   return (
     <>
     {showRecharge ? <WalletRechargeModal onClose={closeRechargeModal} /> : null}
-    <div>
+    <div className="h-full flex">
       {/* Menu button (Icon) - visible only below md screens */}
       <button
         onClick={toggleSidebar}
-        className="md:hidden p-3 absolute top-[55px] left-3 text-gray-700 hover:text-[#22c55e] transition-colors duration-200 z-40 bg-white rounded-full shadow-md" // Enhanced button styling
+        className="md:hidden p-3 fixed top-[72px] left-4 text-white hover:text-[#22c55e] transition-colors duration-200 z-[60] bg-black/50 rounded-full shadow-lg backdrop-blur-sm"
         aria-label="Open sidebar menu"
       >
-        {isOpen?<FaTimes className="h-7 w-7 text-white" /> : <FaBars className="h-8 w-6" />}
+        {isOpen ? <FaTimes className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
       </button>
+
+      {/* Backdrop for mobile */}
+      {isOpen && (
+        <div 
+            className="fixed inset-0 bg-black/60 z-[45] md:hidden backdrop-blur-[2px]"
+            onClick={toggleSidebar}
+        />
+      )}
 
        {/* Sidebar for md screen */}
        <div
-        className={`${isSidebarHovered ? 'w-[250px] min-w-[250px]' : 'w-[72px] min-w-[72px]'} md:block hidden h-full relative bg-black overflow-y-auto overflow-x-hidden transition-all duration-300`}
+        className={`${isSidebarHovered ? 'w-[250px] min-w-[250px]' : 'w-[72px] min-w-[72px]'} md:block hidden h-full relative bg-[#0f172a] overflow-y-auto overflow-x-hidden transition-all duration-300 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent`}
         onMouseEnter={() => setIsSidebarHovered(true)}
         onMouseLeave={() => setIsSidebarHovered(false)}
       >
+      {/* Branding Section */}
+      <div className={`flex items-center px-4 py-6 border-b border-gray-800/50 mb-2 transition-all duration-300 ${isSidebarHovered ? 'justify-start' : 'justify-center'}`}>
+        <img src="/images/logo.svg" alt="Logo" className="w-10 h-10 flex-shrink-0" />
+        {isSidebarHovered && (
+          <span className="ml-3 text-lg font-extrabold text-white whitespace-nowrap animate-fadeIn">
+            FIRST <span className="text-[#22c55e]">TRACK</span>
+          </span>
+        )}
+      </div>
       <ul className="p-2">
         {sidebarItems.map((item) => {
           if (item.hidden || (item.roles !== undefined && !item.roles.includes(role))) {
@@ -53,12 +70,20 @@ const Sidebar2 = () => {
         })}
       </ul>
       </div>
-       {/* Sidebar for beloe md screen */}
+       {/* Sidebar for below md screen */}
        <div
-        className={`relative ${isOpen?'w-[300px]': 'w-0'} block md:hidden h-full bg-black overflow-y-auto overflow-x-hidden transition-all duration-300`}
+        className={`fixed top-0 left-0 z-50 h-full bg-[#0f172a] overflow-y-auto overflow-x-hidden transition-all duration-300 ${isOpen ? 'w-[280px] shadow-2xl' : 'w-0'}`}
       >
-        {/* Close button (Icon) */}
-        <ul className="p-4 pt-12">
+        {/* Branding for Mobile Sidebar */}
+        {isOpen && (
+          <div className="flex items-center px-6 py-6 border-b border-gray-800/50 mb-2">
+            <img src="/images/logo.svg" alt="Logo" className="w-10 h-10 flex-shrink-0" />
+            <span className="ml-3 text-lg font-extrabold text-white whitespace-nowrap">
+              FIRST <span className="text-[#22c55e]">TRACK</span>
+            </span>
+          </div>
+        )}
+        <ul className="p-4">
         {sidebarItems.map((item) => {
           if (item.hidden || (item.roles !== undefined && !item.roles.includes(role))) {
             return;
