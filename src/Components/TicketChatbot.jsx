@@ -1,5 +1,3 @@
-// ShipWale\src\components\TicketChatbot.jsx
-
 import { useEffect, useRef, useState } from "react";
 // Removed useNavigate
 import { toast } from 'react-toastify'; 
@@ -152,7 +150,7 @@ export default function TicketChatbot({ onClose }) {
 
   useEffect(() => {
     setTimeout(() => {
-      addBot("👋 Welcome to Shipwale Support!");
+      addBot("👋 Welcome to First Track Support!");
       setTimeout(() => {
         addBot("How can I help you?");
         setCurrentOptions([
@@ -238,7 +236,7 @@ export default function TicketChatbot({ onClose }) {
 
   const handleSolved = (answer) => {
     if (answer === "Yes") {
-      addBot("🙏 Thank you for contacting Shipwale Support!");
+      addBot("🙏 Thank you for contacting First Track Support!");
       // Use onClose instead of navigate
       setTimeout(() => onClose(), 2000); 
     } else {

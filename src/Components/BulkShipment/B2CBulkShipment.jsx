@@ -323,7 +323,7 @@ const generateSampleExcel = () => {
   const ws = XLSX.utils.json_to_sheet(SAMPLE_DATA);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Shipments');
-  XLSX.writeFile(wb, 'Shipwale_Domestic_Bulk_Shipment_Sample.xlsx');
+  XLSX.writeFile(wb, 'FirstTrack_Domestic_Bulk_Shipment_Sample.xlsx');
 };
 
 const parseExcel = (file) => {
@@ -584,7 +584,7 @@ const ErrorSummary = ({ errors, onTraceError }) => {
         const ws = XLSX.utils.json_to_sheet(reportData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Error Report');
-        XLSX.writeFile(wb, 'Shipwale_Bulk_Shipment_Error_Report.csv');
+        XLSX.writeFile(wb, 'FirstTrack_Bulk_Shipment_Error_Report.csv');
         toast.info("Error report downloaded.");
     };
 
@@ -1157,7 +1157,7 @@ const BulkShipment = () => {
     const ws = XLSX.utils.json_to_sheet(rowsForReport);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Failed Shipments');
-    XLSX.writeFile(wb, 'Shipwale_Bulk_Shipment_Failed_Shipments_Report.xlsx');
+    XLSX.writeFile(wb, 'FirstTrack_Bulk_Shipment_Failed_Shipments_Report.xlsx');
     toast.info('Failed shipments report downloaded.');
   }, [apiFailedShipments, validatedPayload]);
 
