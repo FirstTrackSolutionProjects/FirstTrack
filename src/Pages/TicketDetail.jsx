@@ -1,4 +1,3 @@
-// ShipWale\src\pages\TicketDetail.jsx (MODIFIED for Phase 3)
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';

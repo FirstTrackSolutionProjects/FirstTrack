@@ -85,7 +85,7 @@ const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
   const generateTrackingMessage = () => {
     if (!report) return "No shipment details available.";
 
-    let message = `*🚚 ShipWale - Shipment Tracking Update 🚚*\n\n`;
+    let message = `*🚚 First Track - Shipment Tracking Update 🚚*\n\n`;
 
     // Shipment Details Section
     message += `*----- Shipment Details ----*\n`;

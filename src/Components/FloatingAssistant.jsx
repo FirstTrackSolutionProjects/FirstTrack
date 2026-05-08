@@ -37,7 +37,7 @@ export default function FloatingAssistant() {
                 >
                     {/* Header */}
                     <div className="bg-[#075e54] text-white px-4 py-3 flex justify-between items-center shrink-0">
-                        <p className="font-semibold text-sm">Shipwale Support</p>
+                        <p className="font-semibold text-sm">First Track Support</p>
                         <button onClick={handleClose} className="text-xl hover:text-red-300 transition">
                             <X size={20} />
                         </button>

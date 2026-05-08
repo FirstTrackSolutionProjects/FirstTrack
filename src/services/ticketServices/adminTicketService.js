@@ -1,4 +1,3 @@
-// ShipWale\src\services\ticketServices\adminTicketService.js
 
 import axios from "axios";
 
