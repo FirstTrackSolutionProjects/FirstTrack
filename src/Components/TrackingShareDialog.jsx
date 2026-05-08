@@ -23,176 +23,164 @@ const timestampToDate = (timestamp) => {
 
 // Re-using/adapting card components from Tracking.jsx or Listing.jsx
 // Card for Delhivery B2B (serviceId = 1)
-const TrackingShareDelhiveryB2BCard = ({ scan }) => {
-  return (
-    <div className="w-full px-4 py-3 flex items-start gap-4">
-      <div className="mt-1 w-3 h-3 rounded-full bg-red-500 shadow shadow-red-200" />
-      <div className="flex-1 rounded-xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
-        <div className="text-sm font-semibold text-gray-800">{scan?.scan_remark || '—'}</div>
-        <div className="mt-1 text-xs text-gray-500">{scan?.location || '—'}</div>
-        <div className="mt-1 text-xs text-gray-400">{timestampToDate(scan.scan_timestamp)}</div>
-      </div>
+const TrackingShareDelhiveryB2BCard = ({ scan }) => (
+  <div className="w-full px-4 py-3 flex items-start gap-4">
+    <div className="mt-1 w-3 h-3 rounded-full bg-sky-700 shadow shadow-sky-200" />
+    <div className="flex-1 rounded-xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+      <div className="text-sm font-semibold text-gray-800">{scan?.scan_remark || '—'}</div>
+      <div className="mt-1 text-xs text-gray-500">{scan?.location || '—'}</div>
+      <div className="mt-1 text-xs text-gray-400">{timestampToDate(scan.scan_timestamp)}</div>
     </div>
-  );
-};
+  </div>
+);
 
-// Card for Delhivery B2C (serviceId = 2)
-const TrackingShareDelhiveryCard = ({ scan }) => {
-  return (
-    <div className="w-full px-4 py-3 flex items-start gap-4">
-      <div className="mt-1 w-3 h-3 rounded-full bg-red-500 shadow shadow-red-200" />
-      <div className="flex-1 rounded-xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
-        <div className="text-sm font-semibold text-gray-800">{scan?.Instructions || scan?.Scan || '—'}</div>
-        <div className="mt-1 text-xs text-gray-500">{scan?.ScannedLocation || '—'}</div>
-        <div className="mt-1 text-xs text-gray-400">{timestampToDate(scan.ScanDateTime)}</div>
-      </div>
+const TrackingShareDelhiveryCard = ({ scan }) => (
+  <div className="w-full px-4 py-3 flex items-start gap-4">
+    <div className="mt-1 w-3 h-3 rounded-full bg-sky-700 shadow shadow-sky-200" />
+    <div className="flex-1 rounded-xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+      <div className="text-sm font-semibold text-gray-800">{scan?.Instructions || scan?.Scan || '—'}</div>
+      <div className="mt-1 text-xs text-gray-500">{scan?.ScannedLocation || '—'}</div>
+      <div className="mt-1 text-xs text-gray-400">{timestampToDate(scan.ScanDateTime)}</div>
     </div>
-  );
-};
+  </div>
+);
 
-// Generic card for other services
-const GenericTrackingShareCard = ({ scan }) => {
-  return (
-    <div className="w-full px-4 py-3 flex items-start gap-4">
-      <div className="mt-1 w-3 h-3 rounded-full bg-red-500 shadow shadow-red-200" />
-      <div className="flex-1 rounded-xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
-        <div className='font-bold text-sm text-gray-800'>{scan?.status || '—'}</div>
-        {scan?.description && <div className='text-xs text-gray-600'>{scan.description}</div>}
-        {scan?.location && <div className='text-xs text-gray-500'>{scan.location}</div>}
-        {scan?.timestamp && <div className='text-xs text-gray-400'>{timestampToDate(scan.timestamp)}</div>}
-      </div>
+const GenericTrackingShareCard = ({ scan }) => (
+  <div className="w-full px-4 py-3 flex items-start gap-4">
+    <div className="mt-1 w-3 h-3 rounded-full bg-sky-700 shadow shadow-sky-200" />
+    <div className="flex-1 rounded-xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+      <div className='font-bold text-sm text-gray-800'>{scan?.status || '—'}</div>
+      {scan?.description && <div className='text-xs text-gray-600'>{scan.description}</div>}
+      {scan?.location && <div className='text-xs text-gray-500'>{scan.location}</div>}
+      {scan?.timestamp && <div className='text-xs text-gray-400'>{timestampToDate(scan.timestamp)}</div>}
     </div>
-  );
-};
+  </div>
+);
 
 
 const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
-  const [loading, setLoading] = useState(true); // Internal loading state for fetching data
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
-      if (trackingData === null) {
-        setLoading(true); // Still loading if trackingData is null when dialog opens
-      } else {
-        setLoading(false); // Data received
-      }
+      setLoading(trackingData === null);
     } else {
-      setLoading(true); // Reset loading when dialog closes
+      setLoading(true);
     }
   }, [isOpen, trackingData]);
 
-  // Generate a comprehensive tracking message for sharing
+  const getTrackingLink = () => {
+    // Determine which tracking ID to use (AWB for domestic, ref_id for international)
+    const trackingId = report?.iid ? report.ref_id : report?.awb;
+    return trackingId ? `${window.location.origin}/track?awb=${trackingId}` : '';
+  };
+
   const generateTrackingMessage = () => {
     if (!report) return "No shipment details available.";
 
-    let message = `*🚚 First Track - Shipment Tracking Update 🚚*\n\n`;
+    // Determine values based on available properties (domestic vs. international)
+    const isInternational = !!report.iid; // Check for international order ID property
+    const awbNumber = isInternational ? report.ref_id || 'N/A' : report.awb || 'N/A';
+    const orderId = isInternational ? report.iid || 'N/A' : report.ord_id || 'N/A';
+    const customerName = isInternational ? report.consignee_name || 'N/A' : report.customer_name || 'N/A';
 
-    // Shipment Details Section
+    let destinationAddress = 'N/A';
+    if (isInternational) {
+      if (report.consignee_city) {
+        destinationAddress = `${report.consignee_city}, ${report.consignee_state || ''}`;
+        if (report.consignee_zip_code) destinationAddress += ` - ${report.consignee_zip_code}`;
+      }
+    } else { // Domestic
+      if (report.shipping_city) {
+        destinationAddress = `${report.shipping_city}, ${report.shipping_state || ''}`;
+        if (report.shipping_postcode) destinationAddress += ` - ${report.shipping_postcode}`;
+      }
+    }
+
+    let message = `*🚚 First Track - Shipment Tracking Update 🚚*\n\n`;
     message += `*----- Shipment Details ----*\n`;
-    message += `📦 *AWB:* ${report.awb || 'N/A'}\n`;
-    message += `🛒 *Order ID:* ${report.ord_id || 'N/A'}\n`;
-    message += `👤 *Customer:* ${report.customer_name || 'N/A'}\n`;
-    message += `📍 *Destination:* ${report.shipping_city || 'N/A'}, ${report.shipping_state || 'N/A'} - ${report.shipping_postcode || 'N/A'}\n`;
+    message += `📦 *AWB:* ${awbNumber}\n`;
+    if (!isInternational) { // Show Order ID only for domestic shipments
+      message += `🛒 *Order ID:* ${orderId}\n`;
+    }
+    message += `👤 *Customer:* ${customerName}\n`;
+    message += `📍 *Destination:* ${destinationAddress}\n`;
+    if (!isInternational && report.service_name) { // Show Courier/Vendor for domestic shipments
+      message += `🚚 *Courier Service:* ${report.service_name}\n`;
+    }
     message += `*----------------------------*\n\n`;
 
-
     if (loading || !trackingData || !trackingData.success) {
-      // Improved message for loading/unavailable data
       message += `*🗓️ Tracking History:*\n`;
       message += `_Tracking information is currently unavailable or still loading._\n`;
-      message += `_Please check back shortly._\n`;
       return message;
     }
 
-    const statusUpdates = Array.isArray(trackingData.data) ? trackingData.data : (trackingData.data ? [trackingData.data] : []);
-    const cleanedStatusUpdates = statusUpdates.filter(Boolean); // Filter out null/undefined scans
+    const updates = Array.isArray(trackingData.data) ? trackingData.data : (trackingData.data ? [trackingData.data] : []);
+    const cleanedUpdates = updates.filter(Boolean);
 
     message += `*🗓️ Tracking History:*\n`;
-    if (cleanedStatusUpdates.length > 0) {
-      // Reversing to show latest first, similar to UI
-      cleanedStatusUpdates.slice().reverse().forEach((scan) => {
-        let formattedTimestamp = '';
-        let status = 'N/A';
-        let description = '';
-        let location = '';
-        const serviceId = Number(trackingData.id);
+    if (cleanedUpdates.length > 0) {
+      cleanedUpdates.slice().reverse().forEach((scan) => {
+        let status = 'Update';
+        let loc = '';
+        let time = '';
+        const sId = Number(trackingData.id);
 
-        if (serviceId === 1) { // Delhivery B2B
-          formattedTimestamp = timestampToDate(scan.scan_timestamp);
+        if (sId === 1) { // Delhivery B2B (example service ID)
           status = scan.scan_remark || 'N/A';
-          location = scan.location || '';
-        } else if (serviceId === 2) { // Delhivery B2C
-          // Use ScanDetail if available, otherwise assume scan object itself holds the details
-          const detail = scan.ScanDetail ?? scan; 
-          formattedTimestamp = timestampToDate(detail.ScanDateTime);
-          status = detail.Instructions || detail.Scan || 'N/A';
-          location = detail.ScannedLocation || '';
-        } else { // Generic tracking
-          formattedTimestamp = timestampToDate(scan.timestamp);
+          loc = scan.location || '';
+          time = timestampToDate(scan.scan_timestamp);
+        } else if (sId === 2 || sId === 3) { // Delhivery (other types)
+          const d = scan.ScanDetail ?? scan;
+          status = d.Instructions || d.Scan || 'N/A';
+          loc = d.ScannedLocation || '';
+          time = timestampToDate(d.ScanDateTime);
+        } else { // Generic / Other International
           status = scan.status || 'N/A';
-          description = scan.description || '';
-          location = scan.location || '';
+          loc = scan.location || '';
+          time = timestampToDate(scan.timestamp);
         }
-        
-        // Construct the scan text more consistently for better readability
-        let scanText = `• *${formattedTimestamp}* - *${status}*`;
-        if (description) {
-            scanText += ` (${description})`;
-        }
-        if (location) {
-            scanText += ` at ${location}`;
-        }
-        
-        message += `${scanText.trim()}\n`;
+        message += `• *${time}* - *${status}*${loc ? ` at ${loc}` : ''}\n`;
       });
     } else {
       message += "_No detailed scan history available yet._\n";
     }
 
-    const trackingLink = report.awb ? `${window.location.origin}/tracking?awb=${report.awb}` : 'N/A';
-    message += `\n\n🔗 *Live Tracking Link:* ${trackingLink}`;
+    const trackingLink = getTrackingLink();
+    message += `\n🔗 *Live Tracking Link:* ${trackingLink || 'N/A'}`;
     
     return message;
   };
 
-  const getTrackingLink = () => {
-    return report.awb ? `${window.location.origin}/tracking?awb=${report.awb}` : '';
-  };
-
-  // Handler for copying tracking information to clipboard
-  const handleCopyTrackingInfo = () => {
-    const message = generateTrackingMessage();
-    navigator.clipboard.writeText(message)
-      .then(() => toast.success("Tracking info copied to clipboard!"))
-      .catch((err) => toast.error("Failed to copy tracking info."));
-  };
-
-  // Handler for copying only the tracking link to clipboard
-  const handleCopyTrackingLink = () => {
+  const handleCopyLink = () => {
     const link = getTrackingLink();
-    if (link && link !== 'N/A') {
+    if (link) {
       navigator.clipboard.writeText(link)
-        .then(() => toast.success("Tracking link copied to clipboard!"))
-        .catch(() => toast.error("Failed to copy tracking link."));
-    } else {
-      toast.error("No tracking link available.");
+        .then(() => toast.success("Tracking link copied!"))
+        .catch(() => toast.error("Failed to copy link."));
     }
   };
 
-  // Handler for sharing tracking information via WhatsApp
+  const handleCopyInfo = () => {
+    const message = generateTrackingMessage();
+    navigator.clipboard.writeText(message)
+      .then(() => toast.success("Full tracking info copied!"))
+      .catch(() => toast.error("Failed to copy info."));
+  };
+
   const handleShareWhatsApp = () => {
     const message = generateTrackingMessage();
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
-  // Render tracking cards based on service ID
   const renderTrackingCards = () => {
     if (loading) {
       return (
         <Box p={4} textAlign="center" display="flex" flexDirection="column" alignItems="center" gap={2}>
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-500"></div>
-          <Typography color="text.secondary">Fetching tracking updates...</Typography>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-sky-800"></div>
+          <Typography color="text.secondary">Fetching updates...</Typography>
         </Box>
       );
     }
@@ -201,51 +189,31 @@ const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
       return (
         <Box p={4} textAlign="center">
           <Typography variant="body1" color="error">
-            {trackingData?.message || "Failed to load tracking information."}
+            {trackingData?.message || "Failed to load tracking details."}
           </Typography>
         </Box>
       );
     }
 
     const updates = Array.isArray(trackingData.data) ? trackingData.data : (trackingData.data ? [trackingData.data] : []);
-    const count = updates.length;
-
-    if (count === 0) {
+    if (updates.length === 0) {
       return (
         <Box p={4} textAlign="center">
-          <Typography variant="body1" color="text.secondary">No tracking updates available yet.</Typography>
+          <Typography variant="body1" color="text.secondary">No updates available yet.</Typography>
         </Box>
       );
     }
     
     return (
       <div className="relative">
-        {/* Vertical timeline rail */}
         <div className="absolute left-[22px] top-0 bottom-0 w-px bg-gray-200" /> 
-        {/* Conditional Rendering for Cards based on trackingData.id (serviceId) */}
-        {Number(trackingData?.id) === 1 ? ( // Delhivery B2B
-          updates
-            .filter(Boolean)
-            .slice()
-            .reverse() // Display latest first
-            .map((scan, index) => (
-              <TrackingShareDelhiveryB2BCard key={index} scan={scan} />
-            ))
-        ) : Number(trackingData?.id) === 2 ? ( // Delhivery B2C
-          updates
-            .filter(Boolean)
-            .slice()
-            .reverse() // Display latest first
-            .map((scan, index) => (
-              <TrackingShareDelhiveryCard key={index} scan={scan?.ScanDetail ?? scan} />
-            ))
-        ) : ( // Generic Tracking
-          updates
-            .filter(Boolean)
-            .map((scan, index) => ( // GenericTrackingShareCard assumes data is already ordered or handles it internally
-              <GenericTrackingShareCard key={index} scan={scan} />
-            ))
-        )}
+        {updates.slice().reverse().map((scan, index) => {
+           if (!scan) return null;
+           const sId = Number(trackingData.id);
+           if (sId === 1) return <TrackingShareDelhiveryB2BCard key={index} scan={scan} />;
+           if (sId === 2 || sId === 3) return <TrackingShareDelhiveryCard key={index} scan={scan?.ScanDetail ?? scan} />;
+           return <GenericTrackingShareCard key={index} scan={scan} />;
+        })}
       </div>
     );
   };
@@ -259,20 +227,17 @@ const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
       PaperProps={{
         sx: { 
           borderRadius: { xs: 2, sm: 3 }, 
-          boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-          m: { xs: 1, sm: 2 },
-          width: { xs: 'calc(100% - 16px)', sm: 'auto' }
+          boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+          m: { xs: 1, sm: 2 }
         }
       }}
     >
       <DialogTitle sx={{ p: { xs: 2, sm: 3 } }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
-          <Box display="flex" alignItems="center" gap={1.5}>
-            <Typography variant="h6" fontWeight="700" color="text.primary" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
-              Track Shipment: {report?.awb || 'N/A'}
-            </Typography>
-          </Box>
-          <IconButton onClick={onClose} sx={{ '&:hover': { color: 'error.main', bgcolor: 'error.light' }, p: 0.5 }}>
+          <Typography variant="h6" fontWeight="700" color="text.primary" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
+            Track Shipment: {report?.iid ? report.ref_id : report?.awb || 'N/A'}
+          </Typography>
+          <IconButton onClick={onClose} sx={{ '&:hover': { bgcolor: 'grey.100' } }}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -283,34 +248,35 @@ const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
         {renderTrackingCards()}
       </DialogContent>
 
-      <Box sx={{ px: { xs: 2, sm: 3 }, py: 2, borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end', gap: 1.5 }}>
-        {report?.awb && (
-          <Button
-            variant="outlined"
-            startIcon={<ContentCopyIcon />}
-            onClick={handleCopyTrackingLink}
-            disabled={!report?.awb} // Disable if AWB is not available
-            sx={{ textTransform: 'none' }}
-          >
-            Copy Link
-          </Button>
-        )}
+      <Box sx={{ px: { xs: 2, sm: 3 }, py: 2, borderTop: '1px solid #eee', display: 'flex', justifyContent: 'flex-end', gap: 1.5, flexWrap: 'wrap' }}>
         <Button
           variant="outlined"
+          size="small"
           startIcon={<ContentCopyIcon />}
-          onClick={handleCopyTrackingInfo}
-          disabled={loading || !trackingData || !trackingData.success}
-          sx={{ textTransform: 'none' }}
+          onClick={handleCopyLink}
+          disabled={!(report?.iid ? report.ref_id : report?.awb)}
+          sx={{ textTransform: 'none', borderRadius: 1.5 }}
+        >
+          Copy Link
+        </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<ContentCopyIcon />}
+          onClick={handleCopyInfo}
+          disabled={loading || !trackingData?.success}
+          sx={{ textTransform: 'none', borderRadius: 1.5 }}
         >
           Copy Info
         </Button>
         <Button
           variant="contained"
+          size="small"
           color="success"
           startIcon={<WhatsAppIcon />}
           onClick={handleShareWhatsApp}
-          disabled={loading || !trackingData || !trackingData.success}
-          sx={{ textTransform: 'none' }}
+          disabled={loading || !trackingData?.success}
+          sx={{ textTransform: 'none', borderRadius: 1.5, bgcolor: '#25D366', '&:hover': { bgcolor: '#128C7E' } }}
         >
           Share on WhatsApp
         </Button>
