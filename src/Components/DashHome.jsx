@@ -38,7 +38,7 @@ const DashHome = () => {
   },[])
 
   return (
-    <div className='bg-gray-200 m-8'>
+    <div className='m-8'>
       {/* <div className='text-center '> */}
       {/* <div className='flex gap-1 mt-5 text-xl justify-center'>Welcome <span className='font-semibold'>{name}</span>! </div>  */}
       {/* </div> */}
