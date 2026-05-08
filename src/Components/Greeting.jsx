@@ -10,7 +10,7 @@ const getGreeting = (h) => {
 
 const Greeting = ({ className = '' }) => {
   const { name } = useAuth()
-  const displayName = name ?? 'User'
+  const displayName = name.split(' ')[0] ?? 'User'
 
   const [now, setNow] = useState(new Date())
 
@@ -70,27 +70,27 @@ const Greeting = ({ className = '' }) => {
   }
 
   return (
-    <div className='w-full px-14'>
-    <div className={` relative overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-sm ${className}`}>
+    <div className='w-full px-2 sm:px-4 md:px-5'>
+    <div className={` relative overflow-hidden rounded-lg sm:rounded-2xl border border-gray-200/70 bg-white shadow-sm ${className}`}>
       {/* Decorative gradient blur */}
       <div className={`pointer-events-none absolute -top-16 -right-20 h-56 w-56 rounded-full blur-3xl opacity-30 bg-linear-to-br ${theme.gradient}`} />
 
-      <div className="flex items-start gap-4 p-6 md:p-8">
-        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${theme.tint} ${theme.ring}`} aria-hidden="true">
+      <div className="flex items-start gap-2 sm:gap-3 md:gap-4 p-4 sm:p-5 md:p-6 lg:p-8">
+        <div className={`flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl ${theme.tint} ${theme.ring}`} aria-hidden="true">
           <span className="text-gray-700"><Icon type={theme.icon} /></span>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 leading-snug">
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900 leading-snug">
             <span>{greeting}, </span><br />
             <span className={`bg-linear-to-r ${theme.gradient} bg-clip-text text-transparent`}>{displayName}</span>
             <span className="ml-1" role="img" aria-label="wave">👋</span>
           </h1>
 
-          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600">
             <span>{dateString}</span>
             <span className="hidden md:inline">•</span>
-            <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
+            <span className="inline-flex items-center rounded-full bg-gray-100 px-2 sm:px-2.5 py-0.5 sm:py-1 text-xs font-medium text-gray-700">
               {timeString}
             </span>
           </div>
