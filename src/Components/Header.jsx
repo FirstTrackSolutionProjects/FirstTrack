@@ -6,6 +6,9 @@ import { useAuth } from '../context/AuthContext';
 import { FaDoorOpen } from 'react-icons/fa';
 import WalletRechargeModal from './WalletRechargeModal' 
 import { FaWallet } from 'react-icons/fa'; // Added FaWallet icon
+import getAvailableRoles from '../services/roleServices/getAvailableRoles';
+import changeRoleService from '../services/roleServices/changeRoleService';
+import { toast } from 'react-toastify';
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -109,7 +112,6 @@ const Header = () => {
       const newToken = await changeRoleService(nextUserRoleId)
       localStorage.setItem('token', newToken)
       setRoleMenuOpen(false)
-      setMenuOpen(false)
       window.location.reload()
     } catch (e) {
       toast.error(e?.message || 'Failed to change role')
@@ -211,7 +213,7 @@ const Header = () => {
         {/* Container for logo and navigation */}
         <div className="max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center py-2 md:py-3">
           {/* Logo */}
-          <Link to="/" className="flex items-center flex-shrink-0 mr-1 sm:mr-4">
+          <Link to="/" className="flex items-center shrink-0 mr-1 sm:mr-4">
             <img
               src="/images/logo.svg"
               alt="First Track Logistics Logo"
@@ -223,7 +225,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex flex-grow justify-center min-w-0">
+          <nav className="hidden md:flex grow justify-center min-w-0">
             <div className="flex flex-wrap justify-center md:space-x-4 lg:space-x-8 text-base">
               {navLinks.map((link) => (
                 <NavLink key={link.path} to={link.path} className={getNavLinkClass}>
@@ -234,11 +236,11 @@ const Header = () => {
           </nav>
 
           {/* Right section */}
-          <div className="flex items-center space-x-1 sm:space-x-4 flex-shrink-0 min-w-0 ml-auto">
+          <div className="flex items-center space-x-1 sm:space-x-4 shrink-0 min-w-0 ml-auto">
             {(isAuthenticated &&
               verified &&
               location.pathname.startsWith("/dashboard")) && (
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div
                   onClick={() => setShowRecharge(true)}
                   className={`relative bg-indigo-600 text-white flex items-center font-semibold rounded-full 
@@ -267,19 +269,20 @@ const Header = () => {
             )}
 
             {isAuthenticated && (
-              <div className="md:flex items-center space-x-4 hidden flex-shrink-0 min-w-0">
+              <div className="md:flex items-center space-x-4 hidden shrink-0 min-w-0">
                 <div className="flex items-center space-x-2 min-w-0">
+                  <RoleDropdownMenu containerRef={roleDropdownDesktopRef} />
                   <NavLink
                     to="/dashboard"
                     onClick={() => setIsSidebarOpen(false)}
-                    className="font-semibold text-gray-800 hover:text-green-600 transition-colors duration-200 cursor-pointer truncate max-w-[120px] md:max-w-[150px]"
+                    className="font-semibold text-gray-800 hover:text-green-600 transition-colors duration-200 cursor-pointer truncate max-w-30 md:max-w-37.5"
                     title={name}
                   >
                     {name}
                   </NavLink>
               
                   <button
-                    className="bg-red-500 hover:bg-red-600 transition-colors duration-200 text-white text-lg p-2 rounded-full cursor-pointer flex items-center justify-center shadow-sm flex-shrink-0"
+                    className="bg-red-500 hover:bg-red-600 transition-colors duration-200 text-white text-lg p-2 rounded-full cursor-pointer flex items-center justify-center shadow-sm shrink-0"
                     onClick={logout}
                     aria-label="Logout"
                   >
@@ -290,7 +293,7 @@ const Header = () => {
             )}
 
             {/* Mobile menu button */}
-            <div className="md:hidden z-50 flex-shrink-0">
+            <div className="md:hidden z-50 shrink-0">
               <button onClick={toggleSidebar} aria-label="Open menu">
                 <AiOutlineMenu className="text-[#22c55e]" size={28} />
               </button>
@@ -319,7 +322,7 @@ const Header = () => {
             </button>
           </div>
         
-          <div className="flex-grow overflow-y-auto">
+          <div className="grow overflow-y-auto">
             {/* User Section */}
             <div className="p-4 border-b bg-gray-50">
               {isAuthenticated ? (
