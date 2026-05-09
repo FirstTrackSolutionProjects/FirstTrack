@@ -10,7 +10,7 @@ const getGreeting = (h) => {
 
 const Greeting = ({ className = '' }) => {
   const { name } = useAuth()
-  const displayName = name.split(' ')[0] ?? 'User'
+  const displayName = name ?? 'User'
 
   const [now, setNow] = useState(new Date())
 
