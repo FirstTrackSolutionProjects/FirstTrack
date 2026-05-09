@@ -144,11 +144,14 @@ const FullDetails = () => {
       addressType: "home",
       BaddressType: "home",
       shippingType: "Surface",
+      country: "India",
+      Bcountry: "India",
       orders: [{ box_no: '1', product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: 0 }],
       boxes: [{ box_no: 1, length: 0, breadth: 0, height: 0, weight: 0, weight_unit: 'kg', quantity: 1 }],
       invoiceAmount: 1,
       isB2B: false,
-      invoiceUrl: ''
+      invoiceUrl: '',
+      gst: ''
     }
   });
   useEffect(() => {
@@ -460,6 +463,16 @@ const FullDetails = () => {
                 {...register("state")}
               />
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700" htmlFor="country">Country</label>
+              <input
+                className="w-full border border-gray-300 py-2 px-4 rounded-lg bg-gray-50"
+                type="text"
+                id="country"
+                readOnly
+                {...register("country")}
+              />
+            </div>
           </div>
           
           <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
@@ -488,6 +501,17 @@ const FullDetails = () => {
                 />
               </div>
               <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700" htmlFor="BaddressType">Billing Address Type</label>
+                <select
+                  className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+                  id="BaddressType"
+                  {...register("BaddressType")}
+                >
+                  <option value="home">Home</option>
+                  <option value="office">Office</option>
+                </select>
+              </div>
+              <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700" htmlFor="Bpostcode">Billing Pincode</label>
                 <input
                   className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
@@ -503,6 +527,25 @@ const FullDetails = () => {
                   type="text"
                   id="Bcity"
                   {...register("Bcity")}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700" htmlFor="Bstate">Billing State</label>
+                <input
+                  className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
+                  type="text"
+                  id="Bstate"
+                  {...register("Bstate")}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700" htmlFor="Bcountry">Billing Country</label>
+                <input
+                  className="w-full border border-gray-300 py-2 px-4 rounded-lg bg-gray-50"
+                  type="text"
+                  id="Bcountry"
+                  readOnly
+                  {...register("Bcountry")}
                 />
               </div>
             </div>
@@ -528,7 +571,13 @@ const FullDetails = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-gray-500 uppercase">Box No.</label>
-                    <input className="w-full bg-gray-100 border-none py-2 px-3 rounded text-gray-700 font-bold" type="text" value={index + 1} disabled />
+                    <input 
+                      className="w-full bg-gray-100 border-none py-2 px-3 rounded text-gray-700 font-bold" 
+                      type="text" 
+                      value={index + 1} 
+                      {...register(`boxes[${index}].box_no`)}
+                      readOnly 
+                    />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-gray-500 uppercase">L (cm)</label>
@@ -657,22 +706,21 @@ const FullDetails = () => {
           </div>
         </div>
 
-        {/* B2B & Tax Details Card (Conditional) */}
-        {(watch("isB2B") || watch("Cgst")) && (
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold mb-6 border-b pb-2 text-blue-600">Tax & B2B Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700" htmlFor="gst">Seller GSTIN</label>
-                <input className="w-full border border-gray-300 py-2 px-4 rounded-lg" type="text" id="gst" {...register("gst")} />
-                {errors.gst && <span className='text-red-500 text-sm'>{errors.gst.message}</span>}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700" htmlFor="Cgst">Customer GSTIN</label>
-                <input className="w-full border border-gray-300 py-2 px-4 rounded-lg" type="text" id="Cgst" {...register("Cgst")} />
-              </div>
-              
-              {watch("isB2B") && (
+        {/* Tax Details Card */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h2 className="text-xl font-semibold mb-6 border-b pb-2 text-blue-600">Tax & B2B Details</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700" htmlFor="gst">Seller GSTIN</label>
+              <input className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500" type="text" id="gst" {...register("gst")} />
+              {errors.gst && <span className='text-red-500 text-sm'>{errors.gst.message}</span>}
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700" htmlFor="Cgst">Customer GSTIN (For B2B)</label>
+              <input className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500" type="text" id="Cgst" {...register("Cgst")} />
+            </div>
+            
+            {watch("isB2B") && (
                 <>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700" htmlFor="invoiceNumber">Invoice Number</label>
@@ -696,9 +744,8 @@ const FullDetails = () => {
                   </div>
                 </>
               )}
-            </div>
           </div>
-        )}
+        </div>
 
         <div className="w-full flex justify-center pt-6 pb-12">
           <button
