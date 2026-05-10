@@ -163,15 +163,19 @@ const ReportCard = ({ report, status }) => {
       <div className="flex flex-col">
       <p className="mt-5">AWB : {report.awb}</p>
       {report?.lrn ? <p>LRN : {report.lrn}</p> : null}
+      <div className="my-4 border-b"> </div>
       {status?.length ?
         (status).map((scan, index) => {
           return (
-            <div className='flex flex-col justify-center'>
-              <div className='font-bold'>{scan.status}</div>
-              {scan?.description ? <div>{scan.description}</div> : null}
-              {scan?.location ? <div>{scan.location}</div> : null}
-              <div>{scan.timestamp}</div>
-            </div>
+            <React.Fragment key={index}>
+              <div className='flex flex-col justify-center'>
+                <div className='font-bold'>{scan.status}</div>
+                {scan?.description ? <div>{scan.description}</div> : null}
+                {scan?.location ? <div>{scan.location}</div> : null}
+                <div>{scan.timestamp}</div>
+              </div>
+              <div className="my-4 border-b"> </div>
+            </React.Fragment>
           )
         }) : "Shipment is not yet picked up"
       }
@@ -1027,6 +1031,12 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">Warehouse</Typography>
                     <Typography variant="body2" fontWeight="600" color="text.primary" sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'}, wordBreak: 'break-word' }}>{shipment.warehouseName || 'N/A'}</Typography>
                   </Box>
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">Shipping Charge</Typography>
+                    <Typography variant="body2" fontWeight="700" color="error.main" sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'} }}>
+                      {shipment.shipping_charge ? `- ₹${parseFloat(shipment.shipping_charge).toFixed(2)}` : 'N/A'}
+                    </Typography>
+                  </Box>
                   <Box sx={{ gridColumn: 'span 2' }}>
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">AWB Number</Typography>
                     <Box display="flex" alignItems="center" gap={0.5}>
@@ -1158,7 +1168,13 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
                 <Box display="flex" justifyContent="space-between" mb={1.5}>
                   <Typography variant="body2" fontWeight="600" color="text.secondary">Total dead weight</Typography>
                   <Typography variant="body2" fontWeight="800" color="text.primary">
-                    {boxes.reduce((acc, box) => acc + parseFloat(box.weight), 0).toFixed(3)} {boxes[0]?.weight_unit || 'kg'}
+                    {boxes.reduce((acc, box) => acc + (parseFloat(box.weight) * parseInt(box.quantity || 1)), 0).toFixed(3)} {boxes[0]?.weight_unit || 'kg'}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between" mb={1.5}>
+                  <Typography variant="body2" fontWeight="600" color="text.secondary">Total volumetric weight</Typography>
+                  <Typography variant="body2" fontWeight="800" color="text.primary">
+                    {(boxes.reduce((acc, box) => acc + (parseFloat(box.length) * parseFloat(box.breadth) * parseFloat(box.height) * parseInt(box.quantity || 1)), 0) / (shipment?.is_b2b ? 4500 : 5000)).toFixed(3)} kg
                   </Typography>
                 </Box>
                 <Divider sx={{ my: 2, borderColor: '#D1D5DB' }} />
