@@ -44,6 +44,7 @@ const columns = [
 
       return <span className={cls}>{sign}{Math.abs(v)}</span>;
     }, minWidth: 80 },
+  { field: 'REMAINING_BALANCE', headerName: 'Balance After', flex: 1, renderCell: p => p.value != null ? Number(p.value).toFixed(2) : '', minWidth: 110 },
   { field: 'DESCRIPTION', headerName: 'Description', flex: 2, minWidth: 100 },
 ];
 
