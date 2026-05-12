@@ -145,7 +145,7 @@ const ContactUs = () => {
 
       {/* Floating WhatsApp Button (Only for Contact Page) */}
             <a
-              href="https://wa.me/919040170727?text=Hello%20I%20am%20interested%20in%20your%20services"
+              href="https://wa.me/919040170727?text=Hi%20First%20Track%20Logistics,%20I'm%20interested%20in%20learning%20more%20about%20your%20fast%20and%20reliable%20shipping%20solutions.%20Please%20connect%20me%20with%20a%20representative.%20Thank%20you!"
               target="_blank"
               rel="noopener noreferrer"
               className="fixed bottom-40 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg z-50 transition-transform duration-300 hover:scale-110"
