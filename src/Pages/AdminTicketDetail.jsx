@@ -176,16 +176,16 @@ export default function AdminTicketDetail() {
                     <textarea
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
-                        placeholder="Type your official response here..."
+                        placeholder={currentStatus === 'CLOSED' ? "Ticket is closed. No further replies allowed." : "Type your official response here..."}
                         rows="3"
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                        disabled={submitting}
+                        disabled={submitting || currentStatus === 'CLOSED'}
                     />
                     <div className="flex justify-end mt-2">
                         <button
                             type="submit"
                             className="bg-red-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-red-700 transition disabled:opacity-50"
-                            disabled={submitting}
+                            disabled={submitting || currentStatus === 'CLOSED'}
                         >
                             {submitting ? 'Submitting...' : 'Send Admin Reply'}
                         </button>

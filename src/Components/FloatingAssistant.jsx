@@ -27,19 +27,25 @@ export default function FloatingAssistant() {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 z-1000"> 
+        <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-[1000]"> 
             {/* Chat Modal Window */}
             {isOpen && (
                 <div 
-                    className="bg-white shadow-2xl rounded-lg overflow-hidden 
-                                w-80 h-[450px] md:w-96 md:h-[600px] 
-                                mb-4 border border-gray-200 flex flex-col"
+                    className="bg-white shadow-2xl rounded-3xl overflow-hidden 
+                                w-[calc(100vw-2rem)] h-[480px] md:w-96 md:h-[600px] 
+                                mb-4 border border-slate-200 flex flex-col animate-in fade-in zoom-in-95 duration-200 origin-bottom-right"
                 >
                     {/* Header */}
-                    <div className="bg-[#075e54] text-white px-4 py-3 flex justify-between items-center shrink-0">
-                        <p className="font-semibold text-sm">First Track Support</p>
-                        <button onClick={handleClose} className="text-xl hover:text-red-300 transition">
-                            <X size={20} />
+                    <div className="bg-slate-900 text-white px-5 py-4 flex justify-between items-center shrink-0">
+                        <div>
+                            <p className="font-bold text-sm tracking-tight">Support Assistant</p>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Online</p>
+                            </div>
+                        </div>
+                        <button onClick={handleClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
+                            <X size={18} />
                         </button>
                     </div>
 
@@ -53,8 +59,8 @@ export default function FloatingAssistant() {
             {/* Floating Button */}
             <button
                 onClick={toggleOpen}
-                className={`w-14 h-14 rounded-full shadow-lg text-white transition-all duration-300 flex items-center justify-center 
-                            ${isOpen ? 'bg-red-600 hover:bg-red-700' : 'bg-[#075e54] hover:bg-green-700'}`}
+                className={`w-14 h-14 rounded-2xl shadow-xl text-white transition-all duration-300 flex items-center justify-center 
+                            ${isOpen ? 'bg-slate-800 rotate-90 scale-90' : 'bg-blue-600 hover:bg-blue-700 hover:scale-105 active:scale-95'}`}
                 aria-label={isOpen ? "Close Support Chat" : "Open Support Chat"}
             >
                 {isOpen ? <X size={24} /> : <MessageCircle size={24} />}

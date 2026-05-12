@@ -32,7 +32,7 @@ const Sidebar2 = () => {
       {/* Menu button (Icon) - visible only below md screens */}
       <button
         onClick={toggleSidebar}
-        className="md:hidden p-3 fixed top-[72px] left-4 text-white hover:text-[#22c55e] transition-colors duration-200 z-[60] bg-black/50 rounded-full shadow-lg backdrop-blur-sm"
+        className="md:hidden p-2.5 fixed top-[80px] left-3 text-white hover:text-[#22c55e] transition-colors duration-200 z-[60] bg-gray-900/60 rounded-xl shadow-lg backdrop-blur-md border border-white/10"
         aria-label="Open sidebar menu"
       >
         {isOpen ? <FaTimes className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
@@ -72,7 +72,7 @@ const Sidebar2 = () => {
       </div>
        {/* Sidebar for below md screen */}
        <div
-        className={`fixed top-0 left-0 z-50 h-full bg-[#0f172a] overflow-y-auto overflow-x-hidden transition-all duration-300 ${isOpen ? 'w-[280px] shadow-2xl' : 'w-0'}`}
+        className={`fixed top-0 left-0 z-50 h-[calc(100%-60px)] bg-[#0f172a] overflow-y-auto overflow-x-hidden transition-all duration-300 ${isOpen ? 'w-[280px] shadow-2xl' : 'w-0'}`}
       >
         {/* Branding for Mobile Sidebar */}
         {isOpen && (
