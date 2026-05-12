@@ -9,7 +9,7 @@ const Footer =()=>{
           behavior: 'smooth'
         });
       };
-      const whatsappUrl = `https://wa.me/9040170727?text=Hello, I would like to inquire about your services."`;
+      const whatsappUrl = `https://wa.me/9040170727?text=Hi%20First%20Track%20Logistics,%20I'm%20interested%20in%20learning%20more%20about%20your%20fast%20and%20reliable%20shipping%20solutions.%20Please%20connect%20me%20with%20a%20representative.%20Thank%20you!`;
     return(
         <div className="font-inter">
         {/* Call to Action */}

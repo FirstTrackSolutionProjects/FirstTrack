@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
     FaHome, FaBox, FaClipboardList, FaHistory, FaPlusSquare, 
-    FaTags, FaUsers, FaUserCircle, FaInfoCircle, FaHeadset, FaCog, FaChevronUp 
+    FaTags, FaUsers, FaUserCircle, FaInfoCircle, FaHeadset, FaCog, FaChevronUp,
+    FaMoneyBillAlt
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { USER_ROLES } from '../Constants';
@@ -49,7 +50,7 @@ const MobileBottomNavbar = ({ isDashboardRoute }) => {
         { icon: FaUsers, name: 'Merchant', isMenu: true },
         { icon: FaBox, name: 'Warehouse', path: '/dashboard/warehouse' },
         { icon: FaHeadset, name: 'Support', path: '/dashboard/admin/support' },
-        { icon: FaCog, name: 'Settings', path: '/dashboard/settings/profile' },
+        { icon: FaMoneyBillAlt, name: 'COD', path: '/dashboard/cod-remittance-manage' },
     ];
 
     const adminMerchantSubItems = [
