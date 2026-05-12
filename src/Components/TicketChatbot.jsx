@@ -14,16 +14,12 @@ const OPTIONS = {
       "Pickup cancelled by courier",
       "Pickup reschedule request",
     ],
-    replies: {
-      "Pickup not attempted":
-        "We’re checking why the pickup was not attempted and will update you shortly.",
-      "Pickup delayed":
-        "We apologize for the delay. We’re coordinating with the courier partner.",
-      "Pickup cancelled by courier":
-        "We’re reviewing the pickup cancellation and will assist you further.",
-      "Pickup reschedule request":
-        "Sure. We’ll help you reschedule the pickup at the earliest.",
-    },
+    prompts: {
+      "Pickup not attempted": "Please provide the Order ID/AWB and confirm the pickup address.",
+      "Pickup delayed": "Please provide the Order ID/AWB.",
+      "Pickup cancelled by courier": "Please provide the Order ID/AWB and any reason provided by the rider.",
+      "Pickup reschedule request": "Please provide the Order ID/AWB and your preferred new date and time slot.",
+    }
   },
 
   "Delivery Delay": {
@@ -33,16 +29,12 @@ const OPTIONS = {
       "Delivery attempt unsuccessful",
       "Delivery reschedule request",
     ],
-    replies: {
-      "Delivery delayed beyond SLA":
-        "We’re sorry for the delay. We’re checking the shipment status.",
-      "Shipment pending at delivery center":
-        "Your shipment is being reviewed at the delivery center.",
-      "Delivery attempt unsuccessful":
-        "We’ll coordinate with the courier to reattempt delivery.",
-      "Delivery reschedule request":
-        "We’ll assist you in rescheduling the delivery.",
-    },
+    prompts: {
+      "Delivery delayed beyond SLA": "Please provide the Order ID/AWB.",
+      "Shipment pending at delivery center": "Please provide the Order ID/AWB.",
+      "Delivery attempt unsuccessful": "Please provide the Order ID/AWB and the consignee's active contact number.",
+      "Delivery reschedule request": "Please provide the Order ID/AWB and the preferred delivery date.",
+    }
   },
 
   "COD / Payment Issue": {
@@ -52,16 +44,12 @@ const OPTIONS = {
       "COD not received for delivered order",
       "Payment issue with cancelled shipment",
     ],
-    replies: {
-      "COD amount mismatch":
-        "We’ll verify the COD amount details for your shipment.",
-      "COD remittance pending":
-        "COD remittance is under review. We’ll update you shortly.",
-      "COD not received for delivered order":
-        "We’re checking the delivery and payment confirmation.",
-      "Payment issue with cancelled shipment":
-        "We’ll verify the payment status for the cancelled shipment.",
-    },
+    prompts: {
+      "COD amount mismatch": "Please provide the Order ID/AWB and the amount discrepancy details (Expected vs Received).",
+      "COD remittance pending": "Please provide the Date range and the total pending amount.",
+      "COD not received for delivered order": "Please provide the Order ID/AWB and proof of delivery if available.",
+      "Payment issue with cancelled shipment": "Please provide the Order ID/AWB and the amount to be refunded.",
+    }
   },
 
   "Wallet Recharge Issue": {
@@ -71,16 +59,12 @@ const OPTIONS = {
       "Incorrect wallet balance",
       "Wallet transaction statement required",
     ],
-    replies: {
-      "Wallet recharge failed":
-        "We’re checking the wallet recharge status.",
-      "Recharge successful but balance not updated":
-        "We’ll verify the transaction and update your wallet balance.",
-      "Incorrect wallet balance":
-        "We’re reviewing your wallet transactions.",
-      "Wallet transaction statement required":
-        "We’ll help you with the wallet transaction details.",
-    },
+    prompts: {
+      "Wallet recharge failed": "Please provide the Transaction ID, Amount, and Date of attempt.",
+      "Recharge successful but balance not updated": "Please provide the Transaction ID and Amount.",
+      "Incorrect wallet balance": "Please provide details of the discrepancy you noticed.",
+      "Wallet transaction statement required": "Please specify the start and end dates for the statement.",
+    }
   },
 
   "Weight Dispute": {
@@ -90,16 +74,12 @@ const OPTIONS = {
       "Weight dispute for delivered shipment",
       "Request weight verification",
     ],
-    replies: {
-      "Incorrect charged weight":
-        "We’ll verify the charged weight for your shipment.",
-      "Weight updated after pickup":
-        "We’re checking the weight update details with the courier.",
-      "Weight dispute for delivered shipment":
-        "We’re reviewing the applied weight charges.",
-      "Request weight verification":
-        "We’ll initiate a weight verification request.",
-    },
+    prompts: {
+      "Incorrect charged weight": "Please provide the Order ID/AWB, Actual weight (kg), and Charged weight (kg).",
+      "Weight updated after pickup": "Please provide the Order ID/AWB.",
+      "Weight dispute for delivered shipment": "Please provide the Order ID/AWB.",
+      "Request weight verification": "Please provide the Order ID/AWB and confirm the package is available for re-weighing.",
+    }
   },
 
   "Pricing / Tracking Issue": {
@@ -109,16 +89,12 @@ const OPTIONS = {
       "Tracking not updated",
       "Tracking details incorrect",
     ],
-    replies: {
-      "Unexpected shipment charges":
-        "We’ll review the charges applied to your shipment.",
-      "Rate calculation incorrect":
-        "We’re verifying the rate calculation.",
-      "Tracking not updated":
-        "We’re checking the latest tracking status.",
-      "Tracking details incorrect":
-        "We’ll review and correct the tracking details.",
-    },
+    prompts: {
+      "Unexpected shipment charges": "Please provide the Order ID/AWB and details of the charge you're disputing.",
+      "Rate calculation incorrect": "Please provide the Origin/Destination pincodes and shipment weight.",
+      "Tracking not updated": "Please provide the Order ID/AWB.",
+      "Tracking details incorrect": "Please provide the Order ID/AWB and the correct status/location.",
+    }
   },
 };
 
@@ -226,8 +202,10 @@ export default function TicketChatbot({ onClose }) {
         }
       } else if (step === "SUB") {
         setCurrentSubCategory(option); 
-        addBot(OPTIONS[currentCategory].replies[option]);
-        askSolved(); 
+        const prompt = OPTIONS[currentCategory].prompts[option];
+        addBot(prompt);
+        setStep("DETAILS");
+        setShowInput(true);
       } else if (step === "SOLVED") {
         handleSolved(option);
       }
@@ -261,66 +239,72 @@ export default function TicketChatbot({ onClose }) {
   };
 
   return (
-    // Removed full screen styling wrappers, leaving only the inner chat logic
-    <div className="w-full h-full flex flex-col bg-[#efeae2] overflow-hidden">
-      
-        {/* CHAT BODY */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
-              <div className={`px-3 py-2 rounded-xl text-sm max-w-[75%]
-                ${msg.from === "user" ? "bg-[#dcf8c6]" : "bg-white"}`}>
-                {msg.text}
-              </div>
+    <div className="w-full h-full flex flex-col bg-slate-50 overflow-hidden font-inter">
+      {/* CHAT BODY */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 scroll-smooth">
+        {messages.map((msg, i) => (
+          <div 
+            key={i} 
+            className={`flex flex-col ${msg.from === "user" ? "items-end" : "items-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}
+          >
+            <div className={`px-4 py-2.5 rounded-2xl text-sm max-w-[85%] shadow-sm leading-relaxed
+              ${msg.from === "user" 
+                ? "bg-blue-600 text-white rounded-tr-none" 
+                : "bg-white text-slate-700 border border-slate-100 rounded-tl-none"}`}>
+              {msg.text}
             </div>
-          ))}
+          </div>
+        ))}
 
-          {currentOptions.length > 0 && !isLoading && (
-            <div className="grid grid-cols-2 gap-2">
-              {currentOptions.map((opt) => (
-                <button
-                  key={opt}
-                  onClick={() => handleOption(opt)}
-                  className="bg-white border rounded-full py-2 text-sm hover:bg-gray-100 transition"
-                  disabled={isLoading}
-                >
-                  {opt}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {showInput && !isLoading && (
-            <div className="flex gap-2 mt-2">
-              <input
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Type your issue here..."
-                className="flex-1 px-3 py-2 rounded border"
-                disabled={isLoading}
-              />
+        {currentOptions.length > 0 && !isLoading && (
+          <div className="flex flex-wrap gap-2 pt-2 justify-center">
+            {currentOptions.map((opt) => (
               <button
-                onClick={submitDetails}
-                className="bg-[#075e54] text-white px-4 rounded disabled:opacity-50"
+                key={opt}
+                onClick={() => handleOption(opt)}
+                className="bg-white border border-blue-100 text-blue-600 px-4 py-2 rounded-full text-xs font-semibold hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-sm active:scale-95"
                 disabled={isLoading}
               >
-                {isLoading ? 'Sending...' : 'Send'}
+                {opt}
               </button>
-            </div>
-          )}
-          
-          {/* Display loading message if submitting a ticket */}
-          {isLoading && (
-            <div className="flex justify-start">
-                <div className="px-3 py-2 rounded-xl text-sm max-w-[75%] bg-white text-gray-600">
-                    Submitting your ticket...
-                </div>
-            </div>
-          )}
+            ))}
+          </div>
+        )}
 
+        {/* Display loading message if submitting a ticket */}
+        {isLoading && (
+          <div className="flex justify-start animate-pulse">
+            <div className="px-4 py-2.5 rounded-2xl rounded-tl-none text-sm bg-white border border-slate-100 text-slate-400">
+              Processing your request...
+            </div>
+          </div>
+        )}
 
-          <div ref={bottomRef} />
+        <div ref={bottomRef} />
+      </div>
+
+      {/* INPUT AREA */}
+      {showInput && !isLoading && (
+        <div className="p-4 bg-white border-t border-slate-100 animate-in slide-in-from-bottom-4 duration-300">
+          <div className="flex items-center gap-2 bg-slate-50 rounded-full px-4 py-1 border border-slate-200 focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-100 transition-all">
+            <input
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && submitDetails()}
+              placeholder="Type your message..."
+              className="flex-1 bg-transparent py-2 text-sm focus:outline-none text-slate-700"
+              disabled={isLoading}
+            />
+            <button
+              onClick={submitDetails}
+              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-full transition-colors disabled:opacity-50"
+              disabled={!inputText.trim() || isLoading}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+          </div>
         </div>
+      )}
     </div>
   );
 }

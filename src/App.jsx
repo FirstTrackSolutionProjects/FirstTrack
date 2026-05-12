@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './Components/Header'
 import Footer from './Components/Footer'
@@ -19,12 +19,16 @@ import Verify from './Pages/Verify'
 // import TicketRaise from './Pages/TicketRaise'
 import { ToastContainer } from 'react-toastify'
 import FloatingAssistant from './Components/FloatingAssistant';
+import MobileBottomNavbar from './Components/MobileBottomNavbar';
 
 const App = () => {
   const { pathname } = useLocation();
+
+  const isDashboard = pathname.startsWith('/dashboard');
+
   return (
-    <div className='App font-inter text-gray-800 pb-[72px] md:pb-0'> {/* Added default font and text color for consistency, added conditional padding-bottom for mobile navbar */}
-      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" /> {/* Enhanced ToastContainer props */}
+    <div className='App font-inter text-gray-800 pb-20 md:pb-0'>
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" />
       <Header/>
       <Routes>
       
@@ -45,15 +49,19 @@ const App = () => {
         {/* <Route path='/ticket' element={<TicketRaise/>}></Route> */}
       </Routes>
       <FloatingAssistant />
-      {
-        // NOTE: Removed '/ticket' from this conditional check
-        (pathname.startsWith('/dashboard') ||
-          pathname.startsWith('/login') ||
-          pathname.startsWith('/register') ||
-          pathname.startsWith('/tracking'))
-        ? null 
-        : <Footer />
+      <div className="md:block">
+        {
+          (pathname.startsWith('/dashboard') ||
+            pathname.startsWith('/login') ||
+            pathname.startsWith('/register') ||
+            pathname.startsWith('/track')) // Fixed path match for /track
+          ? null 
+          : <Footer />
         }
+      </div>
+      <MobileBottomNavbar 
+        isDashboardRoute={isDashboard} 
+      />
     </div>
   )
 }

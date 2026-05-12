@@ -12,14 +12,15 @@ const getAuthHeaders = () => {
     };
 };
 
-export const fetchAllTickets = async () => {
+export const fetchAllTickets = async (filters = {}) => {
     // --- ADDED ENVIRONMENT VARIABLE LOOKUP ---
     const VITE_APP_API_URL = import.meta.env.VITE_APP_API_URL;
     // -----------------------------------------
     try {
+        const params = new URLSearchParams(filters).toString();
+        const url = `${VITE_APP_API_URL}/support/admin/tickets${params ? `?${params}` : ''}`;
         const response = await axios.get(
-            // --- UPDATED URL ---
-            `${VITE_APP_API_URL}/support/admin/tickets`,
+            url,
             { headers: getAuthHeaders() }
         );
         return response.data.tickets;

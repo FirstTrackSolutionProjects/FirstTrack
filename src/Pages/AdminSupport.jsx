@@ -26,18 +26,20 @@ export default function AdminSupport() {
     const navigate = useNavigate();
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [filterStatus, setFilterStatus] = useState('ALL');
 
     const loadTickets = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await fetchAllTickets();
+            const filters = filterStatus === 'ALL' ? {} : { status: filterStatus };
+            const data = await fetchAllTickets(filters);
             setTickets(data);
         } catch (error) {
             toast.error(error.message);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [filterStatus]);
 
     useEffect(() => {
         loadTickets();
@@ -69,8 +71,26 @@ export default function AdminSupport() {
 
     return (
         <div className="p-4 md:p-6 bg-white shadow-lg rounded-lg">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800">Admin Support Dashboard</h1>
-            <p className="text-sm text-gray-600 mb-4">Total Tickets: {tickets.length}</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h1 className="text-2xl font-bold text-gray-800">Admin Support Dashboard</h1>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center">
+                        <label className="text-sm text-gray-600 mr-2">Filter:</label>
+                        <select 
+                            className="text-sm border border-gray-300 rounded px-2 py-1"
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                        >
+                            <option value="ALL">All Status</option>
+                            <option value="OPEN">Open</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="RESOLVED">Resolved</option>
+                            <option value="CLOSED">Closed</option>
+                        </select>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-600">Total: {tickets.length}</p>
+                </div>
+            </div>
 
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
