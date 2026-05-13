@@ -209,24 +209,22 @@ const Profile = () => {
             </div>
             <div className='w-full font-medium text-gray-700'>
               {(userRole === USER_ROLES.ADMIN && profileData.designation) ? <p>Designation : {profileData.designation}</p> : null}
-              {profileData.address && <p>Address : {profileData.address}</p>}
 
-              {(userRole === USER_ROLES.MERCHANT || userRole === USER_ROLES.SUBMERCHANT) && (
-                <div className='w-full'>
-                  <DetailRow label="GSTIN" value={profileData.gstin} docKey="gst_doc" />
-                  <DetailRow label="CIN" value={profileData.cin} />
-                  <DetailRow label="MSME/UDYOG" value={profileData.msme} />
-                  <DetailRow label="Aadhar Number" value={profileData.aadhar} docKey="aadhar_doc" />
-                  <DetailRow label="PAN Number" value={profileData.pan} docKey="pan_doc" />
-                  <DetailRow label="City" value={profileData.city} />
-                  <DetailRow label="State" value={profileData.state} />
-                  <DetailRow label="Pincode" value={profileData.pin} />
-                  <DetailRow label="Bank Name" value={profileData.bank} />
-                  <DetailRow label="A/C No." value={profileData.account_number} />
-                  <DetailRow label="IFSC" value={profileData.ifsc} />
-                  {profileData.cancelledCheque && <p>Cancelled Cheque : <span className="cursor-pointer text-blue-500" onClick={()=>handleDownload(profileData.cancelledCheque)}>[PDF]</span></p>}
-                </div>
-              )}
+              <div className='w-full'>
+                <DetailRow label="Address" value={profileData.address} />
+                <DetailRow label="GSTIN" value={profileData.gstin} docKey="gst_doc" />
+                <DetailRow label="CIN" value={profileData.cin} />
+                <DetailRow label="MSME/UDYOG" value={profileData.msme} />
+                <DetailRow label="Aadhar Number" value={profileData.aadhar} docKey="aadhar_doc" />
+                <DetailRow label="PAN Number" value={profileData.pan} docKey="pan_doc" />
+                <DetailRow label="City" value={profileData.city} />
+                <DetailRow label="State" value={profileData.state} />
+                <DetailRow label="Pincode" value={profileData.pin} />
+                <DetailRow label="Bank Name" value={profileData.bank} />
+                <DetailRow label="A/C No." value={profileData.account_number} />
+                <DetailRow label="IFSC" value={profileData.ifsc} />
+                {profileData.cancelledCheque && <p>Cancelled Cheque : <span className="cursor-pointer text-blue-500" onClick={()=>handleDownload(profileData.cancelledCheque)}>[PDF]</span></p>}
+              </div>
             </div>
           </div>
         </div>
