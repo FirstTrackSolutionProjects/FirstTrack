@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { USER_ROLES } from '@/Constants' // Import USER_ROLES
+import { FaRegCopy } from 'react-icons/fa'
+import { toast } from 'react-toastify'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const Profile = () => {
   const admin = jwtDecode(localStorage.getItem('token')).admin;
@@ -30,6 +32,12 @@ const Profile = () => {
   })
   const [profilePhoto, setProfilePhoto] = useState(null)
   const [userRole, setUserRole] = useState(null) // State to store the user's role
+
+  const handleCopy = (text) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard');
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -176,10 +184,11 @@ const Profile = () => {
     if (!value && !(docKey && profileData[docKey])) return null;
 
     return (
-      <p>
+      <p className="flex items-center gap-2">
         <span className='font-medium'>{label}</span> : {value}
+        {value && <FaRegCopy className="cursor-pointer text-gray-400 hover:text-black text-sm" onClick={() => handleCopy(value)} title="Copy" />}
         {docKey && profileData[docKey] && (
-            <span className="cursor-pointer text-blue-500 ml-2" onClick={() => handleDownload(profileData[docKey])}>[PDF]</span>
+            <span className="cursor-pointer text-blue-500 text-sm" onClick={() => handleDownload(profileData[docKey])}>[PDF]</span>
         )}
       </p>
     );
@@ -198,17 +207,36 @@ const Profile = () => {
                 <img src={profilePhoto || '/user.webp'} alt="Profile" className="object-contain" />
               </div>
               <div className=''>
-                <p className='font-medium text-xl'>{profileData.business_name || profileData.name}</p>
+                <p className='font-medium text-xl flex items-center gap-2'>
+                  {profileData.business_name || profileData.name}
+                  {(profileData.business_name || profileData.name) && <FaRegCopy className="cursor-pointer text-gray-500 hover:text-black text-sm" onClick={() => handleCopy(profileData.business_name || profileData.name)} title="Copy" />}
+                </p>
                 {/* Display full name in parenthesis only if business name is also present */}
-                {profileData.business_name && profileData.name && <p className='font-medium text-sm text-gray-600'>({profileData.name})</p>}
-                <p className='font-medium text-sm text-gray-600'>{profileData.email}</p>
-                <p className='font-medium text-sm text-gray-600'>{profileData.phone}</p>
+                {profileData.business_name && profileData.name && (
+                  <p className='font-medium text-sm text-gray-600 flex items-center gap-2'>
+                    ({profileData.name})
+                    <FaRegCopy className="cursor-pointer text-gray-400 hover:text-gray-600 text-xs" onClick={() => handleCopy(profileData.name)} title="Copy" />
+                  </p>
+                )}
+                <p className='font-medium text-sm text-gray-600 flex items-center gap-2'>
+                  {profileData.email}
+                  {profileData.email && <FaRegCopy className="cursor-pointer text-gray-400 hover:text-gray-600 text-xs" onClick={() => handleCopy(profileData.email)} title="Copy" />}
+                </p>
+                <p className='font-medium text-sm text-gray-600 flex items-center gap-2'>
+                  {profileData.phone}
+                  {profileData.phone && <FaRegCopy className="cursor-pointer text-gray-400 hover:text-gray-600 text-xs" onClick={() => handleCopy(profileData.phone)} title="Copy" />}
+                </p>
                 {/* Balance will come from a different endpoint typically, for now, keep coming soon */}
                 <p className='font-medium text-sm text-green-400'>Balance : (Coming Soon)</p>
               </div>
             </div>
             <div className='w-full font-medium text-gray-700'>
-              {(userRole === USER_ROLES.ADMIN && profileData.designation) ? <p>Designation : {profileData.designation}</p> : null}
+              {(userRole === USER_ROLES.ADMIN && profileData.designation) ? (
+                <p className="flex items-center gap-2">
+                  Designation : {profileData.designation}
+                  <FaRegCopy className="cursor-pointer text-gray-500 hover:text-black text-sm" onClick={() => handleCopy(profileData.designation)} title="Copy" />
+                </p>
+              ) : null}
 
               <div className='w-full'>
                 <DetailRow label="Address" value={profileData.address} />
@@ -223,7 +251,12 @@ const Profile = () => {
                 <DetailRow label="Bank Name" value={profileData.bank} />
                 <DetailRow label="A/C No." value={profileData.account_number} />
                 <DetailRow label="IFSC" value={profileData.ifsc} />
-                {profileData.cancelledCheque && <p>Cancelled Cheque : <span className="cursor-pointer text-blue-500" onClick={()=>handleDownload(profileData.cancelledCheque)}>[PDF]</span></p>}
+                {profileData.cancelledCheque && (
+                  <p className="flex items-center gap-2">
+                    Cancelled Cheque : 
+                    <span className="cursor-pointer text-blue-500 text-sm" onClick={()=>handleDownload(profileData.cancelledCheque)}>[PDF]</span>
+                  </p>
+                )}
               </div>
             </div>
           </div>
