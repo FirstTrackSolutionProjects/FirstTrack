@@ -12,6 +12,7 @@
     overflow: hidden;
   }
   
+  /* Slider track */
   .slider-track {
     display: flex;
     width: calc(250px * 10); /* Adjust width based on number of logos */
