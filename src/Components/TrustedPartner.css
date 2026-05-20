@@ -8,11 +8,25 @@
   /* Slider setup */
   .slider {
     width: 100%;
+    overflow-x: auto;   
+    overflow-y: hidden;
     display: flex;
-    overflow: hidden;
+    cursor: grab;
+    scroll-behavior: smooth;
+
+     /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  }
+
+  .slider::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+    
   }
   
-  /* Slider track */
+
   .slider-track {
     display: flex;
     width: calc(250px * 10); /* Adjust width based on number of logos */

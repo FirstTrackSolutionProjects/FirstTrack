@@ -9,8 +9,12 @@ const logos = [
   'images/partners/zoho.jpeg',
   'images/partners/delhivery.jpeg',
   'images/partners/gati.png',
+  'images/partners/aws.jpg',
   'images/partners/xpress.jpeg',
-  // Add more logos as needed
+  'images/partners/amazon.png',
+  'images/partners/ekart.png',
+  'images/partners/netlify.png',
+  'images/partners/hostinger.png'
 ];
 
 const TrustedPartnerSection = () => {
@@ -21,7 +25,7 @@ const { ref, inView } = useInView({
   });
 
   return (
-    <section ref={ref} className="my-3 py-16 bg-neutral-200">
+    <section ref={ref} className="my-3 py-16 bg-neutral-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 text-center">
         <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-10">Our Trusted Partners</h2>
         <div className="flex justify-center items-center ">
