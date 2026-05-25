@@ -992,12 +992,8 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
         'Authorization': localStorage.getItem('token'),
       },
       body: JSON.stringify({ 
-        order: shipment.ord_id, 
-        price: Math.round(price.price), 
-        serviceId: price.serviceId, 
-        courierId: price.courierId,
-        courierServiceId: price.courierServiceId,
-        submerchantMargin: price.submerchantMargin,
+        orderId: shipment.ord_id,
+        service: price
       })
     }).then(response => response.json()).then(async result => {
       if (result.success) {
@@ -1020,7 +1016,7 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
   return (
     <Paper sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <Box>
-        <div>{price.name + " " + price.weight}</div>
+        <div>{`${price.name}${price.publicServiceName ? ` - ${price.publicServiceName}` : ''}` + " " + price.weight}</div>
         <Box sx={{ mt: 0.5 }}>
           <Box component="span" sx={{
             px: 1.2,
@@ -1087,7 +1083,7 @@ const ShipList = ({ shipment, isShipOpen, setIsShipOpen, setIsShipped, getParcel
       await volumetric();
       
       console.log({ 
-        method: shipment.shipping_mode == "Surface" ? "S" : "E", 
+        method: shipment.shipping_mode, 
         status: "Delivered", 
         origin: shipment.pin, 
         dest: shipment.shipping_postcode, 
@@ -1107,7 +1103,7 @@ const ShipList = ({ shipment, isShipOpen, setIsShipOpen, setIsShipped, getParcel
           'Authorization': localStorage.getItem('token')
         },
         body: JSON.stringify({ 
-          method: shipment.shipping_mode == "Surface" ? "S" : "E", 
+          method: shipment.shipping_mode, 
           status: "Delivered", 
           origin: shipment.pin, 
           dest: shipment.shipping_postcode, 

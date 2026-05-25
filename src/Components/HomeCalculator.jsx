@@ -126,8 +126,8 @@ const Form = () => {
             className="mt-1 text-sm block w-full p-2 border border-gray-300 rounded-md"
           >
             
-            <option value="S">Surface</option>
-            <option value="E">Express</option>
+            <option value="Surface">Surface</option>
+            <option value="Express">Express</option>
           </select>
         </div>
 
