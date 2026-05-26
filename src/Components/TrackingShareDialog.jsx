@@ -21,30 +21,6 @@ const timestampToDate = (timestamp) => {
   return formattedTimestamp;
 };
 
-// Re-using/adapting card components from Tracking.jsx or Listing.jsx
-// Card for Delhivery B2B (serviceId = 1)
-const TrackingShareDelhiveryB2BCard = ({ scan }) => (
-  <div className="w-full px-4 py-3 flex items-start gap-4">
-    <div className="mt-1 w-3 h-3 rounded-full bg-sky-700 shadow shadow-sky-200" />
-    <div className="flex-1 rounded-xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
-      <div className="text-sm font-semibold text-gray-800">{scan?.scan_remark || '—'}</div>
-      <div className="mt-1 text-xs text-gray-500">{scan?.location || '—'}</div>
-      <div className="mt-1 text-xs text-gray-400">{timestampToDate(scan.scan_timestamp)}</div>
-    </div>
-  </div>
-);
-
-const TrackingShareDelhiveryCard = ({ scan }) => (
-  <div className="w-full px-4 py-3 flex items-start gap-4">
-    <div className="mt-1 w-3 h-3 rounded-full bg-sky-700 shadow shadow-sky-200" />
-    <div className="flex-1 rounded-xl border border-gray-100 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
-      <div className="text-sm font-semibold text-gray-800">{scan?.Instructions || scan?.Scan || '—'}</div>
-      <div className="mt-1 text-xs text-gray-500">{scan?.ScannedLocation || '—'}</div>
-      <div className="mt-1 text-xs text-gray-400">{timestampToDate(scan.ScanDateTime)}</div>
-    </div>
-  </div>
-);
-
 const GenericTrackingShareCard = ({ scan }) => (
   <div className="w-full px-4 py-3 flex items-start gap-4">
     <div className="mt-1 w-3 h-3 rounded-full bg-sky-700 shadow shadow-sky-200" />
@@ -209,9 +185,6 @@ const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
         <div className="absolute left-[22px] top-0 bottom-0 w-px bg-gray-200" /> 
         {updates.slice().reverse().map((scan, index) => {
            if (!scan) return null;
-           const sId = Number(trackingData.id);
-           if (sId === 1) return <TrackingShareDelhiveryB2BCard key={index} scan={scan} />;
-           if (sId === 2 || sId === 3) return <TrackingShareDelhiveryCard key={index} scan={scan?.ScanDetail ?? scan} />;
            return <GenericTrackingShareCard key={index} scan={scan} />;
         })}
       </div>

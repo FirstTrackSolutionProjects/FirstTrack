@@ -80,7 +80,7 @@ const ComparePrices = ({ method, boxes, status, origin, dest, payMode, codAmount
             >
               <div>
                 <div className="font-semibold text-lg text-gray-800">
-                  {price.name}
+                  {`${price.name}${price.publicServiceName ? ` - ${price.publicServiceName}` : ''}`}
                   {price.weight && <span className="text-sm font-normal text-gray-600 ml-2">({price.weight})</span>}
                 </div>
                 {price.chargableWeight && (
@@ -222,8 +222,8 @@ const Domestic = () => {
               onChange={handleChange}
               className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
             >
-              <option value="S">Surface</option>
-              <option value="E">Express</option>
+              <option value="Surface">Surface</option>
+              <option value="Express">Express</option>
             </select>
           </div>
 
