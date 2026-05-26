@@ -1506,7 +1506,7 @@ const Listing = ({ step, setStep }) => {
       <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 120 }}>
         {isShipped ? (
           <>
-            <div>{params.row.service_name}</div>
+            <div>{`${params.row.service_name}${params.row.public_vendor_service_name?` - ${params.row.public_vendor_service_name}` : ''}`}</div>
             {params.row.awb && <div>AWB: {params.row.awb}</div>}
             {params.row.lrn && <div>LRN: {params.row.lrn}</div>}
           </>
