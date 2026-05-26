@@ -602,7 +602,7 @@ const Listing = () => {
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexDirection: 'column', whiteSpace: 'normal', lineHeight: 1.3, justifyContent: 'center', height: 130 }}>
           <div>Pay Method: {params.row.pay_method} {params.row.pay_method === "COD" ? ` - ₹${parseInt(params.row.cod_amount)}` : ''}</div>
-          <div>Service: {params.row.service_name} {params.row.shipping_mode ? `(${params.row.shipping_mode})` : ''}</div>
+          <div>{`${params.row.service_name}${params.row.public_vendor_service_name?` - ${params.row.public_vendor_service_name}` : ''}`}</div>
           <div>AWB: {params.row.awb}</div>
           <div>Order ID: {params.row.ord_id}</div>
           <div>{params.row.date ? new Date(params.row.date).toLocaleString() : ''}</div>
