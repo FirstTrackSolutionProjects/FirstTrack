@@ -4,12 +4,11 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import loginService from '../services/login';
 import { useAuth } from '../context/AuthContext';
-import EmailOTPVerificationModal from './Modals/EmailOTPVerificationModal'
 import { toast } from 'react-toastify';
 import ForgotPasswordModal from './ForgotPasswordModal';
 
 const LoginForm = () => {
-  const { isAuthenticated, emailVerified ,login, verified } = useAuth();
+  const { isAuthenticated, login, verified } = useAuth();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
   const [email, setEmail] = useState('');
@@ -29,12 +28,10 @@ const LoginForm = () => {
   useEffect(()=>{
     if (isAuthenticated && verified){
       navigate('/dashboard')
-    } else if(isAuthenticated && emailVerified){
+    } else if(isAuthenticated){
       navigate('/verify')
-    } else if (isAuthenticated){
-      setEmailModalOpen(true)
     }
-  },[isAuthenticated, verified, emailVerified, navigate]) // Added dependencies for useEffect
+  },[isAuthenticated, verified, navigate]) // Added dependencies for useEffect
 
   const handleSubmit = async (e) => {
     e.preventDefault();
