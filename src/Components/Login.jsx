@@ -4,31 +4,23 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import loginService from '../services/login';
 import { useAuth } from '../context/AuthContext';
-import EmailOTPVerificationModal from './Modals/EmailOTPVerificationModal'
 import { toast } from 'react-toastify';
 
 const LoginForm = () => {
-  const { isAuthenticated, emailVerified ,login, verified } = useAuth();
-  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const { isAuthenticated, login, verified } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   const navigate = useNavigate();
 
-  const closeEmailModal = () => {
-    setEmailModalOpen(false);
-  }
-
   useEffect(()=>{
     if (isAuthenticated && verified){
       navigate('/dashboard')
-    } else if(isAuthenticated && emailVerified){
+    } else if(isAuthenticated){
       navigate('/verify')
-    } else if (isAuthenticated){
-      setEmailModalOpen(true)
     }
-  },[isAuthenticated, verified, emailVerified, navigate]) // Added dependencies for useEffect
+  },[isAuthenticated, verified, navigate]) // Added dependencies for useEffect
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,8 +49,6 @@ const LoginForm = () => {
 
   return (
     <>
-    {emailModalOpen && <EmailOTPVerificationModal open={emailModalOpen} onClose={closeEmailModal} />}
-    {/*form 2 */}
     <div className="py-5 flex flex-col justify-center items-center px-4"> {/* Added horizontal padding */}
       <div className=" w-full max-w-md">
         <h2 className="md:mt-10 text-center text-2xl md:text-3xl font-bold text-gray-900"> {/* Increased font size */}
