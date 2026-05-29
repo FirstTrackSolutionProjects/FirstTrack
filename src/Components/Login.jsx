@@ -6,10 +6,12 @@ import loginService from '../services/login';
 import { useAuth } from '../context/AuthContext';
 import EmailOTPVerificationModal from './Modals/EmailOTPVerificationModal'
 import { toast } from 'react-toastify';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 const LoginForm = () => {
   const { isAuthenticated, emailVerified ,login, verified } = useAuth();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
@@ -18,6 +20,10 @@ const LoginForm = () => {
 
   const closeEmailModal = () => {
     setEmailModalOpen(false);
+  }
+
+  const toggleForgotPasswordModal = () => {
+    setForgotPasswordModal(!forgotPasswordModal);
   }
 
   useEffect(()=>{
@@ -58,6 +64,7 @@ const LoginForm = () => {
   return (
     <>
     {emailModalOpen && <EmailOTPVerificationModal open={emailModalOpen} onClose={closeEmailModal} />}
+    {forgotPasswordModal && <ForgotPasswordModal onClose={toggleForgotPasswordModal} />}
     {/*form 2 */}
     <div className="py-5 flex flex-col justify-center items-center px-4"> {/* Added horizontal padding */}
       <div className=" w-full max-w-md">
@@ -120,9 +127,9 @@ const LoginForm = () => {
 
             {/* Forgot Password */}
             <div className="text-sm text-right">
-              <a href="#" className="text-gray-600 hover:text-[#22c55e] transition-colors duration-200"> {/* Consistent green hover */}
+              <p className="text-gray-600 hover:text-[#22c55e] transition-colors duration-200" onClick={toggleForgotPasswordModal}> {/* Consistent green hover */}
                 Forgot your password?
-              </a>
+              </p>
             </div>
 
             {/* Submit Button */}
