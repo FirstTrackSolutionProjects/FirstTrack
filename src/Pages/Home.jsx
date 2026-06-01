@@ -101,29 +101,47 @@ const Calc =()=>{
 
 const NewsletterSection = () => {
   return (
-    <section className="relative w-full py-5 md:py-16 bg-cover bg-center bg-[url('/path-to-your-background-image.jpg')]">
-      <div className="absolute inset-0 bg-blue-800 bg-opacity-70"></div>
+    <section className="relative w-full py-12 md:py-20 bg-blue-900 overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] bg-blue-400 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[60%] bg-green-400 rounded-full blur-3xl"></div>
+      </div>
       
-      <div className="relative max-w-7xl mx-auto px-4 lg:px-8">
-        <div className="text-center text-white">
-          <h2 className="text-2xl md:text-4xl font-bold mb-6">
-            Stay Updated with First Track
-          </h2>
-          <p className="text-base md:text-lg mb-6">
-            Subscribe to our newsletter and get the latest updates on logistics and shipping.
-          </p>
-
-          <form className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              className="w-full text-sm md:text-base md:w-auto px-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
-            />
-            <button className="w-full text-sm md:text-base md:w-auto bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-300">
-              Subscribe
-            </button>
-          </form>
+      <div className="relative max-w-4xl mx-auto px-6 text-center">
+        <div className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-wider text-blue-100 uppercase bg-blue-800 bg-opacity-50 rounded-full">
+          Stay Informed
         </div>
+        
+        <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">
+          Stay Updated with <span className="text-green-400">First Track</span>
+        </h2>
+        
+        <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed opacity-90">
+          Get the latest logistics insights, shipping tips, and exclusive updates delivered directly to your inbox.
+        </p>
+
+        <form 
+          onSubmit={(e) => e.preventDefault()} 
+          className="relative max-w-lg mx-auto flex flex-col sm:flex-row gap-3"
+        >
+          <input
+            type="email"
+            required
+            placeholder="Your email address"
+            className="flex-grow px-6 py-4 rounded-xl text-gray-900 bg-white border-2 border-transparent focus:border-green-400 focus:outline-none shadow-lg transition-all"
+          />
+          <button 
+            type="submit"
+            className="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg hover:shadow-green-500/20 transform transition hover:-translate-y-0.5 active:translate-y-0"
+          >
+            Subscribe
+          </button>
+        </form>
+        
+        <p className="mt-6 text-sm text-blue-200 opacity-60">
+          We respect your privacy. Unsubscribe at any time.
+        </p>
       </div>
     </section>
   );
