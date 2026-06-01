@@ -20,8 +20,8 @@ const RegisterForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
-    reg_email: "",
-    reg_password: "",
+    email: "",
+    password: "",
     confirm_password: "",
     phone: "",
     otp: "", // Added OTP field
@@ -54,15 +54,15 @@ const RegisterForm = () => {
     }
 
     // Stricter email validation and trimming
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.reg_email.trim())) {
-      validationErrors.reg_email = "Invalid email format";
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email.trim())) {
+      validationErrors.email = "Invalid email format";
     }
 
-    if (formData.reg_password.length < 4) {
-      validationErrors.reg_password = "Password should be at least 4 characters";
+    if (formData.password.length < 4) {
+      validationErrors.password = "Password should be at least 4 characters";
     }
 
-    if (formData.reg_password !== formData.confirm_password) {
+    if (formData.password !== formData.confirm_password) {
       validationErrors.confirm_password = "Passwords do not match";
     }
 
@@ -98,15 +98,15 @@ const RegisterForm = () => {
 
 
   const handleRequestOtp = async () => {
-    const trimmedEmail = formData.reg_email.trim(); // Trim email before validation and use
+    const trimmedEmail = formData.email.trim(); // Trim email before validation and use
     // Use stricter email validation
     const emailValidation = !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmedEmail);
     if (emailValidation) {
-      setErrors((prev) => ({ ...prev, reg_email: "Invalid email format" }));
+      setErrors((prev) => ({ ...prev, email: "Invalid email format" }));
       toast.error("Please enter a valid email address.");
       return;
     }
-    setErrors((prev) => ({ ...prev, reg_email: undefined })); // Clear email error if valid
+    setErrors((prev) => ({ ...prev, email: undefined })); // Clear email error if valid
 
     setIsRequestingOtp(true);
     try {
@@ -145,8 +145,9 @@ const RegisterForm = () => {
       }
       const payload = {
         fullName: formData.name.trim(),
-        email: formData.reg_email.trim(), // Use trimmed email for payload
-        password: formData.reg_password,
+        email: formData.email.trim(), // Use trimmed email for payload
+        password: formData.password,
+        confirm_password: formData.confirm_password,
         phone: formData.phone.trim(),
         otp: formData.otp.trim(),
       };
@@ -175,7 +176,7 @@ const RegisterForm = () => {
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
   // Use stricter email validation and trimming for OTP button logic
-  const isEmailValidForOtp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.reg_email.trim());
+  const isEmailValidForOtp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email.trim());
 
   return (
     <>
@@ -222,15 +223,15 @@ const RegisterForm = () => {
                 </div>
                 <input
                   type="email"
-                  name="reg_email"
-                  value={formData.reg_email}
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2.5 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition-colors duration-200"
                   placeholder="you@example.com"
                 />
               </div>
-              {errors.reg_email && (
-                <p className="text-red-500 text-xs mt-1">{errors.reg_email}</p>
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
               )}
               <div className="mt-3">
                 <button
@@ -290,8 +291,8 @@ const RegisterForm = () => {
                 </div>
                 <input
                   type={showRegPassword ? "text" : "password"}
-                  name="reg_password"
-                  value={formData.reg_password}
+                  name="password"
+                  value={formData.password}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-10 py-2.5 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition-colors duration-200"
                   placeholder="Password"
@@ -304,8 +305,8 @@ const RegisterForm = () => {
                     {showRegPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
-              {errors.reg_password && (
-                <p className="text-red-500 text-xs mt-1">{errors.reg_password}</p>
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
               )}
             </div>
 
