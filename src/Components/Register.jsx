@@ -23,8 +23,7 @@ const RegisterForm = () => {
     reg_email: "",
     reg_password: "",
     confirm_password: "",
-    business_name: "",
-    mobile: "",
+    phone: "",
     otp: "", // Added OTP field
   });
 
@@ -67,8 +66,8 @@ const RegisterForm = () => {
       validationErrors.confirm_password = "Passwords do not match";
     }
 
-    if (!/^\d{10}$/.test(formData.mobile.trim())) { // Trim mobile before validation
-      validationErrors.mobile = "Mobile number should be exactly 10 digits";
+    if (!/^\d{10}$/.test(formData.phone.trim())) { // Trim phone before validation
+      validationErrors.phone = "Phone number should be exactly 10 digits";
     }
 
     if (showOtpField && !/^\d{6}$/.test(formData.otp.trim())) { // OTP validation (trimming added)
@@ -148,9 +147,8 @@ const RegisterForm = () => {
         fullName: formData.name.trim(),
         email: formData.reg_email.trim(), // Use trimmed email for payload
         password: formData.reg_password,
-        mobile: formData.mobile.trim(),
+        phone: formData.phone.trim(),
         otp: formData.otp.trim(),
-        business_name: formData.business_name.trim(),
       };
       
       try {
@@ -341,10 +339,10 @@ const RegisterForm = () => {
               )}
             </div>
 
-            {/* Mobile */}
+            {/* Phone */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Mobile Number
+                Phone Number
               </label>
               <div className="relative mt-1">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -352,36 +350,16 @@ const RegisterForm = () => {
                 </div>
                 <input
                   type="text"
-                  name="mobile"
-                  value={formData.mobile}
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2.5 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition-colors duration-200"
                   placeholder="1234567890"
                 />
               </div>
-              {errors.mobile && (
-                <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>
+              {errors.phone && (
+                <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
               )}
-            </div>
-
-            {/* Business Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Business Name
-              </label>
-              <div className="relative mt-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaBuilding className="text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  name="business_name"
-                  value={formData.business_name}
-                  onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-2.5 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 transition-colors duration-200"
-                  placeholder="Business Name"
-                />
-              </div>
             </div>
 
             {/* Terms & Conditions */}
