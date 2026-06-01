@@ -311,7 +311,7 @@ const Header = () => {
 
         {/* Mobile sidebar */}
         <div
-          className={`z-50 fixed top-0 right-0 w-72 bg-white h-full shadow-2xl transform ${
+          className={`z-50 fixed top-0 right-0 w-[80%] max-w-[300px] bg-white h-full shadow-2xl transform ${
             isSidebarOpen ? "translate-x-0" : "translate-x-full"
           } transition-transform duration-300 ease-in-out md:hidden flex flex-col`}
         >
@@ -322,7 +322,7 @@ const Header = () => {
             </button>
           </div>
         
-          <div className="grow overflow-y-auto">
+          <div className="grow overflow-y-auto pb-24"> {/* Added padding bottom to avoid overlap with bottom navbar */}
             {/* User Section */}
             <div className="p-4 border-b bg-gray-50">
               {isAuthenticated ? (
@@ -382,6 +382,17 @@ const Header = () => {
                 >
                   DASHBOARD
                 </NavLink>
+              )}
+              {isAuthenticated && (
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsSidebarOpen(false);
+                  }}
+                  className="w-full text-left py-2 px-4 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200 font-bold"
+                >
+                  LOGOUT
+                </button>
               )}
             </nav>
           </div>

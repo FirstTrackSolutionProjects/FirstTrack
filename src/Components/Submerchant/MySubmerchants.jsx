@@ -4,6 +4,9 @@ import AddSubmerchantModal from '../Modals/AddSubmerchantModal'
 import UpdateSubmerchantMarginModal from '../Modals/UpdateSubmerchantMarginModal'
 import getMySubmerchantService from '@/services/merchantServices/getMySubmerchantService'
 import getMySubmerchantsService from '@/services/merchantServices/getMySubmerchantsService'
+import activateSubmerchantService from '@/services/merchantServices/activateSubmerchantService'
+import deactivateSubmerchantService from '@/services/merchantServices/deactivateSubmerchantService'
+import { toast } from 'react-toastify'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const View = ({ userRoleId, onClose }) => {
     const [user, setUser] = useState({})
@@ -122,6 +125,34 @@ const MySubmerchants =  () => {
     const [showView, setShowView] = useState(false)
     const [viewUserRoleId, setViewUserRoleId] = useState(null)
 
+    // Action handlers
+    const handleActivate = async (submerchantId) => {
+        try {
+            setLoading(true)
+            const res = await activateSubmerchantService(submerchantId)
+            toast.success(res.message || 'Submerchant activated successfully')
+            setRefreshIndex(prev => prev + 1)
+        } catch (err) {
+            toast.error(err.message || 'Failed to activate submerchant')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleDeactivate = async (submerchantId) => {
+        if (!confirm('Are you sure you want to deactivate this submerchant?')) return
+        try {
+            setLoading(true)
+            const res = await deactivateSubmerchantService(submerchantId)
+            toast.success(res.message || 'Submerchant deactivated successfully')
+            setRefreshIndex(prev => prev + 1)
+        } catch (err) {
+            toast.error(err.message || 'Failed to deactivate submerchant')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     // Columns definition
     const columns = useMemo(() => [
         { field: 'user_role_id', headerName: 'Account ID', width: 100 },
@@ -130,7 +161,7 @@ const MySubmerchants =  () => {
         { field: 'SUBMERCHANT_PHONE', headerName: 'Phone', width: 140 },
         { field: 'MARGIN', headerName: 'Margin %', width: 110 },
         { field: 'STATUS', headerName: 'Status', width: 110 },
-        { field: 'actions', headerName: 'Actions', width: 320, sortable: false, filterable: false, renderCell: (params)=> {
+        { field: 'actions', headerName: 'Actions', width: 400, sortable: false, filterable: false, renderCell: (params)=> {
             return (
             <>
                 {
@@ -147,23 +178,40 @@ const MySubmerchants =  () => {
                             </button>
 
                             {params.row.STATUS === 'ACTIVE' ? (
+                                <>
+                                    <button
+                                        className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
+                                        onClick={() => {
+                                            setSelectedSubmerchantId(params.row.user_role_id)
+                                            setSelectedCurrentMargin(params.row.MARGIN)
+                                            setOpenUpdateMarginModal(true)
+                                        }}
+                                    >
+                                        Update Margin
+                                    </button>
+                                    <button
+                                        className="px-3 py-1 bg-red-500 text-white rounded-2xl text-sm"
+                                        onClick={() => handleDeactivate(params.row.user_role_id)}
+                                        disabled={loading}
+                                    >
+                                        Deactivate
+                                    </button>
+                                </>
+                            ) : (
                                 <button
-                                    className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
-                                    onClick={() => {
-                                        setSelectedSubmerchantId(params.row.user_role_id)
-                                        setSelectedCurrentMargin(params.row.MARGIN)
-                                        setOpenUpdateMarginModal(true)
-                                    }}
+                                    className="px-3 py-1 bg-green-500 text-white rounded-2xl text-sm"
+                                    onClick={() => handleActivate(params.row.user_role_id)}
+                                    disabled={loading}
                                 >
-                                    Update Margin
+                                    Activate
                                 </button>
-                            ) : null}
+                            )}
                         </div>
                     ) : null
                 }
             </>
         )} }
-    ], [])
+    ], [loading])
 
     // Debounced fetch
     useEffect(() => {
