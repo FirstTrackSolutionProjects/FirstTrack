@@ -26,6 +26,19 @@ const App = () => {
 
   const isDashboard = pathname.startsWith('/dashboard');
 
+  // Scroll to top on route change
+  useEffect(() => {
+    // Attempt to scroll the main document body or the root element to the top.
+    // This addresses scenarios where the main scrollable area might not be the window itself.
+    const scrollableElement = document.getElementById('root') || document.body;
+    if (scrollableElement) {
+      scrollableElement.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Fallback to window scroll if no specific element is identified
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [pathname]);
+
   return (
     <div className='App font-inter text-gray-800 pb-20 md:pb-0'>
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" />
