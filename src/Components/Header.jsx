@@ -244,7 +244,7 @@ const Header = () => {
                 <div
                   onClick={() => setShowRecharge(true)}
                   className={`relative bg-indigo-600 text-white flex items-center font-semibold rounded-full 
-                    px-2 py-0.5 sm:px-3 sm:py-1 md:px-4 md:py-2 text-[10px] sm:text-xs md:text-sm cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap ${
+                    px-2 py-0.5 sm:px-3 sm:py-1 md:px-4 md:py-2 text-xs sm:text-sm md:text-base cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap ${
                     balance < 250
                       ? "ring-2 ring-red-500 ring-offset-1 bg-red-500"
                       : "hover:scale-105"
@@ -260,7 +260,7 @@ const Header = () => {
                   </p>
                 
                   {balance < 250 && (
-                    <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex items-center justify-center text-[8px] sm:text-[10px] md:text-sm font-bold animate-pulse">
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex items-center justify-center text-xs sm:text-sm md:text-base font-bold animate-pulse">
                       !
                     </span>
                   )}
@@ -330,7 +330,7 @@ const Header = () => {
                   <div className="flex items-center justify-between">
                     <div className="min-w-0">
                       <p className="text-sm text-gray-500">Welcome,</p>
-                      <p className="font-bold text-lg truncate text-gray-800">{name}</p>
+                      <p className="font-bold text-xl truncate text-gray-800">{name}</p>
                     </div>
                     <button
                       className="bg-red-500 text-white p-2.5 rounded-lg shadow-sm active:scale-95 transition-all"

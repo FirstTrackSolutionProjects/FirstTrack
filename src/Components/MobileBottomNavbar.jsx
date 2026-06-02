@@ -105,9 +105,9 @@ const MobileBottomNavbar = ({ isDashboardRoute }) => {
                             >
                                 <div className="relative">
                                     <item.icon className="text-xl mb-0.5" />
-                                    <FaChevronUp className={`absolute -right-3 top-0 text-[10px] transition-transform duration-200 ${merchantMenuOpen ? 'rotate-180' : ''}`} />
+                                    <FaChevronUp className={`absolute -right-3 top-0 text-xs transition-transform duration-200 ${merchantMenuOpen ? 'rotate-180' : ''}`} />
                                 </div>
-                                <span className="text-[10px] font-medium tracking-tight">{item.name}</span>
+                                <span className="text-xs font-medium tracking-tight">{item.name}</span>
                             </button>
                         </div>
                     );
@@ -122,7 +122,7 @@ const MobileBottomNavbar = ({ isDashboardRoute }) => {
                             ${active ? 'text-blue-600' : 'text-gray-500'}`}
                     >
                         <item.icon className={`text-xl mb-0.5 ${active ? 'scale-110' : ''} transition-transform`} />
-                        <span className={`text-[10px] tracking-tight ${active ? 'font-bold' : 'font-medium'}`}>
+                        <span className={`text-xs tracking-tight ${active ? 'font-bold' : 'font-medium'}`}>
                             {item.name}
                         </span>
                     </Link>

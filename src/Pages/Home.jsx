@@ -16,11 +16,12 @@ const Testimonials = () => {
         <h2 className="text-2xl md:text-4xl font-bold mb-12">What Our Clients Say</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-white p-3 md:p-6 rounded-lg shadow-md">
+            <div key={index} className="bg-white p-3 md:p-6 rounded-lg shadow-md transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <img
                 src={testimonial.avatar}
                 alt={testimonial.name}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full mx-auto mb-4"
+                className="w-16 h-16 md:w-20 md:h-20 rounded-full mx-auto mb-4 object-cover"
+                loading="lazy"
               />
               <p className="text-sm md:text-base text-gray-600 italic mb-4">"{testimonial.feedback}"</p>
               <h4 className="text-sm md:text-base font-semibold">- {testimonial.name}</h4>
@@ -64,6 +65,7 @@ const WhyChooseUs = () => {
                   src={item.image}
                   alt={item.title}
                   className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                  loading="lazy"
                 />
               </div>
               <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
@@ -85,16 +87,18 @@ const WhyChooseUs = () => {
 
 const Calc =()=>{
   return(
-    <div className='h-fit bg-gray-100 my-5'>
-    <div className="justify-center items-center gap-2 text-center text-lg md:text-3xl font-medium py-5 flex">
-          <div className="border-b-2 border-green-500 w-8 md:w-14"></div>
-          <div>Calculate Your Shipping Price</div>
+    <section className='h-fit bg-gray-100 py-10 md:py-16'>
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
+        <div className="justify-center items-center gap-2 text-center text-xl md:text-3xl font-medium py-5 flex">
+              <div className="border-b-2 border-green-500 w-8 md:w-14"></div>
+              <div>Calculate Your Shipping Price</div>
+            </div>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center'>
+          <div className=''><HomeCalculator/></div>
+          <div><img src="images/delivery.png" className='p-4 md:p-0 items-center mx-auto flex object-contain' alt="Delivery illustration" loading="lazy"></img></div>
         </div>
-    <div className='grid grid-cols-1 md:grid-cols-2 md:px-10'>
-      <div className=''><HomeCalculator/></div>
-      <div><img src="images/delivery.png" className='p-3 md:p-0 items-center mx-auto flex object-cover'></img></div>
-    </div>
-    </div>
+      </div>
+    </section>
   )
 }
 
@@ -129,11 +133,11 @@ const NewsletterSection = () => {
             type="email"
             required
             placeholder="Your email address"
-            className="flex-grow px-6 py-4 rounded-xl text-gray-900 bg-white border-2 border-transparent focus:border-green-400 focus:outline-none shadow-lg transition-all"
+            className="flex-grow px-6 py-4 rounded-xl text-gray-900 bg-white border-2 border-transparent focus:border-green-400 focus:outline-none shadow-lg transition-all duration-300"
           />
           <button 
             type="submit"
-            className="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg hover:shadow-green-500/20 transform transition hover:-translate-y-0.5 active:translate-y-0"
+            className="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg hover:shadow-green-500/20 transform transition hover:-translate-y-0.5 active:translate-y-0 duration-300"
           >
             Subscribe
           </button>
