@@ -7,27 +7,36 @@ const HeroAction = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="w-full text-center mt-6 mb-10">
-      <div className="flex justify-center space-x-4">
-        <Link to="/about">
-          <button className="bg-[#1f2937] text-sm md:text-base text-white py-3 px-6 rounded-lg transition duration-300 hover:bg-gray-800 shadow-md hover:shadow-lg transform hover:-translate-y-1 min-w-[160px]"> {/* Ensures equal width on mobile by setting a minimum width */}
-            DISCOVER MORE
-          </button>
-        </Link>
+    <div className="relative z-20 w-full -mt-16 md:-mt-20 mb-20 px-4">
+      <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-12 border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-sm bg-white/95 transition-all duration-500 hover:shadow-3xl hover:border-green-100">
+        <div className="flex-1 text-center md:text-left">
+          <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 leading-tight">Ready to ship your first package?</h3>
+          <p className="text-gray-600 text-lg font-medium">Join 2,500+ businesses growing with First Track Express.</p>
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <Link to="/about" className="w-full sm:w-auto">
+            <button className="w-full bg-gray-900 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 hover:bg-gray-800 hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2 border border-gray-900">
+              Learn More
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </Link>
 
-        {isAuthenticated ? (
-          <Link to="/dashboard">
-            <button className="bg-[#22c55e] text-sm md:text-base text-white py-3 px-6 rounded-lg shadow-md hover:bg-[#1eab4e] transition duration-300 hover:shadow-lg transform hover:-translate-y-1 min-w-[160px]"> {/* Ensures equal width on mobile by setting a minimum width */}
-              DASHBOARD
-            </button>
-          </Link>
-        ) : (
-          <Link to="/login">
-            <button className="bg-[#22c55e] text-sm md:text-base text-white py-3 px-6 rounded-lg shadow-md hover:bg-[#1eab4e] transition duration-300 hover:shadow-lg transform hover:-translate-y-1 min-w-[160px]"> {/* Ensures equal width on mobile by setting a minimum width */}
-              LOGIN
-            </button>
-          </Link>
-        )}
+          {isAuthenticated ? (
+            <Link to="/dashboard" className="w-full sm:w-auto">
+              <button className="w-full bg-green-600 text-white font-bold py-4 px-8 rounded-2xl shadow-xl shadow-green-500/20 hover:bg-green-700 transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 border border-green-600">
+                DASHBOARD
+              </button>
+            </Link>
+          ) : (
+            <Link to="/login" className="w-full sm:w-auto">
+              <button className="w-full bg-green-600 text-white font-bold py-4 px-8 rounded-2xl shadow-xl shadow-green-500/20 hover:bg-green-700 transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 border border-green-600">
+                GET STARTED
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+              </button>
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );

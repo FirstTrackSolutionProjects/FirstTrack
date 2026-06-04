@@ -1,53 +1,60 @@
 /* Animation for slide-up effect */
 
-  
+
   .animate-slide-up {
     animation: slide-up 1s ease-out forwards;
   }
-  
+
   /* Slider setup */
   .slider {
     width: 100%;
-    overflow-x: auto;   
-    overflow-y: hidden;
-    display: flex;
-    cursor: grab;
-    scroll-behavior: smooth;
-
-     /* Hide scrollbar */
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+    overflow: hidden; /* Hide scrollbars, but allow inner elements to flow */
+    display: flex; /* Make it a flex container for the tracks */
+    /* cursor: grab; Removed for automatic sliding */
   }
 
-  .slider::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-    
-  }
-  
-
+  /*
+  The slider-track needs to be wide enough to contain all items twice for seamless looping.
+  Each item width is 250px. If you have 12 logos, total width for one set is 12 * 250px = 3000px.
+  For two sets (the full track), it's 6000px.
+  The animation translates -50%, effectively moving one full set of logos.
+  */
   .slider-track {
     display: flex;
-    width: calc(250px * 10); /* Adjust width based on number of logos */
-    animation: slide 20s linear infinite;
+    flex-shrink: 0; /* Prevent the track from shrinking */
+    animation: slide 40s linear infinite; /* Increased duration for smoother animation with more logos */
+    will-change: transform; /* Optimize for animation */
+  }
+
+  .slider-track:hover {
+    animation-play-state: paused;
   }
   
   .slider-item {
-    width: 250px;
+    min-width: 200px; /* Adjust item width as needed, ensure it's larger than the logo */
+    flex-shrink: 0; /* Prevent items from shrinking */
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 15px; /* Adjust padding around logos */
   }
-  
+
   /* Keyframes for continuous sliding */
   @keyframes slide {
     0% {
       transform: translateX(0);
     }
     100% {
-      transform: translateX(-50%);
+      transform: translateX(-50%); /* Translate by 50% of the track's total width (which contains two sets of logos) */
     }
   }
+
+  /* Responsive adjustments for slider-item */
+  @media (min-width: 768px) { /* md breakpoint */
+    .slider-item {
+      min-width: 240px; /* Larger items for desktop */
+      padding: 0 25px;
+    }
+  }
+
   

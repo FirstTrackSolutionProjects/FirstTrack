@@ -819,19 +819,22 @@ export const testimonials = [
     {
         id:1,
         title:"Trusted Clients",
-        num: "10",
+        num: 10,
         sym:"K+",
+        speed: 3
     },
     {
         id:2,
         title:"Orders Delivered",
-        num: "20",
+        num: 20,
         sym:"K+",
+        speed: 3
     },
     {
         id:3,
         title:"Sellers",
-        num: "25",
+        num: 25,
         sym:"+",
+        speed: 3
     },
   ];

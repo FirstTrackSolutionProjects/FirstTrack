@@ -65,32 +65,33 @@ const Form = () => {
     return (
         <>
             {/* Main container for the tracking page, now with adjusted vertical padding instead of min-height */}
-            <div className='w-full font-sans tracking-page-bg py-20 sm:py-24 p-4 sm:p-6 lg:p-8 flex items-center justify-center'>
+            <div className='w-full font-sans bg-gradient-to-br from-green-50 to-emerald-100 py-20 sm:py-24 p-4 sm:p-6 lg:p-8 flex items-center justify-center'>
                 {/* Card-like container for the form */}
-                <div className='bg-gradient-to-br from-white to-green-50 p-6 sm:p-8 rounded-2xl shadow-2xl border border-green-100 max-w-lg w-full transform hover:scale-[1.01] transition-transform duration-300 ease-in-out relative overflow-hidden group'>
-                    {/* Decorative elements - made larger and with subtle hover effects */}
-                    <div className="absolute -top-16 -right-16 w-32 h-32 bg-green-200 rounded-full opacity-60 transform rotate-45 group-hover:scale-110 transition-transform duration-300 ease-out"></div>
-                    <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-emerald-200 rounded-full opacity-60 transform -rotate-45 group-hover:scale-110 transition-transform duration-300 ease-out"></div>
-                    {/* Additional subtle decorative elements */}
-                    <div className="absolute top-1/4 left-0 w-16 h-16 bg-green-100 rounded-full opacity-30 blur-sm group-hover:translate-x-2 transition-all duration-300"></div>
-                    <div className="absolute bottom-1/4 right-0 w-16 h-16 bg-emerald-100 rounded-full opacity-30 blur-sm group-hover:-translate-x-2 transition-all duration-300"></div>
+                <div className='bg-white p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-100 max-w-lg w-full transform hover:scale-[1.01] transition-transform duration-300 ease-in-out relative overflow-hidden group'>
+                    {/* Decorative elements - subtle geometric shapes */}
+                    <div className="absolute -top-10 -left-10 w-24 h-24 bg-green-200 rounded-full opacity-30 transform rotate-12 transition-all duration-300 group-hover:scale-110"></div>
+                    <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-emerald-200 rounded-full opacity-30 transform -rotate-12 transition-all duration-300 group-hover:scale-110"></div>
+                    <div className="absolute top-1/4 right-0 w-16 h-16 bg-green-100 rounded-full opacity-20 blur-sm group-hover:translate-x-2 transition-all duration-300"></div>
+                    <div className="absolute bottom-1/4 left-0 w-16 h-16 bg-emerald-100 rounded-full opacity-20 blur-sm group-hover:-translate-x-2 transition-all duration-300"></div>
 
-                    <div className='text-center text-3xl sm:text-4xl font-extrabold text-green-700 mb-4 sm:mb-5 flex items-center justify-center gap-3'>
-                        <FaShippingFast className="text-emerald-500 text-3xl sm:text-4xl" />
-                        Track Your Parcel
+                    <div className='text-center text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 sm:mb-5 flex items-center justify-center gap-3'>
+                        <FaShippingFast className="text-green-600 text-3xl sm:text-4xl" />
+                        Track Your <span className="text-green-600">Parcel</span>
                     </div>
                     
                     <form className="flex flex-col items-center space-y-4 sm:space-y-5" onSubmit={handleSubmit}>
                         <div className='relative flex w-full max-w-md'>
                             <FaSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 z-10 text-lg" />
                             <input type="text" name="awb" value={formData.awb} onChange={handleChange}
-                                className="flex-grow border-2 border-green-200 focus:border-green-600 focus:ring-2 focus:ring-green-300 py-3 pl-12 pr-6 rounded-full bg-white text-lg placeholder-gray-400 outline-none transition-all duration-200 ease-in-out shadow-md focus:shadow-lg text-gray-800 min-w-0"
+                                className="flex-grow border border-gray-300 focus:border-green-600 focus:ring-1 focus:ring-green-300 py-3 pl-12 pr-6 rounded-full bg-white text-lg placeholder-gray-500 outline-none transition-all duration-200 ease-in-out shadow-inner text-gray-800 min-w-0"
                                 placeholder="Enter Tracking ID/AWB"
                                 aria-label="Tracking ID or AWB number" />
-                            <button className="ml-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-bold py-3 px-4 sm:px-8 rounded-full shadow-xl hover:shadow-green-400/50 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg flex-shrink-0 relative overflow-hidden"
+                            <button className="ml-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-bold py-3 px-4 sm:px-8 rounded-full shadow-lg hover:shadow-green-500/30 transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-lg flex-shrink-0 relative overflow-hidden"
                                     disabled={isTracking || !formData.awb}>
-                                <span className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                                <span className="relative z-10">{isTracking ? 'Tracking...' : 'Track'}</span>
+                                <span className="relative z-10 flex items-center gap-1">
+                                    {isTracking ? 'Tracking...' : 'Track'}
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                </span>
                             </button>
                         </div>
                     </form>
@@ -333,49 +334,60 @@ const ResultModal = ({ data, onClose }) => {
   
 
 const TrackingPageIntro = () => (
-    <section className="py-10 bg-gradient-to-r from-green-50 to-emerald-50 text-center"> {/* Reduced vertical padding */}
+    <section className="py-16 md:py-24 bg-gradient-to-r from-green-50 to-emerald-50 text-center">
         <div className="max-w-4xl mx-auto px-4">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-green-800 mb-4 animate-fadeIn">
-                Real-Time <span className="text-emerald-600">Shipment Tracking</span>
-            </h1>
-            <p className="text-lg md:text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto animate-fadeIn delay-100">
-                Stay updated with every movement of your parcel, from pickup to delivery. 
+            <span className="text-green-600 font-bold uppercase tracking-widest text-sm mb-3 block animate-slide-up-fade">Effortless Visibility</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold mb-4 text-gray-900 leading-tight animate-hero-text">
+                Real-Time <span className="text-green-600">Shipment Tracking</span>
+            </h2>
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed max-w-2xl mx-auto animate-fade-in-up-delayed">
+                Stay updated with every movement of your parcel, from pickup to delivery.
                 Enter your tracking ID below to get instant status updates.
             </p>
+            <div className="w-24 h-1.5 bg-green-500 mx-auto mt-6 rounded-full animate-fade-in-up-delayed" style={{animationDelay: '0.6s'}}></div>
         </div>
     </section>
 );
 
-const HowToTrackSection = () => (
-    <section className="py-12 bg-white"> {/* Reduced vertical padding */}
-        <div className="max-w-7xl mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12">How It Works</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="p-6 rounded-lg shadow-md bg-white border border-gray-100 transform hover:scale-105 transition-transform duration-300">
-                    <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
-                        <FaSearch className="text-green-600 text-3xl" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">1. Enter Tracking ID</h3>
-                    <p className="text-gray-600">Locate your unique Tracking ID or AWB number from your shipment confirmation.</p>
-                </div>
-                <div className="p-6 rounded-lg shadow-md bg-white border border-gray-100 transform hover:scale-105 transition-transform duration-300">
-                    <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
-                        <FaShippingFast className="text-green-600 text-3xl" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">2. Click 'Track'</h3>
-                    <p className="text-gray-600">Submit the ID using the track button to initiate the search.</p>
-                </div>
-                <div className="p-6 rounded-lg shadow-md bg-white border border-gray-100 transform hover:scale-105 transition-transform duration-300">
-                    <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
-                        <FaMapMarkerAlt className="text-green-600 text-3xl" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">3. Get Updates</h3>
-                    <p className="text-gray-600">View real-time status, location, and estimated delivery.</p>
-                </div>
+const HowToTrackSection = () => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  return (
+    <section ref={ref} className="py-16 md:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 text-center">
+        <span className="text-green-600 font-bold uppercase tracking-widest text-sm mb-3 block">Simple Steps</span>
+        <h2 className="text-3xl md:text-5xl font-extrabold mb-10 text-gray-900 leading-tight">
+          How It <span className="text-green-600">Works</span>
+        </h2>
+        <div className="w-24 h-1.5 bg-green-500 mx-auto mt-6 rounded-full mb-12"></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { icon: FaSearch, title: "1. Enter Tracking ID", description: "Locate your unique Tracking ID or AWB number from your shipment confirmation." },
+            { icon: FaShippingFast, title: "2. Click 'Track'", description: "Submit the ID using the track button to initiate the search." },
+            { icon: FaMapMarkerAlt, title: "3. Get Updates", description: "View real-time status, location, and estimated delivery." }
+          ].map((item, index) => (
+            <div
+              key={index}
+              style={{ transitionDelay: `${index * 150}ms` }}
+              className={`p-8 rounded-3xl bg-white shadow-xl shadow-gray-200/50 border border-gray-100 transform transition-all duration-700 hover:shadow-2xl hover:shadow-green-300/40 hover:-translate-y-1 ${
+                inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+              }`}
+            >
+              <div className="w-20 h-20 mx-auto bg-green-50 flex items-center justify-center rounded-2xl mb-6 shadow-inner transform transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110">
+                <item.icon className="text-green-600 text-3xl" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+              <p className="text-gray-600 text-base leading-relaxed">{item.description}</p>
             </div>
+          ))}
         </div>
+      </div>
     </section>
-);
+  );
+};
 
 const WhyTrackWithUsSection = () => {
   const { ref, inView } = useInView({
@@ -384,37 +396,40 @@ const WhyTrackWithUsSection = () => {
   });
 
   return (
-    <section className="py-12 bg-gray-50"> {/* Reduced vertical padding */}
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12">
-          Benefits of Our Tracking System
+    <section ref={ref} className="py-16 md:py-24 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 text-center">
+        <span className="text-green-600 font-bold uppercase tracking-widest text-sm mb-3 block">Our Advantage</span>
+        <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+          Benefits of Our <span className="text-green-600">Tracking System</span>
         </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto text-lg md:text-xl">
+            We combine cutting-edge technology with industry expertise to deliver unmatched logistics excellence.
+        </p>
+        <div className="w-24 h-1.5 bg-green-500 mx-auto mt-6 rounded-full mb-12"></div>
 
         <div
-          ref={ref}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10"
         >
-          {whyChooseUs.slice(0, 4).map((item, index) => ( // Use first 4 items from whyChooseUs
+          {whyChooseUs.slice(0, 4).map((item, index) => (
             <div
               key={index}
-              className={`bg-white border border-gray-100 shadow-sm hover:shadow-xl rounded-2xl p-6 flex flex-col items-center text-center transform transition-all duration-700 ${
-                inView
-                  ? `opacity-100 translate-y-0 delay-[${index * 150}ms]`
-                  : "opacity-0 translate-y-8"
+              style={{ transitionDelay: `${index * 150}ms` }}
+              className={`bg-white border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-green-300/40 hover:border-green-200 rounded-[2.5rem] p-8 flex flex-col items-center text-center transform transition-all duration-700 ${
+                inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
               }`}
             >
-              <div className="w-16 h-16 bg-green-50 flex items-center justify-center rounded-full mb-5 shadow-sm">
+              <div className="w-20 h-20 md:w-24 md:h-24 bg-green-50 flex items-center justify-center rounded-3xl mb-6 shadow-inner transform transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110">
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-8 h-8 md:w-10 md:h-10 object-contain"
+                  className="w-10 h-10 md:w-12 md:h-12 object-contain"
                   loading="lazy"
                 />
               </div>
-              <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 uppercase tracking-tight">
                 {item.title}
               </h3>
-              <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+              <p className="text-gray-600 text-base leading-relaxed">
                 {item.description}
               </p>
             </div>
@@ -427,6 +442,10 @@ const WhyTrackWithUsSection = () => {
 
 const TrackingFAQSection = () => {
     const [openIndex, setOpenIndex] = useState(null);
+    const { ref, inView } = useInView({
+        triggerOnce: true,
+        threshold: 0.1,
+    });
 
     const faqs = [
         { q: "What is an AWB/Tracking ID?", a: "An AWB (Airway Bill) or Tracking ID is a unique number assigned to your shipment for identification and tracking purposes. It allows you to monitor its journey in real-time." },
@@ -440,28 +459,40 @@ const TrackingFAQSection = () => {
     };
 
     return (
-        <section className="py-12 bg-gray-100"> {/* Reduced vertical padding */}
-            <div className="max-w-4xl mx-auto px-4">
-                <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12">
-                    Frequently Asked Questions about Tracking
+        <section ref={ref} className="py-16 md:py-24 bg-gradient-to-b from-gray-100 to-white">
+            <div className="max-w-4xl mx-auto px-4 text-center">
+                <span className="text-green-600 font-bold uppercase tracking-widest text-sm mb-3 block">Quick Answers</span>
+                <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+                    Frequently Asked <span className="text-green-600">Questions</span>
                 </h2>
+                <div className="w-24 h-1.5 bg-green-500 mx-auto mt-6 rounded-full mb-12"></div>
                 <div className="space-y-4">
                     {faqs.map((faq, index) => (
-                        <div key={index} className="border border-gray-200 rounded-lg bg-white shadow-sm">
+                        <div
+                            key={index}
+                            style={{ transitionDelay: `${index * 100}ms` }}
+                            className={`border border-gray-100 rounded-xl bg-white shadow-lg transition-all duration-300 ${
+                                inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+                            }`}
+                        >
                             <button
-                                className="flex justify-between items-center w-full p-4 text-left font-semibold text-lg text-gray-700 focus:outline-none"
+                                className="flex justify-between items-center w-full p-5 text-left font-bold text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-300 rounded-xl"
                                 onClick={() => toggleFAQ(index)}
                             >
                                 <span>{faq.q}</span>
-                                <span className="text-xl">
+                                <span className={`text-xl transform transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
                                     {openIndex === index ? '-' : '+'}
                                 </span>
                             </button>
-                            {openIndex === index && (
-                                <div className="px-4 pb-4 pt-2 text-gray-600 border-t border-gray-100">
+                            <div
+                                className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                                    openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                                }`}
+                            >
+                                <p className="px-5 pb-5 pt-0 text-gray-600 border-t border-gray-100 mx-2">
                                     {faq.a}
-                                </div>
-                            )}
+                                </p>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -479,12 +510,13 @@ const DomesticTracking = () => {
         <WhyTrackWithUsSection />
         <TrackingFAQSection />
         {/* Optional: Add a CTA for contact support if tracking fails */}
-        <section className="py-10 bg-green-600 text-white text-center"> {/* Reduced vertical padding */}
+        <section className="py-16 md:py-24 bg-green-700 text-white text-center">
             <div className="max-w-3xl mx-auto px-4">
-                <h3 className="text-2xl md:text-3xl font-bold mb-4">Need further assistance?</h3>
-                <p className="text-lg mb-6">Our support team is here to help you with any tracking issues.</p>
-                <Link to="/contact" className="inline-block bg-white text-green-700 hover:bg-gray-100 py-3 px-8 rounded-full font-semibold text-lg shadow-md transition duration-300">
+                <h3 className="text-3xl md:text-4xl font-extrabold mb-4 leading-tight">Need further assistance?</h3>
+                <p className="text-lg md:text-xl mb-8 opacity-90">Our dedicated support team is here to help you with any tracking issues or questions you might have.</p>
+                <Link to="/contact" className="inline-flex items-center bg-white text-green-700 hover:bg-gray-100 py-4 px-10 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300">
                     Contact Support
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </Link>
             </div>
         </section>
