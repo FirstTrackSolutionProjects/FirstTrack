@@ -1,37 +1,44 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useInView } from 'react-intersection-observer';
 import { services } from '../Constants';
 
 
 const Service = () => {
-  // Using Intersection Observer to detect if the section is in view
   const { ref, inView } = useInView({
-    triggerOnce: false, // Trigger animation only once
-    threshold: 0.1, // Trigger when 10% of the section is visible
+    triggerOnce: true,
+    threshold: 0.1,
   });
 
  return (
-    <section ref={ref} className="py-12 md:py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6 md:mb-12 text-gray-800">
-          Our Capabilities
-        </h2>
+    <section id="services" ref={ref} className="py-20 md:py-32 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 text-center">
+        <div className="mb-16 md:mb-24">
+          <span className="text-green-600 font-bold uppercase tracking-widest text-sm mb-3 block">Our Core Offerings</span>
+          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 text-gray-900 leading-tight">
+            Powerful <span className="text-green-600">Logistics</span> Solutions
+          </h2>
+          <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
+            Everything you need to ship, manage, and scale your business globally.
+          </p>
+          <div className="w-24 h-1.5 bg-green-500 mx-auto mt-6 rounded-full"></div>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
           {services.map((service, index) => (
             <div
               key={service.id}
-              className={`p-5 md:p-6 bg-white shadow-md rounded-xl transform transition-all duration-700 ${
-                inView
-                  ? `opacity-100 translate-y-0 delay-[${index * 200}ms]`
-                  : "opacity-0 translate-y-10"
+              style={{ transitionDelay: `${index * 150}ms` }}
+              className={`group p-8 md:p-10 bg-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-green-300/40 rounded-[2.5rem] transform transition-all duration-700 border border-gray-100 hover:border-green-200 flex flex-col items-center ${
+                inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"
               }`}
             >
-              <div className="text-4xl md:text-5xl mb-4">{service.icon}</div>
-              <h3 className="text-lg md:text-xl font-semibold mb-2 text-gray-800">
+              <div className="text-5xl md:text-6xl mb-6 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 bg-green-50 w-20 h-20 md:w-24 md:h-24 flex items-center justify-center rounded-3xl shadow-inner text-green-600">
+                {service.icon}
+              </div>
+              <h3 className="text-xl md:text-2xl font-bold mb-3 text-gray-900 group-hover:text-green-700 transition-colors uppercase tracking-tight">
                 {service.title}
               </h3>
-              <p className="text-sm md:text-base text-gray-600">
+              <p className="text-gray-600 leading-relaxed text-base font-medium">
                 {service.description}
               </p>
             </div>

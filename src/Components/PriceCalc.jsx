@@ -493,17 +493,20 @@ const Domestic = () => {
 
 const PriceCalc = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-10 px-4">
-      <div className="w-full max-w-5xl mx-auto flex flex-col items-center space-y-10">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-gray-900 leading-tight">
-          Calculate Your <span className="text-green-600">Shipping Price</span>
-        </h1>
-        <p className="text-lg text-gray-600 text-center max-w-2xl">
-          Enter your shipment details and compare prices from various carriers to find the best option for your logistics needs.
-        </p>
+    <section className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 text-center">
+        <div className="mb-16 md:mb-24">
+          <span className="text-green-600 font-bold uppercase tracking-widest text-sm mb-3 block">Transparent Pricing</span>
+          <h2 className="text-3xl md:text-5xl font-extrabold mt-2 text-gray-900 leading-tight">Calculate Your <span className="text-green-600">Shipping Price</span></h2>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mt-4">
+            Get instant quotes for your domestic and international shipments.
+          </p>
+          <div className="w-24 h-1.5 bg-green-500 mx-auto mt-6 rounded-full"></div>
+        </div>
+        
         <Domestic />
       </div>
-    </div>
+    </section>
   );
 };
 
