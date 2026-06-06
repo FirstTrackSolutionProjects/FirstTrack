@@ -7,16 +7,16 @@ import Greeting from './Greeting.jsx';
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 const DashHome = () => {
-  const {role, verified, name} = useAuth()
+  const {role, verified, name, authLoading} = useAuth()
   const navigate = useNavigate();
   const admin = role === USER_ROLES.ADMIN;
 
   useEffect(() => {
-    
+    if (authLoading) return;
     if (!verified) {
       navigate('/login');  // Redirect to login if no user is found
     } 
-  }, [verified]);
+  }, [verified, authLoading]);
   const [summary, setSummary] = useState(null)
   // Removed console.log for summary
   // useEffect(()=>{

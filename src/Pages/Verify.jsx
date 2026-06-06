@@ -50,7 +50,7 @@ const createUploadSessionId = () => {
 
 const Verify = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, verified, role, id } = useAuth();
+  const { isAuthenticated, verified, role, id, authLoading } = useAuth();
 
   const steps = useMemo(() => getActiveVerificationSteps(), []);
 
@@ -243,6 +243,7 @@ const Verify = () => {
   };
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated) {
       navigate("/login");
       return;

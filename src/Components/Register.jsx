@@ -16,7 +16,7 @@ import { requestRegistrationOTPService } from "../services/requestRegistrationOT
 
 
 const RegisterForm = () => {
-  const { isAuthenticated, login, verified } = useAuth();
+  const { isAuthenticated, login, verified, authLoading } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -78,6 +78,7 @@ const RegisterForm = () => {
   };
 
   useEffect(() => {
+    if (authLoading) return;
     if (isAuthenticated && verified) {
       navigate("/dashboard");
     } else if (isAuthenticated) {

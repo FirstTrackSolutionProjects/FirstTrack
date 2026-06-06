@@ -8,11 +8,12 @@ import AdminTicketDetail from '../Pages/AdminTicketDetail';
 import TicketDetail from '../Pages/TicketDetail';
 
 const Dashboard = () => {
-  const {role, isAuthenticated, verified} = useAuth()
+  const {role, isAuthenticated, verified, authLoading} = useAuth()
   const navigate = useNavigate();
   const isKycExempt = role === USER_ROLES.ADMIN; 
   const needsKycVerification = !verified && !isKycExempt; 
   React.useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated) {
         navigate('/login');
         return;
@@ -27,7 +28,7 @@ const Dashboard = () => {
     // 2. If they are authenticated and either verified=1 OR they are KYC Exempt,
     // they fall through and the dashboard renders.
 
-  }, [isAuthenticated, verified, navigate, role, needsKycVerification]);
+  }, [isAuthenticated, verified, navigate, role, needsKycVerification, authLoading]);
 
   if (!isAuthenticated || needsKycVerification) {
     return null; 
