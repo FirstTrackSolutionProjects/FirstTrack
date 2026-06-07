@@ -409,7 +409,7 @@ const Listing = () => {
     });
 
     try {
-      const response = await fetch(`${API_URL}/merchant/submerchants/shipments?${queryParams.toString()}`, {
+      const response = await fetch(`${API_URL}/merchant/submerchants/shipment-reports?${queryParams.toString()}`, {
         headers: {
           'Authorization': localStorage.getItem('token'),
         },
