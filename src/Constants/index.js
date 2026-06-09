@@ -36,7 +36,7 @@ import MySubmerchants from '@/Components/Submerchant/MySubmerchants';
 import SubmerchantRequests from '@/Components/Submerchant/SubmerchantRequests';
 import AdminSupport from '@/Pages/AdminSupport';
 import AdminAnalytics from '@/Pages/AdminAnalytics';
-import MySubmerchantShipments from '@/Components/Submerchant/MySubmerchantShipments';
+import MySubmerchantShipmentReports from '@/Components/Submerchant/MySubmerchantShipmentReports';
 
 export const Admincards = [
   {
@@ -525,9 +525,9 @@ export const menuItems = [
       icon : ShieldCheck,
       name : "Submerchant Shipments",
       isDropdown : false,
-      url : 'my-submerchants-shipments',
+      url : 'my-submerchants-shipment-reports',
       roles: [USER_ROLES.MERCHANT],
-      component : MySubmerchantShipments,
+      component : MySubmerchantShipmentReports,
       dropDownOptions : []
   },
   {

@@ -1157,7 +1157,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
 };
 
 
-export default function MySubmerchantShipments() {
+export default function MySubmerchantShipmentReports() {
   return (
     <div className="py-16 w-full h-full flex flex-col items-center overflow-x-hidden overflow-y-auto">
       <Listing />
