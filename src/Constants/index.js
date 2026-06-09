@@ -37,6 +37,7 @@ import SubmerchantRequests from '@/Components/Submerchant/SubmerchantRequests';
 import AdminSupport from '@/Pages/AdminSupport';
 import AdminAnalytics from '@/Pages/AdminAnalytics';
 import MySubmerchantShipmentReports from '@/Components/Submerchant/MySubmerchantShipmentReports';
+import MySubmerchantShipments from '@/Components/Submerchant/MySubmerchantShipments';
 
 export const Admincards = [
   {
@@ -514,30 +515,47 @@ export const menuItems = [
   },
   {
       icon : ShieldCheck,
-      name : "My Submerchants",
-      isDropdown : false,
-      url : 'my-submerchants',
+      name : "Submerchants",
+      isDropdown : true,
+      url : 'submerchants',
       roles: [USER_ROLES.MERCHANT],
-      component : MySubmerchants,
-      dropDownOptions : []
-  },
-  {
-      icon : ShieldCheck,
-      name : "Submerchant Shipments",
-      isDropdown : false,
-      url : 'my-submerchants-shipment-reports',
-      roles: [USER_ROLES.MERCHANT],
-      component : MySubmerchantShipmentReports,
-      dropDownOptions : []
-  },
-  {
-      icon : ShieldCheck,
-      name: "Submerchant Verification Requests",
-      isDropdown: false,
-      url: 'submerchant-verification-requests',
-      roles: [USER_ROLES.MERCHANT],
-      component: VerificationRequests,
-      dropDownOptions: []
+      dropDownOptions : [{
+          icon : ShieldCheck,
+          name : "My Submerchants",
+          isDropdown : false,
+          url : 'submerchants/my-submerchants',
+          roles: [USER_ROLES.MERCHANT],
+          component : MySubmerchants,
+          dropDownOptions : []
+      },
+      {
+          icon : ShieldCheck,
+          name : "Shipments",
+          isDropdown : false,
+          url : 'submerchants/shipments',
+          roles: [USER_ROLES.MERCHANT],
+          component : MySubmerchantShipments,
+          dropDownOptions : []
+      },
+      {
+          icon : ShieldCheck,
+          name : "Shipment Reports",
+          isDropdown : false,
+          url : 'submerchants/shipment-reports',
+          roles: [USER_ROLES.MERCHANT],
+          component : MySubmerchantShipmentReports,
+          dropDownOptions : []
+      },
+      {
+          icon : ShieldCheck,
+          name: "Verification Requests",
+          isDropdown: false,
+          url: 'submerchants/verification-requests',
+          roles: [USER_ROLES.MERCHANT],
+          component: VerificationRequests,
+          dropDownOptions: []
+      },
+    ]
   },
   {
       icon : ShieldCheck,
