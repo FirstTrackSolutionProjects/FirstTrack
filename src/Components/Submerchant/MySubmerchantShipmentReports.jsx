@@ -498,7 +498,6 @@ const Listing = () => {
           <div>{params.row.email}</div>
           <div>{params.row.phone}</div>
           <div>{params.row.business_name}</div>
-          <div>Role: {params.row.user_role}</div>
           {params.row.merchant_name ? <div>Merchant: {params.row.merchant_name} ({params.row.merchant_email})</div> : null}
         </Box>
       )
