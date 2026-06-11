@@ -5,6 +5,7 @@ import UpdateSubmerchantMarginModal from '../Modals/UpdateSubmerchantMarginModal
 import getMySubmerchantService from '@/services/merchantServices/getMySubmerchantService'
 import getMySubmerchantsService from '@/services/merchantServices/getMySubmerchantsService'
 import deactivateSubmerchantService from '@/services/merchantServices/deactivateSubmerchantService'
+import requestSubmerchantReactivationService from '@/services/merchantServices/requestSubmerchantReactivationService'
 import { toast } from 'react-toastify'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const View = ({ userRoleId, onClose }) => {
@@ -138,6 +139,20 @@ const MySubmerchants =  () => {
         }
     }
 
+    const handleRequestReactivation = async (submerchantId) => {
+        if (!confirm('Are you sure you want to request reactivation for this submerchant?')) return
+        try {
+            setLoading(true)
+            const res = await requestSubmerchantReactivationService(submerchantId)
+            toast.success(res.message || 'Reactivation request submitted successfully')
+            setRefreshIndex(prev => prev + 1)
+        } catch (err) {
+            toast.error(err.message || 'Failed to submit reactivation request')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     // Columns definition
     const columns = useMemo(() => [
         { field: 'user_role_id', headerName: 'Account ID', width: 100 },
@@ -182,7 +197,15 @@ const MySubmerchants =  () => {
                                         Deactivate
                                     </button>
                                 </>
-                            ) : null}
+                            ) : (
+                                <button
+                                    className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
+                                    onClick={() => handleRequestReactivation(params.row.user_role_id)}
+                                    disabled={loading}
+                                >
+                                    Request Reactivation
+                                </button>
+                            )}
                         </div>
                     ) : null
                 }
