@@ -7,6 +7,7 @@ import getMySubmerchantsService from '@/services/merchantServices/getMySubmercha
 import deactivateSubmerchantService from '@/services/merchantServices/deactivateSubmerchantService'
 import requestSubmerchantReactivationService from '@/services/merchantServices/requestSubmerchantReactivationService'
 import { toast } from 'react-toastify'
+import requestSubmerchantsService from '@/services/merchantServices/requestSubmerchantService'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const View = ({ userRoleId, onClose }) => {
     const [user, setUser] = useState({})
@@ -153,6 +154,20 @@ const MySubmerchants =  () => {
         }
     }
 
+    const handleRequestAgain = async (email) => {
+        if (!confirm('Are you sure you want to request again for this submerchant?')) return
+        try {
+            setLoading(true)
+            const res = await requestSubmerchantsService({email});
+            toast.success(res.message || 'Request submitted successfully')
+            setRefreshIndex(prev => prev + 1)
+        } catch (err) {
+            toast.error(err.message || 'Failed to submit request')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     // Columns definition
     const columns = useMemo(() => [
         { field: 'user_role_id', headerName: 'Account ID', width: 100 },
@@ -164,9 +179,8 @@ const MySubmerchants =  () => {
         { field: 'actions', headerName: 'Actions', width: 400, sortable: false, filterable: false, renderCell: (params)=> {
             return (
             <>
-                {
-                    ['ACTIVE', 'INACTIVE'].includes(params.row.STATUS) ? (
                         <div className="flex items-center space-x-2">
+                          {['ACTIVE', 'INACTIVE'].includes(params.row.STATUS) ? (
                             <button
                                 className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
                                 onClick={() => {
@@ -176,6 +190,7 @@ const MySubmerchants =  () => {
                             >
                                 View
                             </button>
+                          ) : null}
 
                             {params.row.STATUS === 'ACTIVE' ? (
                                 <>
@@ -197,7 +212,9 @@ const MySubmerchants =  () => {
                                         Deactivate
                                     </button>
                                 </>
-                            ) : (
+                            ) : null}
+                            {['INACTIVE'].includes(params.row.STATUS) ? (
+                                <>
                                 <button
                                     className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
                                     onClick={() => handleRequestReactivation(params.row.user_role_id)}
@@ -205,10 +222,20 @@ const MySubmerchants =  () => {
                                 >
                                     Request Reactivation
                                 </button>
-                            )}
+                                </>
+                            ) : null}
+                            {['CANCELLED', 'REJECTED'].includes(params.row.STATUS) ? (
+                                <>
+                                <button
+                                    className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
+                                    onClick={() => handleRequestAgain(params.row.SUBMERCHANT_EMAIL)}
+                                    disabled={loading}
+                                >
+                                    Request Again
+                                </button>
+                                </>
+                            ) : null}
                         </div>
-                    ) : null
-                }
             </>
         )} }
     ], [loading])
