@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { Box, Paper, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
-import convertToUTCISOString from '../../helpers/convertToUTCISOString';
-import getCodRemittanceMerchantService from '../../services/codRemittanceServices/getCodRemittanceMerchant.service';
-import getPendingCodRemittanceAmountService from '../../services/codRemittanceServices/getPendingCodRemittanceAmount.service';
-import getPaidCodRemittanceAmountService from '../../services/codRemittanceServices/getPaidCodRemittanceAmount.service';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
+import { Box, Paper, TextField, FormControl, InputLabel, Select, MenuItem, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import convertToUTCISOString from '@/helpers/convertToUTCISOString';
+import getCodRemittanceAdminService from '@/services/codRemittanceServices/getMySubmerchantCodRemittances.service';
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -68,9 +66,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   );
 };
 
-const CodRemittanceMerchant = () => {
+const MySubmerchantCodRemittances = () => {
   const [filters, setFilters] = useState({
     orderId: '',
+    submerchantIdentifier: '',
     status: '',
     serviceId: '',
     startDate: '',
@@ -82,25 +81,21 @@ const CodRemittanceMerchant = () => {
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState([]);
   const [error, setError] = useState('');
-
-  const canSearch = useMemo(() => !loading, [loading]);
-  const [pendingAmount, setPendingAmount] = useState(0);
-  const [paidAmount, setPaidAmount] = useState(0);
-  const totalAmount = useMemo(() => pendingAmount + paidAmount, [pendingAmount, paidAmount]);
+  const apiRef = useGridApiRef();
 
   const fetchServices = async () => {
     try {
-      const res = await fetch(`${API_URL}/services/active-shipments/domestic`,{
+      const res = await fetch(`${API_URL}/services/active-shipments/domestic`, {
         method: 'GET',
         headers: {
-            'Accept': 'application/json',
-            'Authorization': localStorage.getItem('token'),
-        }
+          Accept: 'application/json',
+          Authorization: localStorage.getItem('token'),
+        },
       });
       const data = await res.json();
       if (!data?.success) throw new Error(data?.message || 'Failed to fetch services');
-      const rows = data?.services;
-      if (Array.isArray(rows)) setServices(rows);
+      const svc = data?.services;
+      if (Array.isArray(svc)) setServices(svc);
     } catch (e) {
       console.warn('Failed to fetch services', e);
     }
@@ -110,10 +105,14 @@ const CodRemittanceMerchant = () => {
     setLoading(true);
     setError('');
     try {
-      const startDate = useFilters.startDate ? convertToUTCISOString(new Date(useFilters.startDate).setHours(0,0,0,0)) : '';
-      const endDate = useFilters.endDate ? convertToUTCISOString(new Date(useFilters.endDate).setHours(23,59,59,999)) : '';
+      const startDate = useFilters.startDate
+        ? convertToUTCISOString(new Date(useFilters.startDate).setHours(0, 0, 0, 0))
+        : '';
+      const endDate = useFilters.endDate
+        ? convertToUTCISOString(new Date(useFilters.endDate).setHours(23, 59, 59, 999))
+        : '';
       const payload = { ...useFilters, page: usePage, startDate, endDate };
-      const data = await getCodRemittanceMerchantService(payload);
+      const data = await getCodRemittanceAdminService(payload);
       setRows(data?.rows || []);
       setTotalPages(data?.totalPages || 1);
     } catch (e) {
@@ -124,63 +123,41 @@ const CodRemittanceMerchant = () => {
   };
 
   useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const [pendingRes, paidRes] = await Promise.all([
-          getPendingCodRemittanceAmountService(),
-          getPaidCodRemittanceAmountService(),
-        ]);
-
-        const extractAmount = (res) => {
-          if (!res) return 0;
-          return parseInt(res.data) || 0;
-        };
-
-        setPendingAmount(extractAmount(pendingRes));
-        setPaidAmount(extractAmount(paidRes));
-      } catch (e) {
-        console.warn('Failed to fetch COD summary', e);
-      }
-    };
-
-    fetchSummary();
+    fetchServices();
   }, []);
-
-  useEffect(() => { fetchServices(); }, []);
   useEffect(() => { fetchRows(page, filters); }, [page]);
-  // Debounce filters
   const didMountRef = useRef(false);
-    useEffect(() => {
-      if (!didMountRef.current) {
-        didMountRef.current = true;
-        return; // skip initial fetch triggered by filters on mount
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return; // skip initial fetch triggered by filters on mount
+    }
+    const t = setTimeout(() => {
+      // If already on page 1, just refetch; else move to page 1 and let the page effect fetch once
+      if (page === 1) {
+        fetchRows(1, filters);
+      } else {
+        setPage(1);
       }
-      const t = setTimeout(() => {
-        // If already on page 1, just refetch; else move to page 1 and let the page effect fetch once
-        if (page === 1) {
-          fetchRows(1, filters);
-        } else {
-          setPage(1);
-        }
-      }, 500);
-      return () => clearTimeout(t);
-    }, [filters]);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [filters]);
 
   const onFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
   };
-
   return (
+    <>
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">COD Remittance</h2>
+      <h2 className="text-xl font-semibold mb-4">COD Remittance (Admin)</h2>
 
       <Paper sx={{ width: '100%', p: 2, mb: 3 }}>
         <Box
           sx={{
             mb: 1,
             p: 2,
-            bgcolor: 'blue',
+            bgcolor: 'primary.main',
             borderRadius: 2,
             '& .MuiTextField-root': { bgcolor: 'background.paper', borderRadius: 1 },
             overflowX: 'auto',
@@ -198,6 +175,24 @@ const CodRemittanceMerchant = () => {
               value={filters.orderId}
               onChange={onFilterChange}
               sx={{ mr: 1, minWidth: '150px' }}
+              InputLabelProps={{
+                sx: {
+                  backgroundColor: 'white',
+                  px: 0.5,
+                  width: '100%',
+                  borderRadius: 1,
+                },
+              }}
+            />
+
+            <TextField
+              label="Name, Email or Mobile"
+              variant="outlined"
+              size="small"
+              name="submerchantIdentifier"
+              value={filters.submerchantIdentifier}
+              onChange={onFilterChange}
+              sx={{ mr: 1, minWidth: '180px' }}
               InputLabelProps={{
                 sx: {
                   backgroundColor: 'white',
@@ -280,35 +275,21 @@ const CodRemittanceMerchant = () => {
         </Box>
       </Paper>
 
-      {/* COD summary tiles */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-        <Box sx={{ flex: 1, minWidth: 200, p: 2, borderRadius: 1, bgcolor: '#fff7ed', border: '1px solid #fed7aa' }}>
-          <div className="text-xs font-semibold text-gray-600">Pending COD</div>
-          <div className="text-lg font-bold">₹ {Number(pendingAmount).toFixed(2)}</div>
-        </Box>
-        <Box sx={{ flex: 1, minWidth: 200, p: 2, borderRadius: 1, bgcolor: '#e0f2fe', border: '1px solid #bae6fd' }}>
-          <div className="text-xs font-semibold text-gray-600">Paid COD</div>
-          <div className="text-lg font-bold">₹ {Number(paidAmount).toFixed(2)}</div>
-        </Box>
-        <Box sx={{ flex: 1, minWidth: 200, p: 2, borderRadius: 1, bgcolor: '#ecfdf3', border: '1px solid #bbf7d0' }}>
-          <div className="text-xs font-semibold text-gray-600">Total COD</div>
-          <div className="text-lg font-bold">₹ {Number(totalAmount).toFixed(2)}</div>
-        </Box>
-      </Box>
-
-      {error ? (
-        <div className="text-red-600 mt-3">{error}</div>
-      ) : null}
-
-  <div className="mt-4 bg-white rounded-md border" style={{ height: 600, width: '100%' }}>
+      <div className="mt-2 bg-white rounded-md border" style={{ height: 600, width: '100%' }}>
         <DataGrid
+          apiRef={apiRef}
           rows={rows}
           loading={loading}
           hideFooter={true}
+          disableRowSelectionOnClick
+          getRowId={(row) => row?.ord_id}
           columns={[
             { field: 'ord_id', headerName: 'Order ID', width: 130 },
             { field: 'awb', headerName: 'AWB', width: 150 },
             { field: 'service_name', headerName: 'Service', width: 160 },
+            { field: 'fullName', headerName: 'Merchant Name', width: 180 },
+            { field: 'email', headerName: 'Email', width: 200 },
+            { field: 'phone', headerName: 'Phone', width: 150 },
             {
               field: 'amount', headerName: 'Amount', width: 140,
               renderCell: (params) => `₹ ${Number(params.value || 0).toFixed(2)}`
@@ -343,9 +324,13 @@ const CodRemittanceMerchant = () => {
         />
       </div>
 
+
       <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-    </div>
+  </div>
+    </>
   );
 };
 
-export default CodRemittanceMerchant;
+export default MySubmerchantCodRemittances;
+
+

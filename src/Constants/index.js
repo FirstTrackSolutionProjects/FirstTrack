@@ -38,6 +38,9 @@ import AdminSupport from '@/Pages/AdminSupport';
 import AdminAnalytics from '@/Pages/AdminAnalytics';
 import MySubmerchantShipmentReports from '@/Components/Submerchant/MySubmerchantShipmentReports';
 import MySubmerchantShipments from '@/Components/Submerchant/MySubmerchantShipments';
+import MySubmerchantTransactions from '@/Components/Submerchant/MySubmerchantTransactions';
+import MySubmerchantCodRemittances from '@/Components/Submerchant/MySubmerchantCodRemittances';
+import MySubmerchantWeightDisputes from '@/Components/Submerchant/MySubmerchantWeightDisputes';
 
 export const Admincards = [
   {
@@ -544,6 +547,33 @@ export const menuItems = [
           url : 'submerchants/shipment-reports',
           roles: [USER_ROLES.MERCHANT],
           component : MySubmerchantShipmentReports,
+          dropDownOptions : []
+      },
+      {
+          icon : ShieldCheck,
+          name : "Transactions",
+          isDropdown : false,
+          url : 'submerchants/transactions',
+          roles: [USER_ROLES.MERCHANT],
+          component : MySubmerchantTransactions,
+          dropDownOptions : []
+      },
+      {
+          icon : ShieldCheck,
+          name : "COD Remittances",
+          isDropdown : false,
+          url : 'submerchants/cod-remittances',
+          roles: [USER_ROLES.MERCHANT],
+          component : MySubmerchantCodRemittances,
+          dropDownOptions : []
+      },
+      {
+          icon : ShieldCheck,
+          name : "Weight Disputes",
+          isDropdown : false,
+          url : 'submerchants/weight-disputes',
+          roles: [USER_ROLES.MERCHANT],
+          component : MySubmerchantWeightDisputes,
           dropDownOptions : []
       },
       {

@@ -364,7 +364,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
               <WarehouseSelect
                 onChange={(wid) => setFormData(prev => ({...prev, wid}))}
                 value={formData.wid}
-                userId={shipment.uid}
+                userRoleId={shipment.user_role_id}
               />
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>

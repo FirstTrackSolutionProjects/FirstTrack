@@ -470,28 +470,6 @@ const CodRemittanceAdmin = () => {
           disableRowSelectionOnClick
           getRowId={(row) => row?.ord_id}
           onRowSelectionModelChange={setSelection}
-          sx={{
-              border: '1px solid #000',
-              borderRadius: 0,
-              '& .MuiDataGrid-columnHeaders': {
-                borderBottom: '1px solid #000',
-                backgroundColor: '#A34757',
-                color: '#FFF',
-              },
-              '& .MuiDataGrid-columnHeader': {
-                backgroundColor: '#A34757',
-                fontWeight: 'bold',
-              },
-              '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
-                borderRight: '1px solid #000',
-              },
-              '& .MuiDataGrid-columnHeader:first-of-type, & .MuiDataGrid-cell:first-of-type': {
-                borderLeft: '1px solid #000',
-              },
-              '& .MuiDataGrid-row': {
-                borderBottom: '1px solid #000',
-              },
-            }}
           columns={[
             { field: 'ord_id', headerName: 'Order ID', width: 130 },
             { field: 'awb', headerName: 'AWB', width: 150 },
@@ -557,7 +535,7 @@ const CodRemittanceAdmin = () => {
               disabled={isUploading || isSubmitting}
             />
             {isUploading && (
-              <div className="text-sm text-red-600 mt-1">Uploading...</div>
+              <div className="text-sm text-blue-600 mt-1">Uploading...</div>
             )}
             {uploadError && (
               <div className="text-sm text-red-600 mt-1">{uploadError}</div>

@@ -31,6 +31,7 @@ import { DOMESTIC_ORDER_STATUS_ENUMS } from "@/Constants";
 
 import WarehouseSelect from "../UiComponents/WarehouseSelect";
 import TrackingShareDialog from '../TrackingShareDialog';
+import getMySubmerchantWarehouses from "@/services/warehouseServices/getMySubmerchantWarehouses";
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
@@ -321,8 +322,8 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
       itemFlag = 0
     }
 
-    fetch(`${API_URL}/order/domestic/update`, {
-      method: 'POST',
+    fetch(`${API_URL}/merchant/submerchants/shipments/${shipment.ord_id}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': localStorage.getItem('token'),
@@ -364,7 +365,8 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
               <WarehouseSelect
                 onChange={(wid) => setFormData(prev => ({...prev, wid}))}
                 value={formData.wid}
-                userId={shipment.uid}
+                userRoleId={shipment.user_role_id}
+                getter={getMySubmerchantWarehouses}
               />
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>

@@ -1,7 +1,7 @@
 import getAllWarehouseService from "@/services/warehouseServices/getAllWarehousesService";
 import { useState, useEffect } from "react";
 
-const WarehouseSelect = ({ onChange, isInternational=false, value, userId }) => {
+const WarehouseSelect = ({ onChange, isInternational=false, value, userRoleId, getter=getAllWarehouseService }) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [query, setQuery] = useState("");
@@ -19,16 +19,16 @@ const WarehouseSelect = ({ onChange, isInternational=false, value, userId }) => 
   const getFilteredWarehouses = async ({
     WAREHOUSE_NAME,
     WAREHOUSE_ID,
-    USER_ID
+    USER_ROLE_ID
   }) => {
     try{
       if (abortController) abortController.abort();
 			const newController = new AbortController();
 			setAbortController(newController);
-      const d = await getAllWarehouseService({
+      const d = await getter({
         WAREHOUSE_NAME: WAREHOUSE_NAME || '',
         WAREHOUSE_ID: WAREHOUSE_ID || '',
-        USER_ID: USER_ID || ''
+        USER_ROLE_ID: USER_ROLE_ID || ''
       }, { signal: newController.signal });
       setWarehouses(d.data);
     } catch (error) {
@@ -43,7 +43,7 @@ const WarehouseSelect = ({ onChange, isInternational=false, value, userId }) => 
     if (open) {
       getFilteredWarehouses({
         WAREHOUSE_NAME: debouncedQuery,
-        USER_ID: userId
+        USER_ROLE_ID: userRoleId
       })
     }
   },[debouncedQuery, open])
@@ -59,9 +59,9 @@ const WarehouseSelect = ({ onChange, isInternational=false, value, userId }) => 
     WAREHOUSE_ID
   }) => {
     try {
-      const d = await getAllWarehouseService({
+      const d = await getter({
         WAREHOUSE_ID: WAREHOUSE_ID || '',
-        USER_ID: userId || ''
+        USER_ROLE_ID: userRoleId || ''
       });
       const warehouse = d.data[0];
       setSelected(warehouse);
