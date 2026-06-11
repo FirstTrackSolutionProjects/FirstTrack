@@ -9,7 +9,7 @@ import { IconButton, Box } from '@mui/material';
 import * as XLSX from 'xlsx';
 import { toast } from 'react-toastify';
 import getAllTransactionsDataService from '@/services/transactionServices/getAllTransactionDataService';
-import { TRANSACTION_TYPES, USER_ROLES } from '@/Constants';
+import { TRANSACTION_TYPES } from '@/Constants';
 
 const PAGE_SIZE = 50; // backend admin endpoint uses 50
 
@@ -72,7 +72,6 @@ const MySubmerchantTransactions = () => {
     submerchantIdentifier: '',
     startDate: getFilterStartDate(),
     endDate: getTodaysDate(),
-    role: ''
   });
   const [debouncedFilters, setDebouncedFilters] = useState(filters);
 
@@ -102,7 +101,6 @@ const MySubmerchantTransactions = () => {
         awb: debouncedFilters.awb,
         submerchantIdentifier: debouncedFilters.submerchantIdentifier,
         type: debouncedFilters.type,
-        role: debouncedFilters.role
       });
       const incoming = data?.rows || [];
       // Ensure each row has an id (backend provides id for each select we constructed). Fallback composite.
