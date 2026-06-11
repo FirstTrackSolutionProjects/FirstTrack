@@ -8,6 +8,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate()
   const [authState, setAuthState] = useState({isAuthenticated: false});
+  const [authLoading, setAuthLoading] = useState(true);
 
   const login = async (token) => {
     localStorage.setItem('token', token);
@@ -22,16 +23,25 @@ export const AuthProvider = ({ children }) => {
 
 
   const isAuthenticated = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return false;
-    try {
-        const decoded = await validateToken();
-        setAuthState({isAuthenticated: true, email: decoded.email, verified: decoded.verified, name : decoded.name, id : decoded.id, business_name: decoded.business_name, role: decoded.role, phone: decoded.phone});
-        return true;
+    try{
+        setAuthLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No token found');
+        try {
+            const decoded = await validateToken();
+            setAuthState({isAuthenticated: true, email: decoded.email, verified: decoded.verified, name : decoded.name, id : decoded.id, business_name: decoded.business_name, role: decoded.role, phone: decoded.phone});
+            return true;
+        } catch (error) {
+          let message = error.message;
+          if (error.message === 'TypeError: Failed to fetch') message = 'Network error. Please check your connection and try again.';
+          toast.error(message);
+          throw new Error(message);
+        }
     } catch (error) {
-      console.log(error);
-      toast.error(error)
-      return false;
+        console.error('Error checking authentication:', error);
+        return false;
+    } finally {
+        setAuthLoading(false);
     }
   };
 
@@ -39,7 +49,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated()
   }, []);
   return (
-    <AuthContext.Provider value={{ ...authState, login, logout }}>
+    <AuthContext.Provider value={{ ...authState, login, logout, authLoading }}>
       {children}
     </AuthContext.Provider>
   );

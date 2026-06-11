@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import ForgotPasswordModal from './ForgotPasswordModal';
 
 const LoginForm = () => {
-  const { isAuthenticated, login, verified } = useAuth();
+  const { isAuthenticated, login, verified, authLoading } = useAuth();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [forgotPasswordModal, setForgotPasswordModal] = useState(false);
   const [email, setEmail] = useState('');
@@ -26,12 +26,13 @@ const LoginForm = () => {
   }
 
   useEffect(()=>{
+    if (authLoading) return;
     if (isAuthenticated && verified){
       navigate('/dashboard')
     } else if(isAuthenticated){
       navigate('/verify')
     }
-  },[isAuthenticated, verified, navigate]) // Added dependencies for useEffect
+  },[isAuthenticated, verified, navigate, authLoading]) // Added dependencies for useEffect
 
   const handleSubmit = async (e) => {
     e.preventDefault();
