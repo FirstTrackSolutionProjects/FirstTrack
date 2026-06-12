@@ -8,6 +8,7 @@ import deactivateSubmerchantService from '@/services/merchantServices/deactivate
 import requestSubmerchantReactivationService from '@/services/merchantServices/requestSubmerchantReactivationService'
 import { toast } from 'react-toastify'
 import requestSubmerchantsService from '@/services/merchantServices/requestSubmerchantService'
+import cancelSubmerchantRequestService from '@/services/merchantServices/cancelSubmerchantRequestService'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const View = ({ userRoleId, onClose }) => {
     const [user, setUser] = useState({})
@@ -168,6 +169,20 @@ const MySubmerchants =  () => {
         }
     }
 
+    const handleCancelRequest = async (requestId) => {
+        if (!confirm('Are you sure you want to cancel this request?')) return
+        try {            
+            setLoading(true)
+            const res = await cancelSubmerchantRequestService(requestId)
+            toast.success(res.message || 'Request cancelled successfully')
+            setRefreshIndex(prev => prev + 1)
+        } catch (err) {
+            toast.error(err.message || 'Failed to cancel request')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     // Columns definition
     const columns = useMemo(() => [
         { field: 'user_role_id', headerName: 'Account ID', width: 100 },
@@ -180,6 +195,19 @@ const MySubmerchants =  () => {
             return (
             <>
                         <div className="flex items-center space-x-2">
+                            {
+                                ['REQUESTED'].includes(params.row.STATUS) ? (
+                                    <>
+                                        <button
+                                            className="px-3 py-1 bg-red-500 text-white rounded-2xl text-sm"
+                                            onClick={() => handleCancelRequest(params.row.REQUEST_ID)}
+                                            disabled={loading}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : null
+                            }
                           {['ACTIVE', 'INACTIVE'].includes(params.row.STATUS) ? (
                             <button
                                 className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
