@@ -576,15 +576,6 @@ export const menuItems = [
           component : MySubmerchantWeightDisputes,
           dropDownOptions : []
       },
-      {
-          icon : ShieldCheck,
-          name: "Verification Requests",
-          isDropdown: false,
-          url: 'submerchants/verification-requests',
-          roles: [USER_ROLES.MERCHANT],
-          component: VerificationRequests,
-          dropDownOptions: []
-      },
     ]
   },
   {
