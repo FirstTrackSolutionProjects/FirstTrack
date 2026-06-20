@@ -220,7 +220,7 @@ export const getRequiredFileFieldNames = (
   return required;
 };
 
-export const buildVerificationPayload = ({ values, uploadedFileKeys }) => {
+export const buildVerificationPayload = ({ values, uploadedFileKeys, selectedMerchantRoleId = null }) => {
   return {
     PERSONAL_DATA: {
       address: values.address,
@@ -246,5 +246,6 @@ export const buildVerificationPayload = ({ values, uploadedFileKeys }) => {
       msme: values.msme || null,
       cin: values.cin || null,
     },
+    REQUESTED_MERCHANT_USER_ROLE_ID: selectedMerchantRoleId ?? null,
   };
 };
