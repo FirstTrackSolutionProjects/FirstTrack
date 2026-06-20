@@ -1,15 +1,14 @@
-import { useEffect , useMemo, useState  } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import AddSubmerchantModal from '../Modals/AddSubmerchantModal'
 import UpdateSubmerchantMarginModal from '../Modals/UpdateSubmerchantMarginModal'
 import getMySubmerchantsService from '@/services/merchantServices/getMySubmerchantsService'
-import requestSubmerchantReactivationService from '@/services/merchantServices/requestSubmerchantReactivationService'
 import { toast } from 'react-toastify'
 import requestSubmerchantsService from '@/services/merchantServices/requestSubmerchantService'
 import cancelSubmerchantRequestService from '@/services/merchantServices/cancelSubmerchantRequestService'
 
 
-const MySubmerchants =  () => {
+const MySubmerchants = () => {
     // Data state
     const [rows, setRows] = useState([])
     const [rowCount, setRowCount] = useState(0)
@@ -34,26 +33,11 @@ const MySubmerchants =  () => {
     const [selectedSubmerchantId, setSelectedSubmerchantId] = useState(null)
     const [selectedCurrentMargin, setSelectedCurrentMargin] = useState(null)
 
-
-    const handleRequestReactivation = async (submerchantId) => {
-        if (!confirm('Are you sure you want to request reactivation for this submerchant?')) return
-        try {
-            setLoading(true)
-            const res = await requestSubmerchantReactivationService(submerchantId)
-            toast.success(res.message || 'Reactivation request submitted successfully')
-            setRefreshIndex(prev => prev + 1)
-        } catch (err) {
-            toast.error(err.message || 'Failed to submit reactivation request')
-        } finally {
-            setLoading(false)
-        }
-    }
-
     const handleRequestAgain = async (email) => {
         if (!confirm('Are you sure you want to request again for this submerchant?')) return
         try {
             setLoading(true)
-            const res = await requestSubmerchantsService({email});
+            const res = await requestSubmerchantsService({ email });
             toast.success(res.message || 'Request submitted successfully')
             setRefreshIndex(prev => prev + 1)
         } catch (err) {
@@ -65,7 +49,7 @@ const MySubmerchants =  () => {
 
     const handleCancelRequest = async (requestId) => {
         if (!confirm('Are you sure you want to cancel this request?')) return
-        try {            
+        try {
             setLoading(true)
             const res = await cancelSubmerchantRequestService(requestId)
             toast.success(res.message || 'Request cancelled successfully')
@@ -85,9 +69,10 @@ const MySubmerchants =  () => {
         { field: 'SUBMERCHANT_PHONE', headerName: 'Phone', width: 140 },
         { field: 'MARGIN', headerName: 'Margin %', width: 110 },
         { field: 'STATUS', headerName: 'Status', width: 110 },
-        { field: 'actions', headerName: 'Actions', width: 400, sortable: false, filterable: false, renderCell: (params)=> {
-            return (
-            <>
+        {
+            field: 'actions', headerName: 'Actions', width: 400, sortable: false, filterable: false, renderCell: (params) => {
+                return (
+                    <>
                         <div className="flex items-center space-x-2">
                             {
                                 ['REQUESTED'].includes(params.row.STATUS) ? (
@@ -117,31 +102,23 @@ const MySubmerchants =  () => {
                                     </button>
                                 </>
                             ) : null}
-                            {['INACTIVE'].includes(params.row.STATUS) ? (
-                                <>
-                                <button
-                                    className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
-                                    onClick={() => handleRequestReactivation(params.row.user_role_id)}
-                                    disabled={loading}
-                                >
-                                    Request Reactivation
-                                </button>
-                                </>
-                            ) : null}
+
                             {['CANCELLED', 'REJECTED'].includes(params.row.STATUS) ? (
                                 <>
-                                <button
-                                    className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
-                                    onClick={() => handleRequestAgain(params.row.SUBMERCHANT_EMAIL)}
-                                    disabled={loading}
-                                >
-                                    Request Again
-                                </button>
+                                    <button
+                                        className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
+                                        onClick={() => handleRequestAgain(params.row.SUBMERCHANT_EMAIL)}
+                                        disabled={loading}
+                                    >
+                                        Request Again
+                                    </button>
                                 </>
                             ) : null}
                         </div>
-            </>
-        )} }
+                    </>
+                )
+            }
+        }
     ], [loading])
 
     // Debounced fetch
@@ -281,47 +258,47 @@ const MySubmerchants =  () => {
                     {/* DataGrid */}
                     <div className='w-full bg-white rounded-xl shadow-sm border overflow-hidden'>
                         <div className='p-3' style={{ height: 540 }}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            getRowId={(row) => row.user_role_id}
-                            loading={loading}
-                            rowCount={rowCount}
-                            pageSizeOptions={[pageSize]}
-                            paginationMode="server"
-                            paginationModel={{ page, pageSize }}
-                            onPaginationModelChange={(model) => {
-                                if (model.page !== page) setPage(model.page)
-                            }}
-                            disableRowSelectionOnClick
-                            density="compact"
-                            disableColumnMenu
-                            hideFooter
-                            rowHeight={64}
-                            columnHeaderHeight={64}
-                            sx={{
-                                border: '1px solid #000',
-                                borderRadius: 0,
-                                '& .MuiDataGrid-columnHeaders': {
-                                  borderBottom: '1px solid #000',
-                                  backgroundColor: '#A34757',
-                                color: '#FFF',
-                                },
-                                '& .MuiDataGrid-columnHeader': {
-                                  backgroundColor: '#A34757',
-                                  fontWeight: 'bold',
-                                  },
-                                '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
-                                  borderRight: '1px solid #000',
-                                },
-                                '& .MuiDataGrid-columnHeader:first-of-type, & .MuiDataGrid-cell:first-of-type': {
-                                  borderLeft: '1px solid #000',
-                                },
-                                '& .MuiDataGrid-row': {
-                                  borderBottom: '1px solid #000',
-                                },
-                            }}
-                        />
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row.user_role_id}
+                                loading={loading}
+                                rowCount={rowCount}
+                                pageSizeOptions={[pageSize]}
+                                paginationMode="server"
+                                paginationModel={{ page, pageSize }}
+                                onPaginationModelChange={(model) => {
+                                    if (model.page !== page) setPage(model.page)
+                                }}
+                                disableRowSelectionOnClick
+                                density="compact"
+                                disableColumnMenu
+                                hideFooter
+                                rowHeight={64}
+                                columnHeaderHeight={64}
+                                sx={{
+                                    border: '1px solid #000',
+                                    borderRadius: 0,
+                                    '& .MuiDataGrid-columnHeaders': {
+                                        borderBottom: '1px solid #000',
+                                        backgroundColor: '#A34757',
+                                        color: '#FFF',
+                                    },
+                                    '& .MuiDataGrid-columnHeader': {
+                                        backgroundColor: '#A34757',
+                                        fontWeight: 'bold',
+                                    },
+                                    '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
+                                        borderRight: '1px solid #000',
+                                    },
+                                    '& .MuiDataGrid-columnHeader:first-of-type, & .MuiDataGrid-cell:first-of-type': {
+                                        borderLeft: '1px solid #000',
+                                    },
+                                    '& .MuiDataGrid-row': {
+                                        borderBottom: '1px solid #000',
+                                    },
+                                }}
+                            />
                         </div>
                         <PaginationBar />
                     </div>
