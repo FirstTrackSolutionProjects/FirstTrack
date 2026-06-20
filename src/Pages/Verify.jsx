@@ -18,6 +18,8 @@ import { useAuth } from "../context/AuthContext";
 import checkPendingRequest from "../services/checkPendingRequest";
 import getS3PutUrlService from "../services/s3Services/getS3PutUrlService";
 import putObjectService from "../Components/CustomComponents/s3Services/putObjectService";
+import getSubmerchantRequestsService from "../services/submerchantServices/getSubmerchantRequestsService";
+import SelectMerchantStep from "./verify/SelectMerchantStep";
 
 import {
   VERIFICATION_STEP_SCHEMAS,
@@ -26,6 +28,15 @@ import {
   getActiveVerificationSteps,
   getRequiredFileFieldNames,
 } from "./verify/verificationWizardConfig";
+
+const SELECT_MERCHANT_STEP = Object.freeze({
+  id: "select_merchant",
+  title: "Select Merchant",
+  enabled: true,
+  mandatory: true,
+  textFields: [],
+  fileFields: [],
+});
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -52,7 +63,6 @@ const Verify = () => {
   const navigate = useNavigate();
   const { isAuthenticated, verified, role, id, authLoading } = useAuth();
 
-  const steps = useMemo(() => getActiveVerificationSteps(), []);
 
   const initialValues = useMemo(() => {
     const values = {};
@@ -81,7 +91,36 @@ const Verify = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [view, setView] = useState("form"); // form | pending
 
+  // SUBMERCHANT — merchant join-request state
+  const [merchantRequests, setMerchantRequests] = useState([]);
+  const [merchantRequestsLoading, setMerchantRequestsLoading] = useState(false);
+  const [merchantRequestsError, setMerchantRequestsError] = useState(null);
+  const [selectedMerchantRoleId, setSelectedMerchantRoleId] = useState(null);
+
+  // Derive wizard steps from merchant request results, not from role.
+  // Mirrors backend: verification is SUBMERCHANT only if pending REQUESTED rows exist.
+  const steps = useMemo(() => {
+    const base = getActiveVerificationSteps();
+    if (merchantRequests.length > 0) {
+      return [SELECT_MERCHANT_STEP, ...base];
+    }
+    return base;
+  }, [merchantRequests]);
+
   const validateStep = (stepId) => {
+    // Handle the SUBMERCHANT-only select_merchant step
+    if (stepId === "select_merchant") {
+      if (!selectedMerchantRoleId) {
+        setErrors((prev) => ({
+          ...prev,
+          select_merchant: "Please select a merchant to continue",
+        }));
+        return false;
+      }
+      setErrors((prev) => ({ ...prev, select_merchant: undefined }));
+      return true;
+    }
+
     const stepConfig = steps.find((s) => s.id === stepId);
     if (!stepConfig) return true;
     if (!stepConfig.mandatory) return true;
@@ -213,6 +252,7 @@ const Verify = () => {
       const payload = buildVerificationPayload({
         values,
         uploadedFileKeys,
+        selectedMerchantRoleId,
       });
 
       toast.info("Submitting verification request...");
@@ -264,7 +304,21 @@ const Verify = () => {
         // ignore
       }
     })();
-  }, [isAuthenticated, verified, navigate]);
+    setMerchantRequestsLoading(true);
+    setMerchantRequestsError(null);
+    getSubmerchantRequestsService()
+      .then((data) => {
+        setMerchantRequests(Array.isArray(data?.data) ? data.data : []);
+      })
+      .catch((err) => {
+        setMerchantRequestsError(
+          err?.message || "Failed to load merchant requests"
+        );
+      })
+      .finally(() => {
+        setMerchantRequestsLoading(false);
+      });
+  }, [isAuthenticated, verified, navigate, role]);
 
   if (!isAuthenticated || verified) {
     return null;
@@ -317,7 +371,21 @@ const Verify = () => {
           ))}
         </Stepper>
 
-        {currentStep?.id !== "review" ? (
+        {currentStep?.id === "select_merchant" ? (
+          <>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              {currentStep.title}
+            </Typography>
+            <SelectMerchantStep
+              requests={merchantRequests}
+              loading={merchantRequestsLoading}
+              error={merchantRequestsError}
+              selectedId={selectedMerchantRoleId}
+              onSelect={setSelectedMerchantRoleId}
+              stepError={errors.select_merchant}
+            />
+          </>
+        ) : currentStep?.id !== "review" ? (
           <>
             <Typography variant="h6" sx={{ mb: 2 }}>
               {currentStep?.title}

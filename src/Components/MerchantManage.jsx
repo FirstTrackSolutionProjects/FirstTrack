@@ -5,6 +5,7 @@ import MerchantInvoiceModal from './Modals/MerchantInvoiceModal'
 import formatDateAndTime from '../helpers/formatDateAndTime'
 import allowNegativeBalanceService from '../services/merchantServices/allowNegativeBalanceService'
 import revokeNegativeBalanceService from '../services/merchantServices/revokeNegativeBalanceService'
+import promoteSubmerchantService from '../services/merchantServices/promoteSubmerchantService'
 import { toast } from 'react-toastify'
 import getVerifiedUsersService from '@/services/userServices/getVerifiedUsersService'
 import getVerifiedUserByUserRoleIdService from '@/services/userServices/getVerifiedUserByUserRoleIdService'
@@ -207,6 +208,27 @@ const MerchantManage =  () => {
                 >
                     Invoice
                 </button> : null }
+                { params.row.user_role === USER_ROLES.SUBMERCHANT ? (
+                    <button
+                        className="px-3 py-1 bg-yellow-500 text-white rounded-2xl text-sm"
+                        onClick={async () => {
+                            if (!confirm('Promote this submerchant to a Merchant account?')) return;
+                            try {
+                                const res = await promoteSubmerchantService(params.row.user_role_id);
+                                toast.success(res.message || 'Promoted successfully');
+                                setRows(prev => prev.map(r =>
+                                    r.user_role_id === params.row.user_role_id
+                                        ? { ...r, user_role: USER_ROLES.MERCHANT }
+                                        : r
+                                ));
+                            } catch (err) {
+                                toast.error(err.message || 'Failed to promote submerchant');
+                            }
+                        }}
+                    >
+                        Promote
+                    </button>
+                ) : null }
             </div>
         )} }
     ], [])

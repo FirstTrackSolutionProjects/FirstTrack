@@ -1,103 +1,14 @@
-import { useEffect , useMemo, useState  } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import AddSubmerchantModal from '../Modals/AddSubmerchantModal'
 import UpdateSubmerchantMarginModal from '../Modals/UpdateSubmerchantMarginModal'
-import getMySubmerchantService from '@/services/merchantServices/getMySubmerchantService'
 import getMySubmerchantsService from '@/services/merchantServices/getMySubmerchantsService'
-import deactivateSubmerchantService from '@/services/merchantServices/deactivateSubmerchantService'
-import requestSubmerchantReactivationService from '@/services/merchantServices/requestSubmerchantReactivationService'
 import { toast } from 'react-toastify'
 import requestSubmerchantsService from '@/services/merchantServices/requestSubmerchantService'
-const API_URL = import.meta.env.VITE_APP_API_URL
-const View = ({ userRoleId, onClose }) => {
-    const [user, setUser] = useState({})
-    const getUserDetails = async () => {
-        const res = await getMySubmerchantService({submerchant_id : userRoleId})
-        setUser(res)
-    }
-    useEffect(()=>{
-        getUserDetails()
-    }, [userRoleId])
-    const [profilePhoto, setProfilePhoto] = useState(null)
-    useEffect(() => {
-        const getProfilePhoto = async () => {
-            if (!user?.selfie_doc) {
-                setProfilePhoto(null)
-                return
-            }
-            await fetch(`${API_URL}/s3/getUrl`, {
-                method : 'POST',
-                headers : {
-                    'Content-Type' : 'application/json',
-                    'Accept' : 'application/json',
-                    'Authorization' : localStorage.getItem('token')
-                },
-                body : JSON.stringify({key : user['selfie_doc']})
-            }).then((response)=>response.json()).then(result => setProfilePhoto(result.downloadURL))
-        }
-        getProfilePhoto()
-    }, [user?.selfie_doc])
-    const handleDownload = async (name) => {
-        await fetch(`${API_URL}/s3/getUrl`, {
-        method : 'POST',
-        headers : {
-            'Content-Type' : 'application/json',
-            'Accept' : 'application/json',
-            'Authorization' : localStorage.getItem('token')
-        },
-        body : JSON.stringify({key : user[name]})
-    }).then(response => response.json()).then(async result => {
-        const link = document.createElement('a');
-        link.href = result.downloadURL;
-        link.target = '_blank'
-        link.style.display = 'none'; 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    })
-    }
-    return (
-        <>
-            <div className='fixed inset-0 bg-[rgba(0,0,0,0.5)] z-50 flex justify-center items-center overflow-y-auto'>
-                <div className='relative p-8 max-w-[500px] bg-white rounded-2xl overflow-hidden space-y-8'>
-                <p className='absolute top-5 right-6 cursor-pointer' onClick={onClose}>X</p>
-                    <p className='text-2xl font-medium text-center'>Merchant Details</p>
-                    <div className='w-full space-y-6'>
-                        <div className='w-full flex items-center justify-center space-x-8'>
-                            <div className='flex justify-center items-center w-32 h-32'>
-                                <img src={`${profilePhoto?profilePhoto:"/user.webp"}`}/>
-                            </div>
-                            <div className=''>
-                                <p className='font-medium text-xl'>{user.business_name || user.fullName}</p>
-                                {!user.business_name && <p className='font-medium text-sm text-gray-600'>(user.fullName)</p>}
-                                <p className='font-medium text-sm text-gray-600'>{user.email}</p>
-                                <p className='font-medium text-sm text-gray-600'>{user.phone}</p>
-                                <p className='font-medium text-sm text-green-400'>Balance : {user.balance}</p>
-                            </div>
-                        </div>
-                        <div className='w-full font-medium text-gray-700'>
-                            <p>GSTIN : {user.gstin} <span className="cursor-pointer" onClick={()=>handleDownload('gst_doc')}>[PDF]</span></p>
-                            <p>CIN : {user.cin}</p>
-                            <p>Aadhar Number : {user.aadhar_number} <span className="cursor-pointer" onClick={()=>handleDownload('aadhar_doc')}>[PDF]</span></p>
-                            <p>PAN Number : {user.pan_number} <span className="cursor-pointer" onClick={()=>handleDownload('pan_doc')}>[PDF]</span></p>
-                            <p>Address : {user.address}</p>
-                            <p>City : {user.city}</p>
-                            <p>State : {user.state}</p>
-                            <p>Pincode : {user.pincode}</p>
-                            <p>Bank Name : {user.bank_name}</p>
-                            <p>A/C No. : {user.account_number}</p>
-                            <p>IFSC : {user.ifsc}</p>
-                            <p>Cancelled Cheque : <span className="cursor-pointer" onClick={()=>handleDownload('cancelledCheque')}>[PDF]</span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
-}
+import cancelSubmerchantRequestService from '@/services/merchantServices/cancelSubmerchantRequestService'
 
 
-const MySubmerchants =  () => {
+const MySubmerchants = () => {
     // Data state
     const [rows, setRows] = useState([])
     const [rowCount, setRowCount] = useState(0)
@@ -122,47 +33,29 @@ const MySubmerchants =  () => {
     const [selectedSubmerchantId, setSelectedSubmerchantId] = useState(null)
     const [selectedCurrentMargin, setSelectedCurrentMargin] = useState(null)
 
-    // View modal state
-    const [showView, setShowView] = useState(false)
-    const [viewUserRoleId, setViewUserRoleId] = useState(null)
-
-    const handleDeactivate = async (submerchantId) => {
-        if (!confirm('Are you sure you want to deactivate this submerchant?')) return
-        try {
-            setLoading(true)
-            const res = await deactivateSubmerchantService(submerchantId)
-            toast.success(res.message || 'Submerchant deactivated successfully')
-            setRefreshIndex(prev => prev + 1)
-        } catch (err) {
-            toast.error(err.message || 'Failed to deactivate submerchant')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleRequestReactivation = async (submerchantId) => {
-        if (!confirm('Are you sure you want to request reactivation for this submerchant?')) return
-        try {
-            setLoading(true)
-            const res = await requestSubmerchantReactivationService(submerchantId)
-            toast.success(res.message || 'Reactivation request submitted successfully')
-            setRefreshIndex(prev => prev + 1)
-        } catch (err) {
-            toast.error(err.message || 'Failed to submit reactivation request')
-        } finally {
-            setLoading(false)
-        }
-    }
-
     const handleRequestAgain = async (email) => {
         if (!confirm('Are you sure you want to request again for this submerchant?')) return
         try {
             setLoading(true)
-            const res = await requestSubmerchantsService({email});
+            const res = await requestSubmerchantsService({ email });
             toast.success(res.message || 'Request submitted successfully')
             setRefreshIndex(prev => prev + 1)
         } catch (err) {
             toast.error(err.message || 'Failed to submit request')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleCancelRequest = async (requestId) => {
+        if (!confirm('Are you sure you want to cancel this request?')) return
+        try {
+            setLoading(true)
+            const res = await cancelSubmerchantRequestService(requestId)
+            toast.success(res.message || 'Request cancelled successfully')
+            setRefreshIndex(prev => prev + 1)
+        } catch (err) {
+            toast.error(err.message || 'Failed to cancel request')
         } finally {
             setLoading(false)
         }
@@ -176,21 +69,24 @@ const MySubmerchants =  () => {
         { field: 'SUBMERCHANT_PHONE', headerName: 'Phone', width: 140 },
         { field: 'MARGIN', headerName: 'Margin %', width: 110 },
         { field: 'STATUS', headerName: 'Status', width: 110 },
-        { field: 'actions', headerName: 'Actions', width: 400, sortable: false, filterable: false, renderCell: (params)=> {
-            return (
-            <>
+        {
+            field: 'actions', headerName: 'Actions', width: 400, sortable: false, filterable: false, renderCell: (params) => {
+                return (
+                    <>
                         <div className="flex items-center space-x-2">
-                          {['ACTIVE', 'INACTIVE'].includes(params.row.STATUS) ? (
-                            <button
-                                className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
-                                onClick={() => {
-                                    setViewUserRoleId(params.row.user_role_id)
-                                    setShowView(true)
-                                }}
-                            >
-                                View
-                            </button>
-                          ) : null}
+                            {
+                                ['REQUESTED'].includes(params.row.STATUS) ? (
+                                    <>
+                                        <button
+                                            className="px-3 py-1 bg-red-500 text-white rounded-2xl text-sm"
+                                            onClick={() => handleCancelRequest(params.row.REQUEST_ID)}
+                                            disabled={loading}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : null
+                            }
 
                             {params.row.STATUS === 'ACTIVE' ? (
                                 <>
@@ -204,40 +100,25 @@ const MySubmerchants =  () => {
                                     >
                                         Update Margin
                                     </button>
+                                </>
+                            ) : null}
+
+                            {['CANCELLED', 'REJECTED'].includes(params.row.STATUS) ? (
+                                <>
                                     <button
-                                        className="px-3 py-1 bg-red-500 text-white rounded-2xl text-sm"
-                                        onClick={() => handleDeactivate(params.row.user_role_id)}
+                                        className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
+                                        onClick={() => handleRequestAgain(params.row.SUBMERCHANT_EMAIL)}
                                         disabled={loading}
                                     >
-                                        Deactivate
+                                        Request Again
                                     </button>
                                 </>
                             ) : null}
-                            {['INACTIVE'].includes(params.row.STATUS) ? (
-                                <>
-                                <button
-                                    className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
-                                    onClick={() => handleRequestReactivation(params.row.user_role_id)}
-                                    disabled={loading}
-                                >
-                                    Request Reactivation
-                                </button>
-                                </>
-                            ) : null}
-                            {['CANCELLED', 'REJECTED'].includes(params.row.STATUS) ? (
-                                <>
-                                <button
-                                    className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm"
-                                    onClick={() => handleRequestAgain(params.row.SUBMERCHANT_EMAIL)}
-                                    disabled={loading}
-                                >
-                                    Request Again
-                                </button>
-                                </>
-                            ) : null}
                         </div>
-            </>
-        )} }
+                    </>
+                )
+            }
+        }
     ], [loading])
 
     // Debounced fetch
@@ -323,15 +204,6 @@ const MySubmerchants =  () => {
                 currentMargin={selectedCurrentMargin}
                 onSuccess={() => setRefreshIndex((v) => v + 1)}
             />
-            {showView && viewUserRoleId && (
-                <View
-                    userRoleId={viewUserRoleId}
-                    onClose={() => {
-                        setShowView(false)
-                        setViewUserRoleId(null)
-                    }}
-                />
-            )}
             <div className="py-16 w-full h-full flex flex-col items-center overflow-x-hidden overflow-y-auto">
                 <div className='w-full max-w-[1200px] px-6 flex flex-col items-stretch space-y-6'>
                     <div className='w-full flex items-center justify-between'>
@@ -386,47 +258,47 @@ const MySubmerchants =  () => {
                     {/* DataGrid */}
                     <div className='w-full bg-white rounded-xl shadow-sm border overflow-hidden'>
                         <div className='p-3' style={{ height: 540 }}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            getRowId={(row) => row.user_role_id}
-                            loading={loading}
-                            rowCount={rowCount}
-                            pageSizeOptions={[pageSize]}
-                            paginationMode="server"
-                            paginationModel={{ page, pageSize }}
-                            onPaginationModelChange={(model) => {
-                                if (model.page !== page) setPage(model.page)
-                            }}
-                            disableRowSelectionOnClick
-                            density="compact"
-                            disableColumnMenu
-                            hideFooter
-                            rowHeight={64}
-                            columnHeaderHeight={64}
-                            sx={{
-                                border: '1px solid #000',
-                                borderRadius: 0,
-                                '& .MuiDataGrid-columnHeaders': {
-                                  borderBottom: '1px solid #000',
-                                  backgroundColor: '#A34757',
-                                color: '#FFF',
-                                },
-                                '& .MuiDataGrid-columnHeader': {
-                                  backgroundColor: '#A34757',
-                                  fontWeight: 'bold',
-                                  },
-                                '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
-                                  borderRight: '1px solid #000',
-                                },
-                                '& .MuiDataGrid-columnHeader:first-of-type, & .MuiDataGrid-cell:first-of-type': {
-                                  borderLeft: '1px solid #000',
-                                },
-                                '& .MuiDataGrid-row': {
-                                  borderBottom: '1px solid #000',
-                                },
-                            }}
-                        />
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row.user_role_id}
+                                loading={loading}
+                                rowCount={rowCount}
+                                pageSizeOptions={[pageSize]}
+                                paginationMode="server"
+                                paginationModel={{ page, pageSize }}
+                                onPaginationModelChange={(model) => {
+                                    if (model.page !== page) setPage(model.page)
+                                }}
+                                disableRowSelectionOnClick
+                                density="compact"
+                                disableColumnMenu
+                                hideFooter
+                                rowHeight={64}
+                                columnHeaderHeight={64}
+                                sx={{
+                                    border: '1px solid #000',
+                                    borderRadius: 0,
+                                    '& .MuiDataGrid-columnHeaders': {
+                                        borderBottom: '1px solid #000',
+                                        backgroundColor: '#A34757',
+                                        color: '#FFF',
+                                    },
+                                    '& .MuiDataGrid-columnHeader': {
+                                        backgroundColor: '#A34757',
+                                        fontWeight: 'bold',
+                                    },
+                                    '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
+                                        borderRight: '1px solid #000',
+                                    },
+                                    '& .MuiDataGrid-columnHeader:first-of-type, & .MuiDataGrid-cell:first-of-type': {
+                                        borderLeft: '1px solid #000',
+                                    },
+                                    '& .MuiDataGrid-row': {
+                                        borderBottom: '1px solid #000',
+                                    },
+                                }}
+                            />
                         </div>
                         <PaginationBar />
                     </div>

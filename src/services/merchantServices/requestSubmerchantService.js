@@ -30,7 +30,7 @@ const requestSubmerchantsService = async (body = {}, options = {}) => {
 			throw new Error(data?.message || 'Failed to request submerchant');
 		}
 
-		return data?.data;
+		return data;
 	} catch (error) {
 		console.error(error);
 		throw error instanceof Error ? error : new Error('An unexpected error occurred');
