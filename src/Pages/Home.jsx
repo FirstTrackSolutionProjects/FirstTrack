@@ -1,10 +1,9 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 import Image from '../Components/Image'
 import HeroAction from '../Components/HeroAction'
 import Service from '../Components/Service'
-import PriceCalc from '../Components/PriceCalc';
 import TrustedPartnerSection from '../Components/TrustedPartner';
-import HomeCalculator from '../Components/HomeCalculator';
 import {testimonials,whyChooseUs,counts} from '../Constants'
 import { useInView } from 'react-intersection-observer';
 import CounterCard from '../Components/CounterCard';
@@ -109,28 +108,45 @@ const WhyChooseUs = () => {
 
 
 
-const Calc =()=>{
-  return(
-    <section className='bg-white py-16 md:py-24'>
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="text-center mb-16">
-          <span className="text-green-600 font-bold uppercase tracking-widest text-sm mb-3 block">Transparent Pricing</span>
-          <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
-            Calculate Your Shipping <span className="text-green-600">Price</span>
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg md:text-xl">
-            Get instant quotes for your domestic and international shipments.
-          </p>
-          <div className="w-24 h-1.5 bg-green-500 mx-auto mt-6 rounded-full"></div>
-        </div>
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center'>
-          <div className='bg-gray-50 p-6 md:p-10 rounded-3xl shadow-xl border border-gray-100'><HomeCalculator/></div>
-          <div><img src="images/delivery.png" className='p-4 lg:p-0 items-center mx-auto flex object-contain max-w-sm lg:max-w-full' alt="Delivery illustration" loading="lazy"></img></div>
+const PricingCTA = () => {
+  return (
+    <section className="py-20 md:py-28 bg-white overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="bg-green-600 rounded-[3rem] p-8 md:p-16 relative overflow-hidden shadow-2xl shadow-green-200">
+          {/* Abstract background decorative shapes */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
+          
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div className="text-center lg:text-left lg:max-w-2xl">
+              <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-wider text-green-100 uppercase bg-green-700/50 rounded-full border border-green-400/30">
+                Cost Estimator
+              </span>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
+                Want to know your <span className="text-gray-900">Shipping Costs</span> upfront?
+              </h2>
+              <p className="text-lg md:text-xl text-green-50 opacity-90 leading-relaxed mb-0">
+                Experience complete transparency with our smart pricing calculator. Get instant quotes for your shipments across India and beyond.
+              </p>
+            </div>
+            
+            <div className="w-full lg:w-auto">
+              <Link 
+                to="/pricing" 
+                className="group relative inline-flex items-center justify-center w-full sm:w-auto px-10 py-5 bg-white text-green-600 font-black text-lg rounded-2xl shadow-xl hover:shadow-2xl hover:scale-[1.03] active:scale-95 transition-all duration-300"
+              >
+                <span>CALCULATE PRICE NOW</span>
+                <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
 
 const NewsletterSection = () => {
@@ -231,7 +247,7 @@ const Home = () => {
       <Service/>
       <WhyChooseUs/>
       <Counter/>
-      <Calc/>
+      <PricingCTA/>
       <NewsletterSection/>
       <Testimonials/>
       <TrustedPartnerSection/>
