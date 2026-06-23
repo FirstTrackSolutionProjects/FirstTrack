@@ -39,6 +39,12 @@
     padding: 0 15px; /* Adjust padding around logos */
   }
 
+  /* Remove grayscale and low opacity from partner logos */
+  .slider-item img {
+    filter: none !important;
+    opacity: 1 !important;
+  }
+
   /* Keyframes for continuous sliding */
   @keyframes slide {
     0% {
