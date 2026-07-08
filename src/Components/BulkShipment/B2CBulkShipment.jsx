@@ -1,11 +1,16 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Box, Paper, Button, Typography } from '@mui/material';
+import { Box, Paper, Button, Typography, TextField, CircularProgress, Divider } from '@mui/material';
 import * as XLSX from 'xlsx';
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { toast } from 'react-toastify';
 import parseCSVToJSON from '@/utils/csv_parser.util';
 import { excelValidationSchema, SAMPLE_DATA } from '@/Constants/bulk_excel_columns';
+import getB2CBulkShipmentExcelUploadUrlService from '@/services/bulkServices/get_excel_upload_url.bulk.service';
+import createB2CBulkShipmentsService from '@/services/bulkServices/create_batch.bulk.service';
+import s3FileUploadService from '@/services/s3Services/s3FileUploadService';
+import WarehouseSelect from '@/Components/UiComponents/WarehouseSelect';
 
 const generateExcel = (data, fileName) => {
   const ws = XLSX.utils.json_to_sheet(data);
@@ -64,10 +69,64 @@ const UploadSection = ({ file, fileInputRef, handleFileChange, handleDownloadSam
   </Paper>
 );
 
+const BatchForm = ({ batchName, setBatchName, wid, setWid, onCreateBatch, isCreating }) => (
+  <Paper sx={{ p: { xs: 2, sm: 4 }, boxShadow: 3, mt: 3 }}>
+    <Typography variant="h6" gutterBottom>
+      Batch Details
+    </Typography>
+    <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+      Enter a name for this batch and select the pickup warehouse, then click <strong>Create Batch</strong>.
+    </Typography>
+
+    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3, mb: 3 }}>
+      <TextField
+        label="Batch Name"
+        variant="outlined"
+        size='small'
+        fullWidth
+        value={batchName}
+        onChange={(e) => setBatchName(e.target.value)}
+        disabled={isCreating}
+        placeholder="e.g. July Week 1 Shipments"
+        inputProps={{ maxLength: 100 }}
+      />
+
+      <Box sx={{ width: '100%' }}>
+        <WarehouseSelect
+          value={wid}
+          onChange={(val) => setWid(val)}
+        />
+      </Box>
+    </Box>
+
+    <Divider sx={{ mb: 2 }} />
+
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Button
+        variant="contained"
+        startIcon={isCreating ? <CircularProgress size={18} color="inherit" /> : <AddCircleOutlineIcon />}
+        onClick={onCreateBatch}
+        disabled={isCreating || !batchName.trim() || !wid}
+        sx={{
+          bgcolor: '#ef4444',
+          '&:hover': { bgcolor: '#dc2626' },
+          '&:disabled': { bgcolor: '#fca5a5', color: '#fff' },
+          minWidth: 160,
+        }}
+      >
+        {isCreating ? 'Creating...' : 'Create Batch'}
+      </Button>
+    </Box>
+  </Paper>
+);
+
 // --- Main Component: BulkShipment.jsx ---
 
 const BulkShipment = () => {
   const [file, setFile] = useState(null);
+  const [batchName, setBatchName] = useState('');
+  const [wid, setWid] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileChange = async (e) => {
@@ -125,6 +184,51 @@ const BulkShipment = () => {
     setFile(null);
   }, []);
 
+  const handleCreateBatch = async () => {
+    if (!file) {
+      toast.error('Please select a valid CSV file first.');
+      return;
+    }
+    if (!batchName.trim()) {
+      toast.error('Please enter a batch name.');
+      return;
+    }
+    if (!wid) {
+      toast.error('Please select a pickup warehouse.');
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      // Step 1: Get pre-signed S3 upload URL
+      const { uploadUrl, excelS3Key } = await getB2CBulkShipmentExcelUploadUrlService({
+        filename: file.name,
+      });
+
+      // Step 2: Upload file directly to S3
+      await s3FileUploadService(uploadUrl, file, 'text/csv');
+
+      // Step 3: Create batch record in backend
+      await createB2CBulkShipmentsService({
+        excelS3Key,
+        batchName: batchName.trim(),
+        wid,
+      });
+
+      toast.success('Batch created successfully!');
+
+      // Reset form
+      setFile(null);
+      setBatchName('');
+      setWid('');
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || 'Failed to create batch. Please try again.');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   // --- Render Sections ---
 
   return (
@@ -167,6 +271,17 @@ const BulkShipment = () => {
           handleFileChange={handleFileChange}
           handleDownloadSample={() => generateExcel(SAMPLE_DATA, 'FirstTrack_Domestic_Bulk_Shipment_Sample.csv')}
         />
+
+        {file && (
+          <BatchForm
+            batchName={batchName}
+            setBatchName={setBatchName}
+            wid={wid}
+            setWid={setWid}
+            onCreateBatch={handleCreateBatch}
+            isCreating={isCreating}
+          />
+        )}
 
       </Paper>
     </Box>

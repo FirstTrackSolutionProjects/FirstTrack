@@ -4,6 +4,7 @@ const API_URL = import.meta.env.VITE_APP_API_URL
 const createB2CBulkShipmentsService = async ({
     excelS3Key,
     batchName,
+    wid,
 }) => {
     try {
         if (!excelS3Key) {
@@ -11,6 +12,9 @@ const createB2CBulkShipmentsService = async ({
         }
         if (!batchName) {
             throw new Error("Batch name is required");
+        }
+        if (!wid) {
+            throw new Error("Warehouse is required");
         }
 
         const response = await fetch(`${API_URL}/bulk/b2c/batch`, {
@@ -23,6 +27,7 @@ const createB2CBulkShipmentsService = async ({
             body: JSON.stringify({
                 excelS3Key,
                 batchName,
+                wid,
             }),
         });
 
