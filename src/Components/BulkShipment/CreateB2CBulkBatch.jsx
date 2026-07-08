@@ -122,7 +122,7 @@ const BatchForm = ({ batchName, setBatchName, wid, setWid, onCreateBatch, isCrea
 
 // --- Main Component: BulkShipment.jsx ---
 
-const BulkShipment = () => {
+const CreateB2CBulkBatch = () => {
   const [file, setFile] = useState(null);
   const [batchName, setBatchName] = useState('');
   const [wid, setWid] = useState('');
@@ -288,4 +288,4 @@ const BulkShipment = () => {
   );
 };
 
-export default BulkShipment;
+export default CreateB2CBulkBatch;
