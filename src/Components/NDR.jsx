@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { 
-  Dialog, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogTitle,
   DialogContent,
   Box,
   Paper,
@@ -32,6 +32,7 @@ import { DOMESTIC_SHIPMENT_REPORT_STATUS_ENUMS } from "@/Constants";
 
 // Import the new TrackingShareDialog component
 import TrackingShareDialog from './TrackingShareDialog'; // Ensure this path is correct relative to NDR.jsx
+import { useSearchParams } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -155,27 +156,27 @@ const ShiprocketStatusCard = ({ report, status }) => {
 
 const EnviaCard = ({ report, status }) => {
   return (
-  <>
+    <>
       <div className="flex flex-col">
-      <p className="mt-5">AWB : {report.awb}</p>
+        <p className="mt-5">AWB : {report.awb}</p>
 
-      {status.length ?
-        (status).reverse().map((scan, index) => {
-          return (
-            <div className='flex flex-col justify-center'>
-              <div className='font-bold'>{scan.description}</div>
-              <div>{scan.location}</div>
-              <div>{scan.date}</div>
-            </div>
-          )
-        }) : "Shipment is not yet picked up"
-      }
+        {status.length ?
+          (status).reverse().map((scan, index) => {
+            return (
+              <div className='flex flex-col justify-center'>
+                <div className='font-bold'>{scan.description}</div>
+                <div>{scan.location}</div>
+                <div>{scan.date}</div>
+              </div>
+            )
+          }) : "Shipment is not yet picked up"
+        }
       </div>
-  </>
+    </>
   )
 }
 
-const DelhiveryB2BStatusCard = ({report , status}) => {
+const DelhiveryB2BStatusCard = ({ report, status }) => {
   const timestamp = status?.scan_timestamp;
   const formattedTimestamp = timestampToDate(timestamp);
   return (
@@ -191,28 +192,28 @@ const DelhiveryB2BStatusCard = ({report , status}) => {
 
 const ReportCard = ({ report, status }) => {
   return (
-  <>
+    <>
       <div className="flex flex-col">
-      <p className="mt-5">AWB : {report.awb}</p>
-      {report?.lrn ? <p>LRN : {report.lrn}</p> : null}
-      <div className="my-4 border-b"> </div>
-      {status.length ?
-        (status).map((scan, index) => {
-          return (
-            <React.Fragment key={index}>
-              <div className='flex flex-col justify-center'>
-                <div className='font-bold'>{scan.status}</div>
-                {scan?.description ? <div>{scan.description}</div> : null}
-                {scan?.location ? <div>{scan.location}</div> : null}
-                <div>{scan.timestamp}</div>
-              </div>
-              <div className="my-4 border-b"> </div>
-            </React.Fragment>
-          )
-        }) : "Shipment is not yet picked up"
-      }
+        <p className="mt-5">AWB : {report.awb}</p>
+        {report?.lrn ? <p>LRN : {report.lrn}</p> : null}
+        <div className="my-4 border-b"> </div>
+        {status.length ?
+          (status).map((scan, index) => {
+            return (
+              <React.Fragment key={index}>
+                <div className='flex flex-col justify-center'>
+                  <div className='font-bold'>{scan.status}</div>
+                  {scan?.description ? <div>{scan.description}</div> : null}
+                  {scan?.location ? <div>{scan.location}</div> : null}
+                  <div>{scan.timestamp}</div>
+                </div>
+                <div className="my-4 border-b"> </div>
+              </React.Fragment>
+            )
+          }) : "Shipment is not yet picked up"
+        }
       </div>
-  </>
+    </>
   )
 }
 
@@ -224,10 +225,10 @@ const ViewDialog = ({ isOpen, onClose, report }) => {
   useEffect(() => {
     const getReport = async () => {
       if (!report?.ref_id || !report?.serviceId) return;
-      
+
       setIsLoading(true);
       setStatus(null); // Reset status when loading new report
-      
+
       try {
         const response = await fetch(`${API_URL}/shipment/domestic/report`, {
           method: 'POST',
@@ -236,9 +237,9 @@ const ViewDialog = ({ isOpen, onClose, report }) => {
             'Accept': 'application/json',
             'Authorization': localStorage.getItem('token'),
           },
-          body: JSON.stringify({ 
-            ref_id: report.ref_id, 
-            serviceId: report.serviceId 
+          body: JSON.stringify({
+            ref_id: report.ref_id,
+            serviceId: report.serviceId
           }),
         });
         const result = await response.json();
@@ -261,8 +262,8 @@ const ViewDialog = ({ isOpen, onClose, report }) => {
 
   const renderStatus = () => {
     if (isLoading) return <Box p={2}>Loading...</Box>;
-    
-    switch(report?.serviceId) {
+
+    switch (report?.serviceId) {
       case 1:
         return <DelhiveryB2BStatusCard report={report} status={status} />;
       case 2:
@@ -281,8 +282,8 @@ const ViewDialog = ({ isOpen, onClose, report }) => {
   };
 
   return (
-    <Dialog 
-      open={isOpen} 
+    <Dialog
+      open={isOpen}
       onClose={onClose}
       maxWidth="md"
       fullWidth
@@ -304,7 +305,7 @@ const ViewDialog = ({ isOpen, onClose, report }) => {
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = [];
-  
+
   // Function to add page numbers to the array
   const addPageNumber = (pageNum) => {
     pages.push({
@@ -348,37 +349,34 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
   return (
     <div className="flex items-center justify-center space-x-1 sm:space-x-2 mt-4">
-      <button 
+      <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
-          currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
-        }`}
+        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
       >
         <span className="hidden sm:inline">Previous</span>
         <span className="sm:hidden">Prev</span>
       </button>
-      
+
       {pages.map((page, idx) => (
         <button
           key={idx}
           onClick={() => page.number !== '...' && onPageChange(page.number)}
-          className={`min-w-[30px] px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
-            page.number === '...' ? 'cursor-default' 
-            : page.isCurrent ? 'bg-blue-500 text-white' 
-            : 'bg-white hover:bg-gray-100 border'
-          }`}
+          className={`min-w-[30px] px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${page.number === '...' ? 'cursor-default'
+            : page.isCurrent ? 'bg-blue-500 text-white'
+              : 'bg-white hover:bg-gray-100 border'
+            }`}
         >
           {page.number}
         </button>
       ))}
-      
-      <button 
+
+      <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
-          currentPage === totalPages ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
-        }`}
+        className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${currentPage === totalPages ? 'bg-gray-200 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
       >
         <span className="hidden sm:inline">Next</span>
         <span className="sm:hidden">Next</span>
@@ -388,6 +386,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 };
 
 const Listing = () => {
+  const [searchParams] = useSearchParams();
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -398,6 +397,7 @@ const Listing = () => {
   // NEW STATE FOR TRACKING & SHARING
   const [isTrackingShareOpen, setIsTrackingShareOpen] = useState(false);
   const [currentTrackingShareData, setCurrentTrackingShareData] = useState(null);
+  const [batchId, setBatchId] = useState(searchParams.get('batch_id'));
 
   const [filters, setFilters] = useState({
     awb_or_ref_id: "", // Renamed to a single input field
@@ -449,8 +449,8 @@ const Listing = () => {
 
   const fetchReports = async () => {
     setIsLoading(true);
-    const startDate = filters.startDate ? convertToUTCISOString(new Date(filters.startDate).setHours(0,0,0,0)) : '';
-    const endDate = filters.endDate ? convertToUTCISOString(new Date(filters.endDate).setHours(23,59,59,999)) : '';
+    const startDate = filters.startDate ? convertToUTCISOString(new Date(filters.startDate).setHours(0, 0, 0, 0)) : '';
+    const endDate = filters.endDate ? convertToUTCISOString(new Date(filters.endDate).setHours(23, 59, 59, 999)) : '';
     const queryParams = new URLSearchParams({
       page,
       ord_id: filters.ord_id,
@@ -463,6 +463,10 @@ const Listing = () => {
     // Handle AWB or Reference ID filtering with a single parameter
     if (filters.awb_or_ref_id) {
       queryParams.append("awb_or_ref_id", filters.awb_or_ref_id);
+    }
+
+    if (batchId) {
+      queryParams.append('batch_id', batchId);
     }
 
     const finalUrl = `${API_URL}/shipment/domestic/reports?${queryParams.toString()}`;
@@ -581,7 +585,8 @@ const Listing = () => {
         </Box>
       )
     },
-    { field: 'from_address', headerName: 'Origin', width: 200,
+    {
+      field: 'from_address', headerName: 'Origin', width: 200,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexDirection: 'column', whiteSpace: 'normal', lineHeight: 1.3, height: 130, justifyContent: 'center' }}>
           <div>{params.row.warehouse_city}, {params.row.warehouse_state}</div>
@@ -589,7 +594,8 @@ const Listing = () => {
         </Box>
       )
     },
-    { field: 'to_address', headerName: 'Destination', width: 200,
+    {
+      field: 'to_address', headerName: 'Destination', width: 200,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexDirection: 'column', whiteSpace: 'normal', lineHeight: 1.3, height: 130, justifyContent: 'center' }}>
           <div>{params.row.shipping_city}, {params.row.shipping_state}</div>
@@ -598,11 +604,11 @@ const Listing = () => {
       )
     },
     {
-      field: 'Shipment Details', headerName: 'Shipment Details', width: 280, 
+      field: 'Shipment Details', headerName: 'Shipment Details', width: 280,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexDirection: 'column', whiteSpace: 'normal', lineHeight: 1.3, justifyContent: 'center', height: 130 }}>
           <div>Pay Method: {params.row.pay_method} {params.row.pay_method === "COD" ? ` - ₹${parseInt(params.row.cod_amount)}` : ''}</div>
-          <div>{`${params.row.service_name}${params.row.public_vendor_service_name?` - ${params.row.public_vendor_service_name}` : ''}`}</div>
+          <div>{`${params.row.service_name}${params.row.public_vendor_service_name ? ` - ${params.row.public_vendor_service_name}` : ''}`}</div>
           <div>AWB: {params.row.awb}</div>
           <div>Order ID: {params.row.ord_id}</div>
           <div>{params.row.date ? new Date(params.row.date).toLocaleString() : ''}</div>
@@ -624,7 +630,7 @@ const Listing = () => {
         // --- END DEBUG LOG ---
 
         return (
-          <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1, flexWrap: 'wrap' }}> 
+          <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1, flexWrap: 'wrap' }}>
             <Button
               variant="outlined"
               size="small"
@@ -686,7 +692,7 @@ const Listing = () => {
             mb: 3,
             p: 2,
             bgcolor: 'red',
-            borderRadius: 2, '& .MuiTextField-root': {bgcolor: 'background.paper', borderRadius: 1},
+            borderRadius: 2, '& .MuiTextField-root': { bgcolor: 'background.paper', borderRadius: 1 },
             overflowX: 'auto',
             '&::-webkit-scrollbar': {
               display: 'none'
@@ -826,13 +832,15 @@ const Listing = () => {
                   const payload = {
                     ord_id: filters.ord_id,
                     serviceId: filters.serviceId,
-                    startDate: filters.startDate ? convertToUTCISOString(new Date(filters.startDate).setHours(0,0,0,0)) : '',
-                    endDate: filters.endDate ? convertToUTCISOString(new Date(filters.endDate).setHours(23,59,59,999)) : ''
+                    startDate: filters.startDate ? convertToUTCISOString(new Date(filters.startDate).setHours(0, 0, 0, 0)) : '',
+                    endDate: filters.endDate ? convertToUTCISOString(new Date(filters.endDate).setHours(23, 59, 59, 999)) : ''
                   }
                   // Add combined AWB or Reference ID to download payload
                   if (filters.awb_or_ref_id) {
                     payload.awb_or_ref_id = filters.awb_or_ref_id;
                   }
+
+
 
                   console.log("Download payload:", payload); // <--- DEBUG LOG
 
@@ -852,7 +860,7 @@ const Listing = () => {
                   const worksheet = XLSX.utils.json_to_sheet(data.data);
                   const workbook = XLSX.utils.book_new();
                   XLSX.utils.book_append_sheet(workbook, worksheet, "Reports");
-                  
+
                   // Generate filename with current date
                   const date = new Date().toISOString().split('T')[0];
                   XLSX.writeFile(workbook, `shipment_reports_${date}.xlsx`);
@@ -861,7 +869,7 @@ const Listing = () => {
                   toast.error(error?.message || 'Failed to download reports');
                 }
               }}
-              sx={{ 
+              sx={{
                 backgroundColor: 'white',
                 borderRadius: 1,
                 '&:hover': {
@@ -913,7 +921,7 @@ const Listing = () => {
         </Box>
 
         {/* Add custom pagination */}
-        <Pagination 
+        <Pagination
           currentPage={page}
           totalPages={totalPages}
           onPageChange={(newPage) => setPage(newPage)}
@@ -999,14 +1007,14 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
   };
 
   return (
-    <Dialog 
-      open={isOpen} 
-      onClose={onClose} 
-      maxWidth="md" 
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: { 
-          borderRadius: { xs: 2, sm: 3 }, 
+        sx: {
+          borderRadius: { xs: 2, sm: 3 },
           boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
           m: { xs: 1, sm: 2 },
           width: { xs: 'calc(100% - 16px)', sm: 'auto' }
@@ -1019,10 +1027,10 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
             <Typography variant="h6" fontWeight="700" color="text.primary" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
               Order Details - {orderId}
             </Typography>
-            <Chip 
-              label={shipment.status || 'PENDING'} 
-              color={getStatusColor(shipment.status)} 
-              size="small" 
+            <Chip
+              label={shipment.status || 'PENDING'}
+              color={getStatusColor(shipment.status)}
+              size="small"
               sx={{ fontWeight: 600, px: 1, height: 20, fontSize: '0.65rem' }}
             />
           </Box>
@@ -1032,7 +1040,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
         </Box>
         <Divider sx={{ mt: 2 }} />
       </DialogTitle>
-      
+
       <DialogContent sx={{ p: { xs: 2, sm: 3 }, pt: 0 }}>
         {loading ? (
           <Box p={8} textAlign="center" display="flex" flexDirection="column" alignItems="center" gap={2}>
@@ -1055,11 +1063,11 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">Contact Number</Typography>
-                    <Typography variant="body2" sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'} }}>{shipment.customer_mobile}</Typography>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>{shipment.customer_mobile}</Typography>
                   </Box>
                   <Box sx={{ gridColumn: 'span 2' }}>
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">Customer Email</Typography>
-                    <Typography variant="body2" sx={{ wordBreak: 'break-all', fontSize: {xs: '0.8rem', sm: '0.875rem'} }}>{shipment.customer_email || 'N/A'}</Typography>
+                    <Typography variant="body2" sx={{ wordBreak: 'break-all', fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>{shipment.customer_email || 'N/A'}</Typography>
                   </Box>
                 </Box>
               </Paper>
@@ -1076,31 +1084,31 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">Courier Service</Typography>
-                    <Typography variant="body2" fontWeight="600" sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'} }}>
+                    <Typography variant="body2" fontWeight="600" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
                       {shipment.service_name} {shipment.shipping_mode ? `(${shipment.shipping_mode})` : ''}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">Payment Mode</Typography>
-                    <Typography variant="body2" fontWeight="700" color={shipment.pay_method === "COD" ? "error.main" : "success.main"} sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'} }}>
-                      {shipment.pay_method} 
+                    <Typography variant="body2" fontWeight="700" color={shipment.pay_method === "COD" ? "error.main" : "success.main"} sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
+                      {shipment.pay_method}
                       {shipment.pay_method === "COD" && <span> (₹{parseInt(shipment.cod_amount)})</span>}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">Warehouse</Typography>
-                    <Typography variant="body2" fontWeight="600" color="text.primary" sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'}, wordBreak: 'break-word' }}>{shipment.warehouseName || 'N/A'}</Typography>
+                    <Typography variant="body2" fontWeight="600" color="text.primary" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, wordBreak: 'break-word' }}>{shipment.warehouseName || 'N/A'}</Typography>
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">Shipping Charge</Typography>
-                    <Typography variant="body2" fontWeight="700" color="error.main" sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'} }}>
+                    <Typography variant="body2" fontWeight="700" color="error.main" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
                       {shipment.shipping_charge ? `- ₹${parseFloat(shipment.shipping_charge).toFixed(2)}` : 'N/A'}
                     </Typography>
                   </Box>
                   <Box sx={{ gridColumn: 'span 2' }}>
                     <Typography variant="caption" color="text.secondary" fontWeight="600" display="block">AWB Number</Typography>
                     <Box display="flex" alignItems="center" gap={0.5}>
-                      <Typography variant="body2" fontWeight="800" color="primary.main" sx={{ wordBreak: 'break-all', fontSize: {xs: '0.85rem', sm: '1rem'} }}>{shipment.awb || 'N/A'}</Typography>
+                      <Typography variant="body2" fontWeight="800" color="primary.main" sx={{ wordBreak: 'break-all', fontSize: { xs: '0.85rem', sm: '1rem' } }}>{shipment.awb || 'N/A'}</Typography>
                       {shipment.awb && (
                         <Tooltip title="Copy AWB">
                           <IconButton size="small" onClick={() => handleCopy(shipment.awb)} sx={{ p: 0.5 }}>
@@ -1117,29 +1125,29 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
             {/* Address Section */}
             <Box className="grid grid-cols-1 md:grid-cols-2 gap-6 px-1">
               <Box>
-                <Typography variant="subtitle2" fontWeight="800" display="flex" alignItems="center" gap={1.5} mb={2} color="text.primary" sx={{ fontSize: {xs: '0.75rem', sm: '0.875rem'} }}>
+                <Typography variant="subtitle2" fontWeight="800" display="flex" alignItems="center" gap={1.5} mb={2} color="text.primary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                   <Box sx={{ width: 6, height: 18, bgcolor: 'primary.main', borderRadius: 0.5 }} />
                   ORIGIN
                 </Typography>
                 <Box sx={{ pl: 2.5 }}>
-                  <Typography variant="body2" fontWeight="700" color="text.primary" sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'} }}>
+                  <Typography variant="body2" fontWeight="700" color="text.primary" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
                     {shipment.warehouse_city}, {shipment.warehouse_state}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: {xs: '0.75rem', sm: '0.875rem'} }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                     {shipment.warehouse_country} — {shipment.warehouse_pin}
                   </Typography>
                 </Box>
               </Box>
               <Box>
-                <Typography variant="subtitle2" fontWeight="800" display="flex" alignItems="center" gap={1.5} mb={2} color="text.primary" sx={{ fontSize: {xs: '0.75rem', sm: '0.875rem'} }}>
+                <Typography variant="subtitle2" fontWeight="800" display="flex" alignItems="center" gap={1.5} mb={2} color="text.primary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                   <Box sx={{ width: 6, height: 18, bgcolor: 'error.main', borderRadius: 0.5 }} />
                   DESTINATION
                 </Typography>
                 <Box sx={{ pl: 2.5 }}>
-                  <Typography variant="body2" fontWeight="700" color="text.primary" sx={{ fontSize: {xs: '0.8rem', sm: '0.875rem'} }}>
+                  <Typography variant="body2" fontWeight="700" color="text.primary" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
                     {shipment.shipping_city}, {shipment.shipping_state}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: {xs: '0.75rem', sm: '0.875rem'} }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                     {shipment.shipping_country} — {shipment.shipping_postcode}
                   </Typography>
                 </Box>
@@ -1208,13 +1216,13 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
 
             {/* Summary Section */}
             <Box display="flex" justifyContent="flex-end" pt={2} pb={2}>
-              <Paper 
-                variant="elevation" 
+              <Paper
+                variant="elevation"
                 elevation={0}
-                sx={{ 
-                  p: { xs: 2, sm: 3 }, 
-                  borderRadius: 3, 
-                  minWidth: { xs: '100%', sm: 280 }, 
+                sx={{
+                  p: { xs: 2, sm: 3 },
+                  borderRadius: 3,
+                  minWidth: { xs: '100%', sm: 280 },
                   bgcolor: '#F3F4F6',
                   border: '1px solid #E5E7EB'
                 }}
