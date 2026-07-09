@@ -1,4 +1,4 @@
-import { useEffect , useMemo, useState  } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import UserDiscountModal from './Modals/UserDiscountModal'
 import MerchantInvoiceModal from './Modals/MerchantInvoiceModal'
@@ -10,14 +10,17 @@ import { toast } from 'react-toastify'
 import getVerifiedUsersService from '@/services/userServices/getVerifiedUsersService'
 import getVerifiedUserByUserRoleIdService from '@/services/userServices/getVerifiedUserByUserRoleIdService'
 import { USER_ROLES } from '@/Constants'
+import enableUserFeatureService from '@/services/featureServices/enable_user_feature.feature.service'
+import disableUserFeatureService from '@/services/featureServices/disable_user_feature.feature.service'
+import getUserFeaturesByUserRoleIdService from '@/services/featureServices/get_user_features_by_role_id.feature.service'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const View = ({ userRoleId, onClose }) => {
     const [user, setUser] = useState({})
     const getUserDetails = async () => {
-        const res = await getVerifiedUserByUserRoleIdService({user_role_id : userRoleId})
+        const res = await getVerifiedUserByUserRoleIdService({ user_role_id: userRoleId })
         setUser(res?.data)
     }
-    useEffect(()=>{
+    useEffect(() => {
         getUserDetails()
     }, [userRoleId])
     const [isActivated, setIsActivated] = useState(Boolean(user?.user_role_active))
@@ -31,7 +34,7 @@ const View = ({ userRoleId, onClose }) => {
                 'Accept': 'application/json',
                 'Authorization': localStorage.getItem('token')
             }
-        }).then(response => response.json()).then(result => alert(result.message)).then(()=>setIsActivated(true));
+        }).then(response => response.json()).then(result => alert(result.message)).then(() => setIsActivated(true));
     }
     const deactivate = () => {
         fetch(`${API_URL}/roles/deactivate/${user?.user_role_id}`, {
@@ -40,8 +43,52 @@ const View = ({ userRoleId, onClose }) => {
                 'Accept': 'application/json',
                 'Authorization': localStorage.getItem('token')
             }
-        }).then(response => response.json()).then(result => alert(result.message)).then(()=>setIsActivated(false));
+        }).then(response => response.json()).then(result => alert(result.message)).then(() => setIsActivated(false));
     }
+
+    const [features, setFeatures] = useState({});
+    const getFeatures = async () => {
+        try {
+            const data = await getUserFeaturesByUserRoleIdService({ userRoleId: userRoleId });
+            setFeatures(data);
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message || "Failed to get features");
+        }
+    }
+
+    useEffect(() => {
+        getFeatures();
+    }, []);
+
+    const activateFeature = async (featureId) => {
+        try {
+            const promptConfirm = confirm("Are you sure you want to activate this feature for user?");
+            if (!promptConfirm) return;
+            await enableUserFeatureService({ featureId, userRoleId: user?.user_role_id });
+            toast.success("Feature activated successfully");
+            getFeatures()
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message || "Failed to activate feature");
+        }
+    }
+    const deactivateFeature = async (featureId) => {
+        try {
+            const promptConfirm = confirm("Are you sure you want to deactivate this feature for user?");
+            if (!promptConfirm) return;
+            await disableUserFeatureService({ featureId, userRoleId: user?.user_role_id });
+            toast.success("Feature deactivated successfully");
+            getFeatures()
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message || "Failed to deactivate feature");
+        }
+    }
+    useEffect(() => {
+        console.log(features)
+    }, [features]);
+
     const [profilePhoto, setProfilePhoto] = useState(null)
     useEffect(() => {
         const getProfilePhoto = async () => {
@@ -50,35 +97,35 @@ const View = ({ userRoleId, onClose }) => {
                 return
             }
             await fetch(`${API_URL}/s3/getUrl`, {
-                method : 'POST',
-                headers : {
-                    'Content-Type' : 'application/json',
-                    'Accept' : 'application/json',
-                    'Authorization' : localStorage.getItem('token')
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': localStorage.getItem('token')
                 },
-                body : JSON.stringify({key : user['selfie_doc']})
-            }).then((response)=>response.json()).then(result => setProfilePhoto(result.downloadURL))
+                body: JSON.stringify({ key: user['selfie_doc'] })
+            }).then((response) => response.json()).then(result => setProfilePhoto(result.downloadURL))
         }
         getProfilePhoto()
     }, [user?.selfie_doc])
     const handleDownload = async (name) => {
         await fetch(`${API_URL}/s3/getUrl`, {
-        method : 'POST',
-        headers : {
-            'Content-Type' : 'application/json',
-            'Accept' : 'application/json',
-            'Authorization' : localStorage.getItem('token')
-        },
-        body : JSON.stringify({key : user[name]})
-    }).then(response => response.json()).then(async result => {
-        const link = document.createElement('a');
-        link.href = result.downloadURL;
-        link.target = '_blank'
-        link.style.display = 'none'; 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify({ key: user[name] })
+        }).then(response => response.json()).then(async result => {
+            const link = document.createElement('a');
+            link.href = result.downloadURL;
+            link.target = '_blank'
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        })
     }
     const [openDiscountModal, setOpenDiscountModal] = useState(false);
     const closeDiscountModal = () => {
@@ -88,12 +135,12 @@ const View = ({ userRoleId, onClose }) => {
         <>
             <div className='fixed inset-0 bg-[rgba(0,0,0,0.5)] z-50 flex justify-center items-center overflow-y-auto'>
                 <div className='relative p-8 max-w-[500px] bg-white rounded-2xl overflow-hidden space-y-8'>
-                <p className='absolute top-5 right-6 cursor-pointer' onClick={onClose}>X</p>
+                    <p className='absolute top-5 right-6 cursor-pointer' onClick={onClose}>X</p>
                     <p className='text-2xl font-medium text-center'>Merchant Details</p>
                     <div className='w-full space-y-6'>
                         <div className='w-full flex items-center justify-center space-x-8'>
                             <div className='flex justify-center items-center w-32 h-32'>
-                                <img src={`${profilePhoto?profilePhoto:"/user.webp"}`}/>
+                                <img src={`${profilePhoto ? profilePhoto : "/user.webp"}`} />
                             </div>
                             <div className=''>
                                 <p className='font-medium text-xl'>{user.business_name || user.fullName}</p>
@@ -104,10 +151,10 @@ const View = ({ userRoleId, onClose }) => {
                             </div>
                         </div>
                         <div className='w-full font-medium text-gray-700'>
-                            <p>GSTIN : {user.gstin} <span className="cursor-pointer" onClick={()=>handleDownload('gst_doc')}>[PDF]</span></p>
+                            <p>GSTIN : {user.gstin} <span className="cursor-pointer" onClick={() => handleDownload('gst_doc')}>[PDF]</span></p>
                             <p>CIN : {user.cin}</p>
-                            <p>Aadhar Number : {user.aadhar_number} <span className="cursor-pointer" onClick={()=>handleDownload('aadhar_doc')}>[PDF]</span></p>
-                            <p>PAN Number : {user.pan_number} <span className="cursor-pointer" onClick={()=>handleDownload('pan_doc')}>[PDF]</span></p>
+                            <p>Aadhar Number : {user.aadhar_number} <span className="cursor-pointer" onClick={() => handleDownload('aadhar_doc')}>[PDF]</span></p>
+                            <p>PAN Number : {user.pan_number} <span className="cursor-pointer" onClick={() => handleDownload('pan_doc')}>[PDF]</span></p>
                             <p>Address : {user.address}</p>
                             <p>City : {user.city}</p>
                             <p>State : {user.state}</p>
@@ -115,16 +162,26 @@ const View = ({ userRoleId, onClose }) => {
                             <p>Bank Name : {user.bank_name}</p>
                             <p>A/C No. : {user.account_number}</p>
                             <p>IFSC : {user.ifsc}</p>
-                            <p>Cancelled Cheque : <span className="cursor-pointer" onClick={()=>handleDownload('cancelledCheque')}>[PDF]</span></p>
+                            <p>Cancelled Cheque : <span className="cursor-pointer" onClick={() => handleDownload('cancelledCheque')}>[PDF]</span></p>
                         </div>
                     </div>
                     <div className='flex space-x-1'>
-                        <button onClick={isActivated?()=>deactivate():()=>activate()}  className={` ${isActivated?"bg-red-500":"bg-green-500"} text-white mx-2  py-2 px-4 rounded`}>
-                            {isActivated? "Deactivate" : "Activate"}
+                        <button onClick={isActivated ? () => deactivate() : () => activate()} className={` ${isActivated ? "bg-red-500" : "bg-green-500"} text-white mx-2  py-2 px-4 rounded`}>
+                            {isActivated ? "Deactivate" : "Activate"}
                         </button>
-                        <button onClick={() => setOpenDiscountModal(true)}  className={`bg-blue-500 text-white mx-2  py-2 px-4 rounded`}>
+                        <button onClick={() => setOpenDiscountModal(true)} className={`bg-blue-500 text-white mx-2  py-2 px-4 rounded`}>
                             Discounts
                         </button>
+                    </div>
+                    <div className='flex space-x-1'>
+                        {Object.keys(features).map((key) => {
+                            console.log(features[key])
+                            return (
+                                <button key={key} onClick={() => (features[key]?.is_enabled) ? deactivateFeature(key) : activateFeature(key)} className={` ${!features[key]?.is_enabled ? "bg-red-500" : "bg-green-500"} text-white mx-2  py-2 px-4 rounded`}>
+                                    {features[key]?.name}
+                                </button>
+                            )
+                        })}
                     </div>
                 </div>
             </div>
@@ -134,7 +191,7 @@ const View = ({ userRoleId, onClose }) => {
 }
 
 
-const MerchantManage =  () => {
+const MerchantManage = () => {
     // Data state
     const [rows, setRows] = useState([])
     const [rowCount, setRowCount] = useState(0)
@@ -171,66 +228,71 @@ const MerchantManage =  () => {
         { field: 'email', headerName: 'Email', flex: 1.2, minWidth: 200 },
         { field: 'phone', headerName: 'Phone', width: 140 },
         { field: 'user_role', headerName: 'Role', width: 120 },
-        { field: 'balance', headerName: 'Balance', width: 120, renderCell: (p)=> p.value !== undefined && p.value !== null ? `₹${p.value}` : '₹0' },
-        { field: 'total_revenue', headerName: 'Total Revenue', width: 120, renderCell: (p)=> p.value !== undefined && p.value !== null ? `₹${parseFloat(p.value).toFixed(2)}` : '₹0.00' },
-        { field: 'createdAt', headerName: 'Joined', width: 170, renderCell: (p)=> p.value ? new Date(p.value).toLocaleString() : '' },
-        { field: 'user_role_active', headerName: 'Status', width: 110, renderCell: (params)=> (
-            <span className={`px-2 py-1 rounded-2xl text-xs ${params.value ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                {params.value ? 'Active' : 'Inactive'}
-            </span>
-        ) },
-        { field: 'actions', headerName: 'Actions', width: 320, sortable: false, filterable: false, renderCell: (params)=> {
-            return (
-            <div className="flex items-center space-x-2">
-                <button
-                    className="px-3 py-1 bg-red-500 text-white rounded-2xl text-sm"
-                    onClick={() => {
-                        setViewUserRoleId(params.row.user_role_id)
-                        setShowView(true)
-                    }}
-                >
-                    View
-                </button>
-                <button
-                    className="px-3 py-1 bg-purple-600 text-white rounded-2xl text-sm"
-                    onClick={() => {
-                        setSelectedToPay(params.row);
-                        const defaultLimit = (params.row?.negative_value ?? params.row?.negative_limit);
-                        setToPayForm({ negative_limit: (defaultLimit ?? '') === null ? '' : String(defaultLimit ?? '') });
-                        setShowToPay(true);
-                    }}
-                >
-                    To Pay
-                </button>
-                { [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT].includes(params.row.user_role) ? <button
-                    className="px-3 py-1 bg-green-600 text-white rounded-2xl text-sm"
-                    onClick={() => { setSelectedMerchant(params.row); setShowInvoice(true); }}
-                >
-                    Invoice
-                </button> : null }
-                { params.row.user_role === USER_ROLES.SUBMERCHANT ? (
-                    <button
-                        className="px-3 py-1 bg-yellow-500 text-white rounded-2xl text-sm"
-                        onClick={async () => {
-                            if (!confirm('Promote this submerchant to a Merchant account?')) return;
-                            try {
-                                const res = await promoteSubmerchantService(params.row.user_role_id);
-                                toast.success(res.message || 'Promoted successfully');
-                                setRows(prev => prev.map(r =>
-                                    r.user_role_id === params.row.user_role_id
-                                        ? { ...r, user_role: USER_ROLES.MERCHANT }
-                                        : r
-                                ));
-                            } catch (err) {
-                                toast.error(err.message || 'Failed to promote submerchant');
-                            }
-                        }}
-                    >
-                        Promote
-                    </button>
-                ) : null }
-            </div>
-        )} }
+        { field: 'balance', headerName: 'Balance', width: 120, renderCell: (p) => p.value !== undefined && p.value !== null ? `₹${p.value}` : '₹0' },
+        { field: 'total_revenue', headerName: 'Total Revenue', width: 120, renderCell: (p) => p.value !== undefined && p.value !== null ? `₹${parseFloat(p.value).toFixed(2)}` : '₹0.00' },
+        { field: 'createdAt', headerName: 'Joined', width: 170, renderCell: (p) => p.value ? new Date(p.value).toLocaleString() : '' },
+        {
+            field: 'user_role_active', headerName: 'Status', width: 110, renderCell: (params) => (
+                <span className={`px-2 py-1 rounded-2xl text-xs ${params.value ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {params.value ? 'Active' : 'Inactive'}
+                </span>
+            )
+        },
+        {
+            field: 'actions', headerName: 'Actions', width: 320, sortable: false, filterable: false, renderCell: (params) => {
+                return (
+                    <div className="flex items-center space-x-2">
+                        <button
+                            className="px-3 py-1 bg-red-500 text-white rounded-2xl text-sm"
+                            onClick={() => {
+                                setViewUserRoleId(params.row.user_role_id)
+                                setShowView(true)
+                            }}
+                        >
+                            View
+                        </button>
+                        <button
+                            className="px-3 py-1 bg-purple-600 text-white rounded-2xl text-sm"
+                            onClick={() => {
+                                setSelectedToPay(params.row);
+                                const defaultLimit = (params.row?.negative_value ?? params.row?.negative_limit);
+                                setToPayForm({ negative_limit: (defaultLimit ?? '') === null ? '' : String(defaultLimit ?? '') });
+                                setShowToPay(true);
+                            }}
+                        >
+                            To Pay
+                        </button>
+                        {[USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT].includes(params.row.user_role) ? <button
+                            className="px-3 py-1 bg-green-600 text-white rounded-2xl text-sm"
+                            onClick={() => { setSelectedMerchant(params.row); setShowInvoice(true); }}
+                        >
+                            Invoice
+                        </button> : null}
+                        {params.row.user_role === USER_ROLES.SUBMERCHANT ? (
+                            <button
+                                className="px-3 py-1 bg-yellow-500 text-white rounded-2xl text-sm"
+                                onClick={async () => {
+                                    if (!confirm('Promote this submerchant to a Merchant account?')) return;
+                                    try {
+                                        const res = await promoteSubmerchantService(params.row.user_role_id);
+                                        toast.success(res.message || 'Promoted successfully');
+                                        setRows(prev => prev.map(r =>
+                                            r.user_role_id === params.row.user_role_id
+                                                ? { ...r, user_role: USER_ROLES.MERCHANT }
+                                                : r
+                                        ));
+                                    } catch (err) {
+                                        toast.error(err.message || 'Failed to promote submerchant');
+                                    }
+                                }}
+                            >
+                                Promote
+                            </button>
+                        ) : null}
+                    </div>
+                )
+            }
+        }
     ], [])
 
     // Debounced fetch
@@ -462,47 +524,47 @@ const MerchantManage =  () => {
                     {/* DataGrid */}
                     <div className='w-full bg-white rounded-xl shadow-sm border overflow-hidden'>
                         <div className='p-3' style={{ height: 540 }}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            getRowId={(row) => row.user_role_id}
-                            loading={loading}
-                            rowCount={rowCount}
-                            pageSizeOptions={[pageSize]}
-                            paginationMode="server"
-                            paginationModel={{ page, pageSize }}
-                            onPaginationModelChange={(model) => {
-                                if (model.page !== page) setPage(model.page)
-                            }}
-                            disableRowSelectionOnClick
-                            density="compact"
-                            disableColumnMenu
-                            hideFooter
-                            rowHeight={64}
-                            columnHeaderHeight={64}
-                            sx={{
-                                border: '1px solid #000',
-                                borderRadius: 0,
-                                '& .MuiDataGrid-columnHeaders': {
-                                  borderBottom: '1px solid #000',
-                                  backgroundColor: '#A34757',
-                                color: '#FFF',
-                                },
-                                '& .MuiDataGrid-columnHeader': {
-                                  backgroundColor: '#A34757',
-                                  fontWeight: 'bold',
-                                  },
-                                '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
-                                  borderRight: '1px solid #000',
-                                },
-                                '& .MuiDataGrid-columnHeader:first-of-type, & .MuiDataGrid-cell:first-of-type': {
-                                  borderLeft: '1px solid #000',
-                                },
-                                '& .MuiDataGrid-row': {
-                                  borderBottom: '1px solid #000',
-                                },
-                            }}
-                        />
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row.user_role_id}
+                                loading={loading}
+                                rowCount={rowCount}
+                                pageSizeOptions={[pageSize]}
+                                paginationMode="server"
+                                paginationModel={{ page, pageSize }}
+                                onPaginationModelChange={(model) => {
+                                    if (model.page !== page) setPage(model.page)
+                                }}
+                                disableRowSelectionOnClick
+                                density="compact"
+                                disableColumnMenu
+                                hideFooter
+                                rowHeight={64}
+                                columnHeaderHeight={64}
+                                sx={{
+                                    border: '1px solid #000',
+                                    borderRadius: 0,
+                                    '& .MuiDataGrid-columnHeaders': {
+                                        borderBottom: '1px solid #000',
+                                        backgroundColor: '#A34757',
+                                        color: '#FFF',
+                                    },
+                                    '& .MuiDataGrid-columnHeader': {
+                                        backgroundColor: '#A34757',
+                                        fontWeight: 'bold',
+                                    },
+                                    '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
+                                        borderRight: '1px solid #000',
+                                    },
+                                    '& .MuiDataGrid-columnHeader:first-of-type, & .MuiDataGrid-cell:first-of-type': {
+                                        borderLeft: '1px solid #000',
+                                    },
+                                    '& .MuiDataGrid-row': {
+                                        borderBottom: '1px solid #000',
+                                    },
+                                }}
+                            />
                         </div>
                         <PaginationBar />
                     </div>

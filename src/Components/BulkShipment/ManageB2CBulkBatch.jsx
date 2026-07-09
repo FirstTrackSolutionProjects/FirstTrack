@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
+import { useNavigate } from 'react-router-dom'
 import getB2CBulkShipmentBatches from '@/services/bulkServices/get_batches.bulk.service'
 import { toast } from 'react-toastify'
 
@@ -10,6 +11,7 @@ const ManageB2CBulkBatch = () => {
     const [loading, setLoading] = useState(false)
     const [page, setPage] = useState(0) // 0-based for DataGrid; backend expects 1-based
     const pageSize = 10 // matches backend's fixed limit
+    const navigate = useNavigate();
 
     // Filters
     const [batchName, setBatchName] = useState('')
@@ -94,13 +96,13 @@ const ManageB2CBulkBatch = () => {
                 <div className="flex items-center space-x-2 h-full">
                     <button
                         className="px-3 py-1 bg-blue-500 text-white rounded-2xl text-sm cursor-pointer hover:bg-blue-600 transition-colors"
-                        onClick={() => { /* TODO: implement View logic */ }}
+                        onClick={() => navigate(`/dashboard/shipments/domestic?batch_id=${params.row.id}`)}
                     >
                         View
                     </button>
                     <button
                         className="px-3 py-1 bg-gray-500 text-white rounded-2xl text-sm cursor-pointer hover:bg-gray-600 transition-colors"
-                        onClick={() => { /* TODO: implement Reports logic */ }}
+                        onClick={() => navigate(`/dashboard/shipment/domestic/reports?batch_id=${params.row.id}`)}
                     >
                         Reports
                     </button>

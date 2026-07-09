@@ -43,6 +43,11 @@ import MySubmerchantWeightDisputes from '@/Components/Submerchant/MySubmerchantW
 import CreateB2CBulkBatch from '@/Components/BulkShipment/CreateB2CBulkBatch';
 import ManageB2CBulkBatch from '@/Components/BulkShipment/ManageB2CBulkBatch';
 
+export const FEATURES = Object.freeze({
+  BULK_SHIPMENTS: "BULK_SHIPMENTS",
+  SUBMERCHANTS: "SUBMERCHANTS",
+})
+
 export const Admincards = [
   {
     id: '1',
@@ -348,6 +353,7 @@ export const menuItems = [
     url: 'bulk-shipment',
     merchantOnly: true,
     roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
+    featureSwitchId: FEATURES.BULK_SHIPMENTS,
     // component: Pricing,
     dropDownOptions: [
       {
@@ -531,6 +537,7 @@ export const menuItems = [
     isDropdown: true,
     url: 'submerchants',
     roles: [USER_ROLES.MERCHANT],
+    featureSwitchId: FEATURES.SUBMERCHANTS,
     dropDownOptions: [{
       icon: ShieldCheck,
       name: "My Submerchants",
@@ -592,7 +599,7 @@ export const menuItems = [
     name: "Submerchant Requests",
     isDropdown: false,
     url: 'submerchant-requests',
-    roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
+    roles: [USER_ROLES.SUBMERCHANT],
     component: SubmerchantRequests,
     dropDownOptions: []
   },
