@@ -85,9 +85,6 @@ const View = ({ userRoleId, onClose }) => {
             toast.error(error.message || "Failed to deactivate feature");
         }
     }
-    useEffect(() => {
-        console.log(features)
-    }, [features]);
 
     const [profilePhoto, setProfilePhoto] = useState(null)
     useEffect(() => {
@@ -175,7 +172,6 @@ const View = ({ userRoleId, onClose }) => {
                     </div>
                     <div className='flex space-x-1'>
                         {Object.keys(features).map((key) => {
-                            console.log(features[key])
                             return (
                                 <button key={key} onClick={() => (features[key]?.is_enabled) ? deactivateFeature(key) : activateFeature(key)} className={` ${!features[key]?.is_enabled ? "bg-red-500" : "bg-green-500"} text-white mx-2  py-2 px-4 rounded`}>
                                     {features[key]?.name}

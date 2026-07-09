@@ -13,10 +13,6 @@ const Sidebar2 = () => {
   const [showRecharge, setShowRecharge] = useState(false);
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
 
-  useEffect(() => {
-    console.log(features);
-  }, [features])
-
   const closeRechargeModal = () => {
     setShowRecharge(false);
   }
