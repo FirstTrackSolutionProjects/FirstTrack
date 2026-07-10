@@ -1,55 +1,51 @@
 import z from "zod";
 
 const COLUMN_NAME_TO_EXCEL_MAP = Object.freeze({
-    PICKUP_DATE: '*Pickup Date (YYYY-MM-DD)',
-    PICKUP_TIME: '*Pickup Time (HH:MM)',
-    CUSTOMER_REF: 'Customer Reference Number',
-    PAYMENT_MODE: '*Payment Mode (cod/pre-paid)',
-    COD_AMOUNT: 'COD Amount',
-    SHIPPING_TYPE: '*Shipping Type (surface/express)',
-    CUSTOMER_NAME: '*Customer Name',
-    CUSTOMER_EMAIL: '*Customer Email',
-    CUSTOMER_PHONE: '*Customer Phone',
-    SHIPPING_ADDRESS: '*Shipping Address (Max 100 Char)',
-    SHIPPING_ADDRESS_TYPE: '*Shipping Address Type (home/office)',
-    SHIPPING_PINCODE: '*Shipping Pincode',
-    SHIPPING_CITY: '*Shipping City',
-    SHIPPING_STATE: '*Shipping State',
-    LENGTH: '*Length (cm)',
-    BREADTH: '*Breadth (cm)',
-    HEIGHT: '*Height (cm)',
-    WEIGHT: '*Weight (kg)',
-    ITEM_NAMES: '*Item Name (Comma Separated)',
-    ITEM_QUANTITIES: '*Item Quantity (Comma Separated)',
-    ITEM_UNIT_PRICES: '*Item Unit Price (Comma Separated)',
-    SHIPMENT_VALUE: '*Shipment Value',
-    E_WAYBILL: 'E-Waybill (For Shipment Value more than ₹49999)',
+  CUSTOMER_REF: 'Customer Reference Number',
+  PAYMENT_MODE: '*Payment Mode (cod/pre-paid)',
+  COD_AMOUNT: 'COD Amount',
+  SHIPPING_TYPE: '*Shipping Type (surface/express)',
+  CUSTOMER_NAME: '*Customer Name',
+  CUSTOMER_EMAIL: '*Customer Email',
+  CUSTOMER_PHONE: '*Customer Phone',
+  SHIPPING_ADDRESS: '*Shipping Address (Max 100 Char)',
+  SHIPPING_ADDRESS_TYPE: '*Shipping Address Type (home/office)',
+  SHIPPING_PINCODE: '*Shipping Pincode',
+  SHIPPING_CITY: '*Shipping City',
+  SHIPPING_STATE: '*Shipping State',
+  LENGTH: '*Length (cm)',
+  BREADTH: '*Breadth (cm)',
+  HEIGHT: '*Height (cm)',
+  WEIGHT: '*Weight (kg)',
+  ITEM_NAMES: '*Item Name (Comma Separated)',
+  ITEM_QUANTITIES: '*Item Quantity (Comma Separated)',
+  ITEM_UNIT_PRICES: '*Item Unit Price (Comma Separated)',
+  SHIPMENT_VALUE: '*Shipment Value',
+  E_WAYBILL: 'E-Waybill (For Shipment Value more than ₹49999)',
 })
 
 const EXCEL_TO_DB_COLUMNS = Object.freeze({
-    [COLUMN_NAME_TO_EXCEL_MAP.PICKUP_DATE]: 'pickup_date',
-    [COLUMN_NAME_TO_EXCEL_MAP.PICKUP_TIME]: 'pickup_time',
-    [COLUMN_NAME_TO_EXCEL_MAP.CUSTOMER_REF]: 'customer_reference_number',
-    [COLUMN_NAME_TO_EXCEL_MAP.PAYMENT_MODE]: 'pay_method',
-    [COLUMN_NAME_TO_EXCEL_MAP.COD_AMOUNT]: 'cod_amount',
-    [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_TYPE]: 'shipping_mode',
-    [COLUMN_NAME_TO_EXCEL_MAP.CUSTOMER_NAME]: 'customer_name',
-    [COLUMN_NAME_TO_EXCEL_MAP.CUSTOMER_EMAIL]: 'customer_email',
-    [COLUMN_NAME_TO_EXCEL_MAP.CUSTOMER_PHONE]: 'customer_mobile',
-    [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_ADDRESS]: 'shipping_address',
-    [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_ADDRESS_TYPE]: 'shipping_address_type',
-    [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_PINCODE]: 'shipping_postcode',
-    [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_CITY]: 'shipping_city',
-    [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_STATE]: 'shipping_state',
-    [COLUMN_NAME_TO_EXCEL_MAP.LENGTH]: 'length',
-    [COLUMN_NAME_TO_EXCEL_MAP.BREADTH]: 'breadth',
-    [COLUMN_NAME_TO_EXCEL_MAP.HEIGHT]: 'height',
-    [COLUMN_NAME_TO_EXCEL_MAP.WEIGHT]: 'weight',
-    [COLUMN_NAME_TO_EXCEL_MAP.ITEM_NAMES]: 'product_name',
-    [COLUMN_NAME_TO_EXCEL_MAP.ITEM_QUANTITIES]: 'product_quantity',
-    [COLUMN_NAME_TO_EXCEL_MAP.ITEM_UNIT_PRICES]: 'selling_price',
-    [COLUMN_NAME_TO_EXCEL_MAP.SHIPMENT_VALUE]: 'shipment_value',
-    [COLUMN_NAME_TO_EXCEL_MAP.E_WAYBILL]: 'ewaybill'
+  [COLUMN_NAME_TO_EXCEL_MAP.CUSTOMER_REF]: 'customer_reference_number',
+  [COLUMN_NAME_TO_EXCEL_MAP.PAYMENT_MODE]: 'pay_method',
+  [COLUMN_NAME_TO_EXCEL_MAP.COD_AMOUNT]: 'cod_amount',
+  [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_TYPE]: 'shipping_mode',
+  [COLUMN_NAME_TO_EXCEL_MAP.CUSTOMER_NAME]: 'customer_name',
+  [COLUMN_NAME_TO_EXCEL_MAP.CUSTOMER_EMAIL]: 'customer_email',
+  [COLUMN_NAME_TO_EXCEL_MAP.CUSTOMER_PHONE]: 'customer_mobile',
+  [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_ADDRESS]: 'shipping_address',
+  [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_ADDRESS_TYPE]: 'shipping_address_type',
+  [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_PINCODE]: 'shipping_postcode',
+  [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_CITY]: 'shipping_city',
+  [COLUMN_NAME_TO_EXCEL_MAP.SHIPPING_STATE]: 'shipping_state',
+  [COLUMN_NAME_TO_EXCEL_MAP.LENGTH]: 'length',
+  [COLUMN_NAME_TO_EXCEL_MAP.BREADTH]: 'breadth',
+  [COLUMN_NAME_TO_EXCEL_MAP.HEIGHT]: 'height',
+  [COLUMN_NAME_TO_EXCEL_MAP.WEIGHT]: 'weight',
+  [COLUMN_NAME_TO_EXCEL_MAP.ITEM_NAMES]: 'product_name',
+  [COLUMN_NAME_TO_EXCEL_MAP.ITEM_QUANTITIES]: 'product_quantity',
+  [COLUMN_NAME_TO_EXCEL_MAP.ITEM_UNIT_PRICES]: 'selling_price',
+  [COLUMN_NAME_TO_EXCEL_MAP.SHIPMENT_VALUE]: 'shipment_value',
+  [COLUMN_NAME_TO_EXCEL_MAP.E_WAYBILL]: 'ewaybill'
 })
 
 const COLUMN_NAME_MAP = COLUMN_NAME_TO_EXCEL_MAP;
@@ -67,72 +63,7 @@ const PAYMENT_MODE_ENUM_DB = {
   "COD": "COD"
 }
 
-const convertCellDateToISO = (excelDate) => {
-  if (typeof excelDate === 'number') {
-    const date = XLSX.SSF.parse_date_code(excelDate);
-    const jsDate = new Date(Date.UTC(date.y, date.m - 1, date.d));
-    return jsDate.toISOString().split('T')[0];
-  }
-  return String(excelDate);
-}
-
-const convertCellTimeToHHMM = (excelTime) => {
-  if (typeof excelTime === 'number') {
-    const totalSeconds = Math.round(excelTime * 24 * 60 * 60);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  }
-  return String(excelTime);
-}
-
 const excelValidationSchema = z.object({
-  [COLUMN_NAME_MAP.PICKUP_DATE]: z.preprocess(
-    (value) => {
-      if (value === undefined || value === null) return undefined;
-      if (typeof value !== 'string') return undefined;
-      return convertCellDateToISO(value.trim());
-    },
-    z.string({
-      error: (issue) => {
-        if (issue.input === undefined) {
-          return "Pickup Date Column is required";
-        }
-        if (issue.code === 'invalid_type') {
-          return 'Pickup Date must be a string';
-        }
-      }
-    }).regex(/^(?:\d{4}-\d{2}-\d{2})$/, {
-      error: (issue) => {
-        if (issue.code === "invalid_format") {
-          return 'Invalid pickup date';
-        }
-      }
-    }),
-  ),
-  [COLUMN_NAME_MAP.PICKUP_TIME]: z.preprocess(
-    (value) => {
-      if (value === undefined || value === null) return undefined;
-      if (typeof value !== 'string') return undefined;
-      return convertCellTimeToHHMM(value.trim());
-    },
-    z.string({
-      error: (issue) => {
-        if (issue.input === undefined) {
-          return "Pickup Time Column is required";
-        }
-        if (issue.code === 'invalid_type') {
-          return 'Pickup Time must be a string';
-        }
-      }
-    }).regex(/^(?:\d{2}:\d{2})$/, {
-      error: (issue) => {
-        if (issue.code === 'invalid_format') {
-          return "Invalid pickup time"
-        }
-      }
-    })
-  ),
   [COLUMN_NAME_MAP.CUSTOMER_REF]: z.string({
     error: (issue) => {
       if (issue.input === undefined) {
@@ -640,8 +571,8 @@ const SAMPLE_DATA = [
 ];
 
 export {
-    COLUMN_NAME_TO_EXCEL_MAP,
-    EXCEL_TO_DB_COLUMNS,
-    excelValidationSchema,
-    SAMPLE_DATA
+  COLUMN_NAME_TO_EXCEL_MAP,
+  EXCEL_TO_DB_COLUMNS,
+  excelValidationSchema,
+  SAMPLE_DATA
 }

@@ -5,24 +5,29 @@ import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { toast } from 'react-toastify';
-import parseCSVToJSON from '@/utils/csv_parser.util';
 import { excelValidationSchema, SAMPLE_DATA } from '@/Constants/bulk_excel_columns';
 import getB2CBulkShipmentExcelUploadUrlService from '@/services/bulkServices/get_excel_upload_url.bulk.service';
 import createB2CBulkShipmentsService from '@/services/bulkServices/create_batch.bulk.service';
 import s3FileUploadService from '@/services/s3Services/s3FileUploadService';
 import WarehouseSelect from '@/Components/UiComponents/WarehouseSelect';
 
+const parseExcel = (fileBuffer) => {
+  const workbook = XLSX.read(fileBuffer, { type: "buffer", cellDates: true, });
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+  const data = XLSX.utils.sheet_to_json(worksheet, { raw: true, });
+  return data;
+}
+
 const generateExcel = (data, fileName) => {
   const ws = XLSX.utils.json_to_sheet(data);
-  const csv = XLSX.utils.sheet_to_csv(ws);
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
 
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = fileName;
-  link.click();
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
-  URL.revokeObjectURL(link.href);
+  XLSX.writeFile(
+    wb,
+    (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) ? fileName : `${fileName}.xlsx`
+  );
 };
 
 const UploadSection = ({ file, fileInputRef, handleFileChange, handleDownloadSample }) => (
@@ -30,7 +35,7 @@ const UploadSection = ({ file, fileInputRef, handleFileChange, handleDownloadSam
     <>
       <Typography variant="h6" gutterBottom>Upload Domestic Bulk Shipment File</Typography>
       <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
-        Please upload your `.csv` file following the provided format.
+        Please upload your `.xlsx` or `.xls` file following the provided format.
       </Typography>
       <Box
         sx={{
@@ -43,7 +48,7 @@ const UploadSection = ({ file, fileInputRef, handleFileChange, handleDownloadSam
         <input
           ref={fileInputRef}
           type="file"
-          accept=".csv"
+          accept=".xlsx, .xls"
           style={{ display: 'none' }}
           onChange={handleFileChange}
         />
@@ -69,13 +74,13 @@ const UploadSection = ({ file, fileInputRef, handleFileChange, handleDownloadSam
   </Paper>
 );
 
-const BatchForm = ({ batchName, setBatchName, wid, setWid, onCreateBatch, isCreating }) => (
+const BatchForm = ({ batchName, setBatchName, wid, setWid, pickupDate, setPickupDate, pickupTime, setPickupTime, onCreateBatch, isCreating }) => (
   <Paper sx={{ p: { xs: 2, sm: 4 }, boxShadow: 3, mt: 3 }}>
     <Typography variant="h6" gutterBottom>
       Batch Details
     </Typography>
     <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
-      Enter a name for this batch and select the pickup warehouse, then click <strong>Create Batch</strong>.
+      Enter a name for this batch, select the pickup warehouse and schedule, then click <strong>Create Batch</strong>.
     </Typography>
 
     <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3, mb: 3 }}>
@@ -99,6 +104,33 @@ const BatchForm = ({ batchName, setBatchName, wid, setWid, onCreateBatch, isCrea
       </Box>
     </Box>
 
+    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3, mb: 3 }}>
+      <TextField
+        label="Pickup Date"
+        type="date"
+        variant="outlined"
+        size="small"
+        fullWidth
+        value={pickupDate}
+        onChange={(e) => setPickupDate(e.target.value)}
+        disabled={isCreating}
+        InputLabelProps={{ shrink: true }}
+        inputProps={{ min: new Date().toISOString().split('T')[0] }}
+      />
+
+      <TextField
+        label="Pickup Time"
+        type="time"
+        variant="outlined"
+        size="small"
+        fullWidth
+        value={pickupTime}
+        onChange={(e) => setPickupTime(e.target.value)}
+        disabled={isCreating}
+        InputLabelProps={{ shrink: true }}
+      />
+    </Box>
+
     <Divider sx={{ mb: 2 }} />
 
     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -106,7 +138,7 @@ const BatchForm = ({ batchName, setBatchName, wid, setWid, onCreateBatch, isCrea
         variant="contained"
         startIcon={isCreating ? <CircularProgress size={18} color="inherit" /> : <AddCircleOutlineIcon />}
         onClick={onCreateBatch}
-        disabled={isCreating || !batchName.trim() || !wid}
+        disabled={isCreating || !batchName.trim() || !wid || !pickupDate || !pickupTime}
         sx={{
           bgcolor: '#ef4444',
           '&:hover': { bgcolor: '#dc2626' },
@@ -126,6 +158,8 @@ const CreateB2CBulkBatch = () => {
   const [file, setFile] = useState(null);
   const [batchName, setBatchName] = useState('');
   const [wid, setWid] = useState('');
+  const [pickupDate, setPickupDate] = useState('');
+  const [pickupTime, setPickupTime] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -133,8 +167,8 @@ const CreateB2CBulkBatch = () => {
     const uploadedFile = e.target.files[0];
     if (!uploadedFile) return;
 
-    if (!uploadedFile.name.match(/\.(csv)$/i)) {
-      toast.error('Only .csv files are supported.');
+    if (!uploadedFile.name.match(/\.(xlsx|xls)$/i)) {
+      toast.error('Only .xlsx and .xls files are supported.');
       return;
     }
 
@@ -142,8 +176,8 @@ const CreateB2CBulkBatch = () => {
 
     try {
       const fileName = uploadedFile.name;
-      const csvString = await uploadedFile.text();
-      const rawData = parseCSVToJSON(csvString);
+      const fileBuffer = await uploadedFile.arrayBuffer();
+      const rawData = parseExcel(fileBuffer);
       if (rawData.length === 0) {
         toast.error('The uploaded file is empty or contains no data rows.');
         handleRemoveFile();
@@ -197,6 +231,14 @@ const CreateB2CBulkBatch = () => {
       toast.error('Please select a pickup warehouse.');
       return;
     }
+    if (!pickupDate) {
+      toast.error('Please select a pickup date.');
+      return;
+    }
+    if (!pickupTime) {
+      toast.error('Please select a pickup time.');
+      return;
+    }
 
     setIsCreating(true);
     try {
@@ -213,6 +255,8 @@ const CreateB2CBulkBatch = () => {
         excelS3Key,
         batchName: batchName.trim(),
         wid,
+        pickupDate,
+        pickupTime,
       });
 
       toast.success('Batch created successfully!');
@@ -221,6 +265,8 @@ const CreateB2CBulkBatch = () => {
       setFile(null);
       setBatchName('');
       setWid('');
+      setPickupDate('');
+      setPickupTime('');
     } catch (error) {
       console.error(error);
       toast.error(error.message || 'Failed to create batch. Please try again.');
@@ -269,7 +315,7 @@ const CreateB2CBulkBatch = () => {
           file={file}
           fileInputRef={fileInputRef}
           handleFileChange={handleFileChange}
-          handleDownloadSample={() => generateExcel(SAMPLE_DATA, 'FirstTrack_Domestic_Bulk_Shipment_Sample.csv')}
+          handleDownloadSample={() => generateExcel(SAMPLE_DATA, 'FirstTrack_Domestic_Bulk_Shipment_Sample.xlsx')}
         />
 
         {file && (
@@ -278,6 +324,10 @@ const CreateB2CBulkBatch = () => {
             setBatchName={setBatchName}
             wid={wid}
             setWid={setWid}
+            pickupDate={pickupDate}
+            setPickupDate={setPickupDate}
+            pickupTime={pickupTime}
+            setPickupTime={setPickupTime}
             onCreateBatch={handleCreateBatch}
             isCreating={isCreating}
           />
