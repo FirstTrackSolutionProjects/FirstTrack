@@ -1057,14 +1057,14 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
   );
 };
 
-const BulkShipCard = ({ price, batchId, pricesLoading, setIsBatchProcessing, isBulkShipOpen }) => {
+const BulkShipCard = ({ price, batchId, pricesLoading, setIsBatchProcessing, setIsBulkShipOpen }) => {
   const [isLoading, setIsLoading] = useState(false);
   const shipBulk = async (price) => {
     setIsLoading(true);
     try {
       await shipB2CBulkShipmentService({ batchId: batchId, service: price });
       setIsBatchProcessing(true);
-      isBulkShipOpen(false);
+      setIsBulkShipOpen(false);
       toast.success("Bulk Shipment Request Accepted!")
       setIsLoading(false);
     } catch (error) {
@@ -1321,7 +1321,7 @@ const BulkShipList = ({ batch, isBulkShipOpen, setIsBulkShipOpen, setIsBatchProc
           {prices.length ? prices.map((price, index) => (
             <BulkShipCard
               pricesLoading={loadingState}
-              isBulkShipOpen={isBulkShipOpen}
+              setIsBulkShipOpen={setIsBulkShipOpen}
               setIsBatchProcessing={setIsBatchProcessing}
               price={price}
               batchId={batch}
