@@ -5,6 +5,8 @@ const createB2CBulkShipmentsService = async ({
     excelS3Key,
     batchName,
     wid,
+    pickupDate,
+    pickupTime,
 }) => {
     try {
         if (!excelS3Key) {
@@ -15,6 +17,12 @@ const createB2CBulkShipmentsService = async ({
         }
         if (!wid) {
             throw new Error("Warehouse is required");
+        }
+        if (!pickupDate) {
+            throw new Error("Pickup date is required");
+        }
+        if (!pickupTime) {
+            throw new Error("Pickup time is required");
         }
 
         const response = await fetch(`${API_URL}/bulk/b2c/batch`, {
@@ -28,6 +36,8 @@ const createB2CBulkShipmentsService = async ({
                 excelS3Key,
                 batchName,
                 wid,
+                pickupDate,
+                pickupTime,
             }),
         });
 
