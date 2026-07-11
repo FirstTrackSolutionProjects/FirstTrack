@@ -11,7 +11,7 @@ const HeroAction = () => {
       <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-12 border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-sm bg-white/95 transition-all duration-500 hover:shadow-3xl hover:border-green-100">
         <div className="flex-1 text-center md:text-left">
           <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2 leading-tight">Ready to ship your first package?</h3>
-          <p className="text-gray-600 text-lg font-medium">Join 2,500+ businesses growing with First Track Express.</p>
+          <p className="text-gray-600 text-lg font-medium">Join 2,500+ businesses growing with First Track.</p>
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">

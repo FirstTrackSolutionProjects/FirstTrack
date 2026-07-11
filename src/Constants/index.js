@@ -799,7 +799,7 @@ export const menuItems = [
 export const testimonials = [
   {
     name: "Amit",
-    feedback: "First Track Express has been an absolute pleasure to work with. Professional, reliable, and timely!",
+    feedback: "First Track has been an absolute pleasure to work with. Professional, reliable, and timely!",
     avatar: "images/male.png",
   },
   {
