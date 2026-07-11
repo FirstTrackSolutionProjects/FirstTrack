@@ -693,15 +693,15 @@ export const menuItems = [
       component: VerificationRequests,
       dropDownOptions: [{}]
     },
-    // {
-    //     icon : "/logo.webp",
-    //     name : "Update Profile Requests",
-    //     isDropdown : false,
-    //     admin : true,
-    //     url : 'submissions/merchant-update-profile-requests',
-    //     component : UpdateProfileRequestSubmissions,
-    //     dropDownOptions : [{}]
-    // },
+    {
+        icon : "/logo.webp",
+        name : "Update Profile Requests",
+        isDropdown : false,
+        admin : true,
+        url : 'submissions/merchant-update-profile-requests',
+        component : UpdateProfileRequestSubmissions,
+        dropDownOptions : [{}]
+    },
     {
       icon: FaFileAlt,
       name: "Contact Submission",
@@ -768,15 +768,15 @@ export const menuItems = [
         component: Profile,
         dropDownOptions: [{}]
       },
-      // {
-      //     icon : "/logo.webp",
-      //     name : "Profile Update",
-      //     isDropdown : false,
-      //     url : 'settings/profile-update-request',
-      //     component : UpdateProfileRequest,
-      //     merchantOnly : true,
-      //     dropDownOptions : [{}]
-      // },
+      {
+          icon : "/logo.webp",
+          name : "Profile Update",
+          isDropdown : false,
+          url : 'settings/profile-update-request',
+          component : UpdateProfileRequest,
+          merchantOnly : true,
+          dropDownOptions : [{}]
+      },
       {
         icon: Key,
         name: "Change Password",

@@ -1,392 +1,554 @@
-import React, { useState, useEffect } from "react";
-import { Box, Typography, TextField, Button, Grid } from "@mui/material";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { z } from "zod";
-import { useAuth } from "../context/AuthContext";
-import { v4 } from "uuid";
-import { MuiFileInput } from 'mui-file-input'
-import CloseIcon from '@mui/icons-material/Close'
-import { InputAdornment } from "@mui/material";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import checkPendingUpdateProfileRequest from "../services/checkPendingUpdateProfileRequest";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {
+    Box, Typography, TextField, Button, Stepper, Step, StepLabel,
+    CircularProgress, Alert, Chip
+} from '@mui/material';
+import { MuiFileInput } from 'mui-file-input';
+import CloseIcon from '@mui/icons-material/Close';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import { InputAdornment } from '@mui/material';
+import { toast } from 'react-toastify';
+import { z } from 'zod';
+import getMerchantProfileService from '../services/updateProfileServices/getMerchantProfileService';
+import getMyProfileUpdateRequestService from '../services/updateProfileServices/getMyProfileUpdateRequestService';
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
-// Define the Zod validation schema
-const formSchema = z.object({
-  full_name: z.string().min(3, "Full Name is required and must be at least 3 characters long"),
-  business_name: z.string().min(3, "Business Name is required and must be at least 3 characters long"),
-  phone: z.string().optional(),
-  email: z.string().optional(),
-  address: z.string().optional(),
-  state: z.string().optional(),
-  city: z.string().optional(),
-  pin: z.string().optional(),
-  aadhar: z.string().optional(),
-  pan: z.string().optional(),
-  gst: z.string().optional(),
-  msme: z.string().optional(),
-  bank: z.string().optional(),
-  ifsc: z.string().optional(),
-  account: z.string().optional(),
-  cin: z.string().optional(),
-  aadhar_doc: z.string().optional(),
-  pan_doc: z.string().optional(),
-  gst_doc: z.string().optional(),
-  cancelledCheque: z.string().optional(),
-  selfie_doc: z.string().optional(),
-}).refine((data) => (/^(?:[6-9]\d{9})?$/.test(data.phone)), {
-  message: "Phone number should be 10 digits and must start with 6/7/8/9",
-  path: ["phone"],
-}).refine((data) => (!data.address.length) || (data.address.length >= 20 && data.address.length <= 255),{
-  message: "Address should be between 20 and 255 characters",
-  path: ["address"],
-}).refine((data) => (!data.state.length) || (data.state.length >= 3 && data.state.length <= 100 ), {
-  message: "State should be between 3 and 100 characters",
-  path: ["state"],
-}).refine((data) => (!data.city.length) || (data.city.length >= 3 && data.city.length <= 100 ), {
-  message: "City should be between 3 and 100 characters",
-  path: ["city"],
-}).refine((data) => (/^(?:[1-9]\d{5})?$/.test(data.pin)), {
-  message: "Invalid Pincode",
-  path: ["pin"],
-}).refine((data) => (/^(?:[1-9]\d{11})?$/.test(data.aadhar)), {
-  message: "Invalid Aadhar Number",
-  path: ["aadhar"],
-}).refine((data) => (/^(?:[A-Z]{5}[0-9]{4}[A-Z]{1})?$/.test(data.pan)),{
-  message: "Invalid PAN number (use capital letters)",
-  path: ["pan"],
-}).refine((data) => (/^(?:\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1})?$/.test(data.gst)), {
-  message: "Invalid GST number",
-  path: ["gst"],
-}).refine((data) => (/^(UDYAM-[A-Z]{2}-\d{2}-\d{7})?$/.test(data.msme)),{
-  message: "Invalid MSME number (use format UDYAM-XX-00-0000000)",
-  path: ["msme"],
-}).refine((data) => (/^(([LUu]{1})([0-9]{5})([A-Za-z]{2})([0-9]{4})([A-Za-z]{3})([0-9]{6}))?$/.test(data.cin)),{
-  message: "Invalid CIN (use format U12345AB6784CDE123456)",
-  path: ["cin"],
-})
+// ─── Zod Schemas ──────────────────────────────────────────────────────────────
 
-const TextForm = ({ id, onNext }) => {
-  const [loadingState, setLoadingState] = useState(null);
-  const [uploadCompleted, setUploadCompleted] = useState(null);
-  const reqId = v4();
-  const [formData, setFormData] = useState({
-    req_id: reqId,
-    full_name: "",
-    business_name: "",
-    phone: "",
-    email: "",
-    address: "",
-    state: "",
-    city: "",
-    pin: "",
-    aadhar: "",
-    pan: "",
-    gst: "",
-    msme: "",
-    bank: "",
-    ifsc: "",
-    account: "",
-    cin: "",
-    aadhar_doc: "",
-    pan_doc: "",
-    gst_doc: "",
-    cancelledCheque: "",
-    selfie_doc: "",
-  });
-  const [files, setFiles] = useState({
-    aadhar_doc: null,
-    pan_doc: null,
-    gst_doc: null,
-    cancelledCheque: null,
-    selfie_doc: null,
-  })
-  const [errors, setErrors] = useState({});
+const basicSchema = z.object({
+    fullName: z.string().min(3, 'Full Name must be at least 3 characters'),
+    phone: z.string().regex(/^[6-9]\d{9}$/, 'Phone must be 10 digits starting with 6/7/8/9'),
+});
 
-  const fields = [
-    { fieldId: "full_name", fieldTitle: "Full Name*", helperText: "Enter Full Name", currentValue:""},
-    { fieldId: "business_name", fieldTitle: "Business Name*", helperText: "Enter business name"},
-    { fieldId: "phone", fieldTitle: "Phone", helperText: "Enter your phone number"},
-    { fieldId: "email", fieldTitle: "Email", helperText: "Email cannot be changed", disabled: true, placeholder: "adityakumar5155@gmail.com"},
-    { fieldId: "address", fieldTitle: "Address", helperText: "Enter your full address" },
-    { fieldId: "state", fieldTitle: "State", helperText: "Enter your state" },
-    { fieldId: "city", fieldTitle: "City", helperText: "Enter your city" },
-    { fieldId: "pin", fieldTitle: "PIN Code", helperText: "Enter your PIN code" },
-    { fieldId: "aadhar", fieldTitle: "Aadhar Number", helperText: "Enter your Aadhar number" },
-    { fieldId: "pan", fieldTitle: "PAN Number", helperText: "Enter your PAN number (use capital letters)" },
-    { fieldId: "gst", fieldTitle: "GST Number", helperText: "Enter your GST number" },
-    { fieldId: "msme", fieldTitle: "MSME Number", helperText: "Enter your MSME number (if applicable)" },
-    { fieldId: "bank", fieldTitle: "Bank Name", helperText: "Enter your bank name" },
-    { fieldId: "ifsc", fieldTitle: "IFSC Code", helperText: "Enter your bank IFSC code" },
-    { fieldId: "account", fieldTitle: "Account Number", helperText: "Enter your bank account number" },
-    { fieldId: "cin", fieldTitle: "CIN Number", helperText: "Enter your CIN number (if applicable)" },
-    { fieldId: "aadhar_doc", fieldTitle : "Aadhar Document", helperText: "Upload your Aadhar", type: "file"},
-    { fieldId: "pan_doc", fieldTitle : "PAN Document", helperText: "Upload your PAN", type: "file"},
-    { fieldId: "gst_doc", fieldTitle : "GST Document", helperText: "Upload your GST Document", type: "file"},
-    { fieldId: "cancelledCheque", fieldTitle : "Cancelled Cheque", helperText: "Upload your cancelled cheque", type: "file"},
-    { fieldId: "selfie_doc", fieldTitle : "Selfie Document", helperText: "Upload your selfie", type: "file"},
+const personalSchema = z.object({
+    address: z.string().min(20, 'Address must be at least 20 characters').max(255, 'Address too long').or(z.literal('')),
+    state: z.string().min(3, 'State too short').max(100).or(z.literal('')),
+    city: z.string().min(3, 'City too short').max(100).or(z.literal('')),
+    pin: z.string().regex(/^[1-9]\d{5}$/, 'Invalid pincode').or(z.literal('')),
+    accountNumber: z.string().or(z.literal('')),
+    ifsc: z.string().or(z.literal('')),
+    bank: z.string().or(z.literal('')),
+});
 
-  ];
+const businessSchema = z.object({
+    business_name: z.string().min(3, 'Business name must be at least 3 characters'),
+    gst: z.string().regex(/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$/, 'Invalid GST number').or(z.literal('')),
+    cin: z.string().regex(/^([LUu]{1})(\d{5})([A-Za-z]{2})(\d{4})([A-Za-z]{3})(\d{6})$/, 'Invalid CIN').or(z.literal('')),
+    msme: z.string().regex(/^(UDYAM-[A-Z]{2}-\d{2}-\d{7})$/, 'Invalid MSME (use UDYAM-XX-00-0000000)').or(z.literal('')),
+});
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
+const kycSchema = z.object({
+    aadhar_number: z.string().regex(/^\d{12}$/, 'Aadhar must be 12 digits').or(z.literal('')),
+    pan_number: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN (capital letters)').or(z.literal('')),
+});
 
-  const handleFileChange = (value, name) => {
-      if (!value){
-        setFiles((prevFiles) => ({ ...prevFiles, [name]: null }));
-        return;
-      }
-      if (!['image/png','image/jpeg'].includes(value.type) && name=="selfie_doc"){
-        toast.error("Only png, jpeg, jpg are supported");
-        setFiles((prevFiles) => ({ ...prevFiles, [name]: null }));
-        return;
-      }
-      if (!['image/png', 'image/jpeg', 'application/pdf'].includes(value.type) && name!="selfie_doc"){
-        toast.error("Only png, jpeg, jpg, pdf are supported");
-        setFiles((prevFiles) => ({ ...prevFiles, [name]: null }));
-        return;
-      }
-      setFiles((prevFiles) => ({...prevFiles, [name]: value }));
-  };
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-  const handleUpload = async (name) => {
-    try {
-      if (!files[name]) return;
-      const key = `merchant/${id}/profileUpdateDocs/${reqId}/${name}`;
-      const urlResponse = await fetch(`${API_URL}/s3/putUrl`, {
-        method: "POST",
-        headers: {
-          Authorization: localStorage.getItem("token"),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ filename: key, filetype: files[name].type }),
-      });
-      
-      if (!urlResponse.ok) {
-        return { success: false, key: name };
-      }
-      
-      const { uploadURL } = await urlResponse.json();
-      const uploadRequest = await fetch(uploadURL, {
-        method: "PUT",
-        headers: { "Content-Type": files[name].type },
-        body: files[name],
-      });
-      
-      if (!uploadRequest.ok) {
-        return { success: false, key: name };
-      }
-      
-      return { success: true, key: name, value: key };
-    } catch (error) {
-      toast.error(`Error uploading ${name}: ${error.message}`);
-      return { success: false, key: name };
-    }
-  };
-  
-  const uploadFiles = async (e) => {
-    e.preventDefault();
-    setUploadCompleted(null);
-    setLoadingState('Uploading Files...');
-    
-    try {
-      const uploadResults = await Promise.all(
-        Object.keys(files).map((key) => handleUpload(key))
-      );
+const STAGES = ['Basic Details', 'Personal Details', 'Business Details', 'KYC Details', 'Review'];
 
-      const successfulUploads = uploadResults.filter(result => result && result.success);
-      const newFormData = { ...formData };
-      
-      successfulUploads.forEach(({ key, value }) => {
-        newFormData[key] = value;
-      });
-      await new Promise(resolve => {
-        setFormData(newFormData);
-        resolve();
-      });
-
-      setUploadCompleted(true);
-    } catch (error) {
-      toast.error("Error submitting form: " + error.message);
-    } finally {
-      setLoadingState(null);
-    }
-  };
-
-  useEffect(()=>{
-    if (uploadCompleted){
-      handleSubmit();
-    }
-  },[uploadCompleted])
-  
-  const handleSubmit = async () => {
-    setLoadingState('Submitting Form...');
-    
-    try {
-      const result = formSchema.safeParse(formData);
-      if (result.success) {
-        setErrors({}); // Clear previous errors
-        console.log(formData);
-        
-        // Uncomment when ready to submit to API
-        const response = await fetch(
-          `${API_URL}/update-profile-requests`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: localStorage.getItem("token"),
-            },
-            body: JSON.stringify(formData),
-          }
-        );
-        const data = await response.json();
-        console.log(data);
-        if (data.success) {
-        toast.success("Submitted Successfully");
-        } else {
-          toast.error("Error submitting form: " + data.message);
-        }
-        onNext();
-      } else {
-        // Set validation errors
-        const validationErrors = result.error.formErrors.fieldErrors;
-        setErrors(validationErrors);
-      }
-    } catch (error) {
-      toast.error("Error submitting form: " + error.message);
-    } finally {
-      setLoadingState(null);
-    }
-  };
-
-  return (
-    <Box
-      component="form"
-      onSubmit={uploadFiles}
-      sx={{
-        maxWidth: 800,
-        mx: "auto",
-        p: 3,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-      className="border-gray-300 shadow-xl border-2 rounded-xl "
-    >
-      <Typography variant="h4" className="text-2xl sm:text-4xl lg:text-5xl">Profile Update Request</Typography>
-      <Typography variant="h6" className="text-2xl sm:text-4xl lg:text-5xl">(Only fill fields you want to update)</Typography>
-
-
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-        {fields.map((field, idx) => {
-          if (field.type !== "file"){
-            return (
-              <Grid item xs={12} md={6} key={idx}>
-              <TextField
-                label={field.fieldTitle}
-                variant="outlined"
-                size="small"
-                name={field.fieldId}
-                value={formData[field.fieldId]}
-                type={field.type}
-                onChange={handleChange}
-                disabled={field.disabled}
-                fullWidth
-                error={Boolean(errors[field.fieldId])}
-                helperText={errors[field.fieldId] ? errors[field.fieldId][0] : field.helperText}
-              />
-              </Grid>
-            )
-          } else {
-            return (
-              <Grid item xs={12} sm={6} key={idx}>
-              <MuiFileInput
-                label={field.fieldTitle}
-                size="small"
-                helperText={errors[field.fieldId] ? errors[field.fieldId][0] : field.helperText}
-                placeholder={'Select File'}
-                id={field.fieldId}
-                name={field.fieldId}
-                onChange={(value) => handleFileChange(value, field.fieldId)}
-                value={files[field.fieldId]}
-                clearIconButtonProps={{
-                  title: "Remove",
-                  children: <CloseIcon fontSize="small" />
-                }}
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AttachFileIcon fontSize="small" />
-                    </InputAdornment>
-                  )
-                }}
-              />
-              </Grid>
-            )
-          }
-        })}
-      </Grid>
-
-      <Button
-        variant="contained"
-        color="primary"
-        type="submit"
-        disabled={loadingState?true:false}
-        fullWidth
-        sx={{ mt: 3, maxWidth: 300, bgcolor: 'black' }}
-      >
-        {loadingState || 'Submit'}
-      </Button>
-    </Box>
-  );
+const EMPTY_FORM = {
+    // Basic
+    fullName: '', phone: '',
+    // Personal
+    address: '', state: '', city: '', pin: '',
+    accountNumber: '', ifsc: '', bank: '',
+    // Business
+    business_name: '', gst: '', cin: '', msme: '',
+    // KYC
+    aadhar_number: '', pan_number: '',
 };
 
-const UpdateProfileRequest = () => {  
-  const {id} = useAuth()
-  const [step, setStep] = useState(1);
-  const nextStep = () => setStep((prevStep) => prevStep + 1);
+const EMPTY_FILES = {
+    cancelledCheque: null,
+    selfie_doc: null,
+    gst_doc: null,
+    aadhar_doc: null,
+    pan_doc: null,
+};
 
-  const pendingRequest = async () => {
-    const response = await checkPendingUpdateProfileRequest();
-    if (response.success){
-        nextStep();
-    }
-  }
+// Maps profile API field names → form field names
+const mapProfileToForm = (data) => ({
+    fullName: data.fullName || '',
+    phone: data.phone || '',
+    address: data.address || '',
+    state: data.state || '',
+    city: data.city || '',
+    pin: data.pin || '',
+    accountNumber: data.accountNumber || '',
+    ifsc: data.ifsc || '',
+    bank: data.bank || '',
+    business_name: data.business_name || '',
+    gst: data.gst || '',
+    cin: data.cin || '',
+    msme: data.msme || '',
+    aadhar_number: data.aadhar_number || '',
+    pan_number: data.pan_number || '',
+});
 
-  useEffect(()=>{
-    pendingRequest()
-  },[])
+// Returns only fields that have changed vs original
+const getChangedFields = (current, original) => {
+    const changes = {};
+    Object.keys(current).forEach((key) => {
+        if (current[key] !== original[key]) {
+            changes[key] = { old: original[key], new: current[key] };
+        }
+    });
+    return changes;
+};
 
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        p: 2,
-      }}
-    >
-      {step === 1 && <TextForm id={id} onNext={nextStep} />}
-      {step === 2 && <Box className={'h-[calc(100vh-64px)] w-full flex justify-center items-center'}>
-        <Box>
-          <Box>
-            Update Profile Request is submitted successfully.
-          </Box>
-          <Box>
-            Please wait for the action by the admin.
-          </Box>
-        </Box>
-      </Box>}
+const FIELD_LABELS = {
+    fullName: 'Full Name', phone: 'Phone',
+    address: 'Address', state: 'State', city: 'City', pin: 'Pincode',
+    accountNumber: 'Account Number', ifsc: 'IFSC Code', bank: 'Bank Name',
+    business_name: 'Business Name', gst: 'GST Number', cin: 'CIN Number', msme: 'MSME Number',
+    aadhar_number: 'Aadhar Number', pan_number: 'PAN Number',
+    cancelledCheque: 'Cancelled Cheque', selfie_doc: 'Selfie Document',
+    gst_doc: 'GST Document', aadhar_doc: 'Aadhar Document', pan_doc: 'PAN Document',
+};
+
+// ─── File Upload Helper ───────────────────────────────────────────────────────
+
+const uploadFileToS3 = async (file, key) => {
+    const urlRes = await fetch(`${API_URL}/s3/putUrl`, {
+        method: 'POST',
+        headers: {
+            Authorization: localStorage.getItem('token'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ filename: key, filetype: file.type }),
+    });
+    if (!urlRes.ok) throw new Error('Failed to get upload URL');
+    const { uploadURL } = await urlRes.json();
+    const uploadRes = await fetch(uploadURL, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+    });
+    if (!uploadRes.ok) throw new Error('Failed to upload file');
+    return key;
+};
+
+// ─── TextField wrapper ────────────────────────────────────────────────────────
+
+const FormField = ({ fieldId, label, helperText, formData, onChange, errors, changed }) => (
+    <TextField
+        label={label}
+        variant="outlined"
+        size="small"
+        name={fieldId}
+        value={formData[fieldId]}
+        onChange={onChange}
+        fullWidth
+        error={Boolean(errors[fieldId])}
+        helperText={errors[fieldId]?.[0] || helperText}
+        sx={changed ? { '& fieldset': { borderColor: '#f59e0b !important', borderWidth: '2px' } } : {}}
+    />
+);
+
+// ─── Stage 1: Basic ───────────────────────────────────────────────────────────
+
+const BasicStage = ({ formData, onChange, errors, original }) => (
+    <Box display="flex" flexDirection="column" gap={2}>
+        <FormField fieldId="fullName" label="Full Name *" helperText="Enter your full name" formData={formData} onChange={onChange} errors={errors} changed={formData.fullName !== original.fullName} />
+        <FormField fieldId="phone" label="Phone *" helperText="10-digit mobile number" formData={formData} onChange={onChange} errors={errors} changed={formData.phone !== original.phone} />
     </Box>
-  );
+);
+
+// ─── Stage 2: Personal ────────────────────────────────────────────────────────
+
+const PersonalStage = ({ formData, onChange, errors, original, files, onFileChange }) => (
+    <Box display="flex" flexDirection="column" gap={2}>
+        <FormField fieldId="address" label="Address" helperText="Full address (min 20 chars)" formData={formData} onChange={onChange} errors={errors} changed={formData.address !== original.address} />
+        <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2}>
+            <FormField fieldId="state" label="State" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.state !== original.state} />
+            <FormField fieldId="city" label="City" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.city !== original.city} />
+            <FormField fieldId="pin" label="Pincode" helperText="6-digit pincode" formData={formData} onChange={onChange} errors={errors} changed={formData.pin !== original.pin} />
+            <FormField fieldId="bank" label="Bank Name" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.bank !== original.bank} />
+            <FormField fieldId="accountNumber" label="Account Number" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.accountNumber !== original.accountNumber} />
+            <FormField fieldId="ifsc" label="IFSC Code" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.ifsc !== original.ifsc} />
+        </Box>
+        <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2}>
+            <FileField fieldId="selfie_doc" label="Selfie Document" helperText="Upload new selfie (png/jpeg only)" files={files} onFileChange={onFileChange} selfieOnly />
+            <FileField fieldId="cancelledCheque" label="Cancelled Cheque" helperText="Upload new cheque (png/jpeg/pdf)" files={files} onFileChange={onFileChange} />
+        </Box>
+    </Box>
+);
+
+// ─── Stage 3: Business ───────────────────────────────────────────────────────
+
+const BusinessStage = ({ formData, onChange, errors, original, files, onFileChange }) => (
+    <Box display="flex" flexDirection="column" gap={2}>
+        <FormField fieldId="business_name" label="Business Name *" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.business_name !== original.business_name} />
+        <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2}>
+            <FormField fieldId="gst" label="GST Number" helperText="15-char GSTIN" formData={formData} onChange={onChange} errors={errors} changed={formData.gst !== original.gst} />
+            <FormField fieldId="cin" label="CIN Number" helperText="Company Identification Number" formData={formData} onChange={onChange} errors={errors} changed={formData.cin !== original.cin} />
+            <FormField fieldId="msme" label="MSME Number" helperText="UDYAM-XX-00-0000000" formData={formData} onChange={onChange} errors={errors} changed={formData.msme !== original.msme} />
+            <FileField fieldId="gst_doc" label="GST Document" helperText="Upload GST certificate (png/jpeg/pdf)" files={files} onFileChange={onFileChange} />
+        </Box>
+    </Box>
+);
+
+// ─── Stage 4: KYC ────────────────────────────────────────────────────────────
+
+const KycStage = ({ formData, onChange, errors, original, files, onFileChange }) => (
+    <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2}>
+        <FormField fieldId="aadhar_number" label="Aadhar Number" helperText="12-digit number" formData={formData} onChange={onChange} errors={errors} changed={formData.aadhar_number !== original.aadhar_number} />
+        <FileField fieldId="aadhar_doc" label="Aadhar Document" helperText="Upload Aadhar (png/jpeg/pdf)" files={files} onFileChange={onFileChange} />
+        <FormField fieldId="pan_number" label="PAN Number" helperText="10-char PAN (capital letters)" formData={formData} onChange={onChange} errors={errors} changed={formData.pan_number !== original.pan_number} />
+        <FileField fieldId="pan_doc" label="PAN Document" helperText="Upload PAN (png/jpeg/pdf)" files={files} onFileChange={onFileChange} />
+    </Box>
+);
+
+// ─── File Field ───────────────────────────────────────────────────────────────
+
+const FileField = ({ fieldId, label, helperText, files, onFileChange, selfieOnly = false }) => (
+    <MuiFileInput
+        label={label}
+        size="small"
+        helperText={helperText}
+        placeholder="Select file to change"
+        id={fieldId}
+        name={fieldId}
+        onChange={(val) => onFileChange(val, fieldId, selfieOnly)}
+        value={files[fieldId]}
+        clearIconButtonProps={{ title: 'Remove', children: <CloseIcon fontSize="small" /> }}
+        fullWidth
+        InputProps={{
+            startAdornment: (
+                <InputAdornment position="start">
+                    <AttachFileIcon fontSize="small" />
+                </InputAdornment>
+            ),
+        }}
+    />
+);
+
+// ─── Stage 5: Review ─────────────────────────────────────────────────────────
+
+const ReviewStage = ({ formData, original, files }) => {
+    const changedText = getChangedFields(formData, original);
+    const changedFiles = Object.keys(files).filter((k) => files[k] !== null);
+    const hasChanges = Object.keys(changedText).length > 0 || changedFiles.length > 0;
+
+    if (!hasChanges) {
+        return (
+            <Alert severity="warning" sx={{ mt: 1 }}>
+                No changes detected. Please modify at least one field before submitting.
+            </Alert>
+        );
+    }
+
+    return (
+        <Box>
+            <Typography variant="body2" color="text.secondary" mb={2}>
+                Only changed fields are shown below. These will be submitted for admin review.
+            </Typography>
+            <Box display="flex" flexDirection="column" gap={1.5}>
+                {Object.entries(changedText).map(([key, { old: oldVal, new: newVal }]) => (
+                    <Box key={key} p={1.5} borderRadius={1} sx={{ bgcolor: '#fffbeb', border: '1px solid #f59e0b' }}>
+                        <Typography variant="caption" color="text.secondary" display="block">
+                            {FIELD_LABELS[key] || key}
+                        </Typography>
+                        <Box display="flex" alignItems="center" gap={1} flexWrap="wrap" mt={0.5}>
+                            <Chip label={oldVal || '(empty)'} size="small" color="default" sx={{ textDecoration: 'line-through', opacity: 0.6 }} />
+                            <Typography variant="caption">→</Typography>
+                            <Chip label={newVal || '(empty)'} size="small" color="warning" />
+                        </Box>
+                    </Box>
+                ))}
+                {changedFiles.map((key) => (
+                    <Box key={key} p={1.5} borderRadius={1} sx={{ bgcolor: '#fffbeb', border: '1px solid #f59e0b' }}>
+                        <Typography variant="caption" color="text.secondary" display="block">
+                            {FIELD_LABELS[key] || key}
+                        </Typography>
+                        <Chip label={`New file: ${files[key]?.name}`} size="small" color="warning" sx={{ mt: 0.5 }} />
+                    </Box>
+                ))}
+            </Box>
+        </Box>
+    );
+};
+
+// ─── Pending Screen ───────────────────────────────────────────────────────────
+
+const PendingScreen = () => (
+    <Box className="h-[calc(100vh-64px)] w-full flex justify-center items-center">
+        <Box textAlign="center" maxWidth={480} p={4}>
+            <Typography variant="h5" fontWeight={600} mb={2}>Request Pending</Typography>
+            <Typography color="text.secondary">
+                You already have a profile update request pending review by an admin.
+                You will be notified once the admin takes action.
+            </Typography>
+        </Box>
+    </Box>
+);
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+const UpdateProfileRequest = () => {
+    const [stage, setStage] = useState(0); // 0-4
+    const [formData, setFormData] = useState(EMPTY_FORM);
+    const [files, setFiles] = useState(EMPTY_FILES);
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState('');
+    const [hasPending, setHasPending] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [initLoading, setInitLoading] = useState(true);
+    const originalData = useRef(EMPTY_FORM);
+
+    // On mount — fetch existing profile + check pending
+    useEffect(() => {
+        const init = async () => {
+            try {
+                const [profile, pending] = await Promise.all([
+                    getMerchantProfileService(),
+                    getMyProfileUpdateRequestService(),
+                ]);
+
+                if (pending?.success) {
+                    setHasPending(true);
+                } else {
+                    const mapped = mapProfileToForm(profile);
+                    setFormData(mapped);
+                    originalData.current = mapped;
+                }
+            } catch (err) {
+                toast.error('Failed to load profile data: ' + err.message);
+            } finally {
+                setInitLoading(false);
+            }
+        };
+        init();
+    }, []);
+
+    const handleChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+        setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }, []);
+
+    const handleFileChange = useCallback((value, name, selfieOnly = false) => {
+        if (!value) {
+            setFiles((prev) => ({ ...prev, [name]: null }));
+            return;
+        }
+        const allowedTypes = selfieOnly
+            ? ['image/png', 'image/jpeg']
+            : ['image/png', 'image/jpeg', 'application/pdf'];
+        if (!allowedTypes.includes(value.type)) {
+            toast.error(selfieOnly ? 'Only PNG or JPEG allowed for selfie' : 'Only PNG, JPEG, or PDF allowed');
+            setFiles((prev) => ({ ...prev, [name]: null }));
+            return;
+        }
+        setFiles((prev) => ({ ...prev, [name]: value }));
+    }, []);
+
+    const validateStage = useCallback(() => {
+        const schemas = [basicSchema, personalSchema, businessSchema, kycSchema];
+        if (stage >= 4) return true; // Review stage — no extra validation
+        try {
+            const stageFields = {
+                0: ['fullName', 'phone'],
+                1: ['address', 'state', 'city', 'pin', 'accountNumber', 'ifsc', 'bank'],
+                2: ['business_name', 'gst', 'cin', 'msme'],
+                3: ['aadhar_number', 'pan_number'],
+            };
+            const subset = Object.fromEntries(stageFields[stage].map((k) => [k, formData[k]]));
+            schemas[stage].parse(subset);
+            setErrors({});
+            return true;
+        } catch (e) {
+            const fieldErrors = {};
+            e.errors.forEach((err) => {
+                const path = err.path[0];
+                if (path) fieldErrors[path] = [err.message];
+            });
+            setErrors(fieldErrors);
+            return false;
+        }
+    }, [stage, formData]);
+
+    const handleNext = () => {
+        if (validateStage()) setStage((s) => s + 1);
+    };
+
+    const handleBack = () => {
+        setErrors({});
+        setStage((s) => s - 1);
+    };
+
+    const handleSubmit = async () => {
+        const changedText = getChangedFields(formData, originalData.current);
+        const changedFiles = Object.keys(files).filter((k) => files[k] !== null);
+        if (Object.keys(changedText).length === 0 && changedFiles.length === 0) {
+            toast.warning('No changes detected. Nothing to submit.');
+            return;
+        }
+
+        setLoading('Uploading documents...');
+        try {
+            // Upload only changed files
+            const fileUrls = { ...Object.fromEntries(Object.keys(files).map((k) => [k, null])) };
+            for (const key of changedFiles) {
+                const s3Key = `merchant/profile-update-docs/${Date.now()}/${key}`;
+                fileUrls[key] = await uploadFileToS3(files[key], s3Key);
+            }
+
+            setLoading('Submitting request...');
+
+            const BASIC_DATA = {
+                fullName: formData.fullName,
+                phone: formData.phone,
+            };
+
+            const PERSONAL_DATA = {
+                address: formData.address,
+                state: formData.state,
+                city: formData.city,
+                pin: formData.pin,
+                accountNumber: formData.accountNumber,
+                ifsc: formData.ifsc,
+                bank: formData.bank,
+                cancelledCheque: fileUrls.cancelledCheque,
+                selfie_doc: fileUrls.selfie_doc,
+            };
+
+            const BUSINESS_DATA = {
+                business_name: formData.business_name,
+                gst: formData.gst,
+                gst_doc: fileUrls.gst_doc,
+                cin: formData.cin,
+                msme: formData.msme,
+            };
+
+            const KYC_DATA = {
+                aadhar_number: formData.aadhar_number,
+                aadhar_doc: fileUrls.aadhar_doc,
+                pan_number: formData.pan_number,
+                pan_doc: fileUrls.pan_doc,
+            };
+
+            const response = await fetch(`${API_URL}/update-profile-requests`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    Authorization: localStorage.getItem('token'),
+                },
+                body: JSON.stringify({ BASIC_DATA, PERSONAL_DATA, BUSINESS_DATA, KYC_DATA }),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                toast.success('Profile update request submitted successfully!');
+                setSubmitted(true);
+            } else {
+                toast.error(result.message || 'Submission failed');
+            }
+        } catch (err) {
+            toast.error('Error: ' + err.message);
+        } finally {
+            setLoading('');
+        }
+    };
+
+    if (initLoading) {
+        return (
+            <Box className="h-[calc(100vh-64px)] w-full flex justify-center items-center">
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (hasPending || submitted) return <PendingScreen />;
+
+    const changedFields = getChangedFields(formData, originalData.current);
+    const changedFiles = Object.keys(files).filter((k) => files[k] !== null);
+    const hasChanges = Object.keys(changedFields).length > 0 || changedFiles.length > 0;
+
+    return (
+        <Box sx={{ maxWidth: 720, mx: 'auto', p: { xs: 2, sm: 4 } }}>
+            {/* Header */}
+            <Typography variant="h5" fontWeight={700} textAlign="center" mb={0.5}>
+                Profile Update Request
+            </Typography>
+            <Typography variant="body2" color="text.secondary" textAlign="center" mb={3}>
+                Fields highlighted in amber have been changed from your current profile.
+                Only changed fields will be reviewed by the admin.
+            </Typography>
+
+            {/* Stepper */}
+            <Stepper activeStep={stage} alternativeLabel sx={{ mb: 4 }}>
+                {STAGES.map((label) => (
+                    <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                    </Step>
+                ))}
+            </Stepper>
+
+            {/* Stage Content */}
+            <Box
+                sx={{
+                    p: { xs: 2, sm: 3 },
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                    bgcolor: 'background.paper',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    minHeight: 200,
+                }}
+            >
+                {stage === 0 && (
+                    <BasicStage formData={formData} onChange={handleChange} errors={errors} original={originalData.current} />
+                )}
+                {stage === 1 && (
+                    <PersonalStage formData={formData} onChange={handleChange} errors={errors} original={originalData.current} files={files} onFileChange={handleFileChange} />
+                )}
+                {stage === 2 && (
+                    <BusinessStage formData={formData} onChange={handleChange} errors={errors} original={originalData.current} files={files} onFileChange={handleFileChange} />
+                )}
+                {stage === 3 && (
+                    <KycStage formData={formData} onChange={handleChange} errors={errors} original={originalData.current} files={files} onFileChange={handleFileChange} />
+                )}
+                {stage === 4 && (
+                    <ReviewStage formData={formData} original={originalData.current} files={files} />
+                )}
+            </Box>
+
+            {/* Navigation */}
+            <Box display="flex" justifyContent="space-between" mt={3} gap={2}>
+                <Button
+                    variant="outlined"
+                    onClick={handleBack}
+                    disabled={stage === 0 || Boolean(loading)}
+                    sx={{ minWidth: 110 }}
+                >
+                    Back
+                </Button>
+
+                {stage < 4 ? (
+                    <Button
+                        variant="contained"
+                        onClick={handleNext}
+                        disabled={Boolean(loading)}
+                        sx={{ minWidth: 110, bgcolor: 'black', '&:hover': { bgcolor: '#333' } }}
+                    >
+                        Next
+                    </Button>
+                ) : (
+                    <Button
+                        variant="contained"
+                        onClick={handleSubmit}
+                        disabled={Boolean(loading) || !hasChanges}
+                        sx={{ minWidth: 140, bgcolor: 'black', '&:hover': { bgcolor: '#333' } }}
+                    >
+                        {loading || 'Submit Request'}
+                    </Button>
+                )}
+            </Box>
+        </Box>
+    );
 };
 
 export default UpdateProfileRequest;
