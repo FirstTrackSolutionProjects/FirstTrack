@@ -1228,32 +1228,36 @@ const BulkShipList = ({ batch, isBulkShipOpen, setIsBulkShipOpen, setIsBatchProc
   const [totalShipments, setTotalShipments] = useState(null);
   const [processedShipments, setProcessedShipments] = useState(null);
   const [requestId, setRequestId] = useState(null);
+
+  const initiatePriceFetching = async () => {
+    try {
+      setLoadingState(true);
+      const data = await getB2CBulkShipmentPriceService({ batchId: batch })
+      const requestId = data.requestId;
+      if (!requestId) {
+        toast.error(data?.message || "Something went wrong");
+        return;
+      }
+      setRequestId(requestId);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    } finally {
+      setLoadingState(false);
+    }
+  };
   useEffect(() => {
     if (!isBulkShipOpen) return;
-
-    const initiatePriceFetching = async () => {
-      try {
-        setLoadingState(true);
-        const data = await getB2CBulkShipmentPriceService({ batchId: batch })
-        const requestId = data.requestId;
-        if (!requestId) {
-          toast.error(data?.message || "Something went wrong");
-          return;
-        }
-        setRequestId(requestId);
-      } catch (error) {
-        console.log(error);
-        toast.error("Something went wrong");
-      } finally {
-        setLoadingState(false);
-      }
-    };
     initiatePriceFetching();
   }, []);
 
   const pollPriceStatus = async (requestId) => {
     try {
       const data = await getB2CBulkShipmentPriceStatusService({ requestId: requestId });
+      if (data.total_shipments == 0) {
+        initiatePriceFetching();
+        return true;
+      }
       setProcessedShipments(data.total_processed);
       setTotalShipments(data.total_shipments);
       const prices = (data.prices || []).sort((a, b) => (a.price || 0) - (b.price || 0));
@@ -1270,29 +1274,26 @@ const BulkShipList = ({ batch, isBulkShipOpen, setIsBulkShipOpen, setIsBatchProc
   useEffect(() => {
     if (!requestId) return;
 
+    let timeout;
     let interval;
 
     const startPolling = async () => {
-      const completed = await pollPriceStatus(requestId);
+      timeout = setTimeout(async () => {
+        interval = setInterval(async () => {
+          const completed = await pollPriceStatus(requestId);
 
-      if (completed) {
-        setLoadingState(false);
-        return;
-      }
-
-      interval = setInterval(async () => {
-        const completed = await pollPriceStatus(requestId);
-
-        if (completed) {
-          clearInterval(interval);
-          setLoadingState(false);
-        }
-      }, 2000);
+          if (completed) {
+            clearInterval(interval);
+            setLoadingState(false);
+          }
+        }, 2000);
+      }, 1000);
     };
 
     startPolling();
 
     return () => {
+      if (timeout) clearTimeout(timeout);
       if (interval) clearInterval(interval);
     };
   }, [requestId]);
@@ -1878,8 +1879,8 @@ const Listing = ({ step, setStep }) => {
           clearInterval(interval);
           setIsBatchProcessing(false);
         }
-      }, 500);
-    }, 500);
+      }, 5000);
+    }, 2000);
 
     return () => {
       clearTimeout(timeout);
@@ -2120,7 +2121,7 @@ const Listing = ({ step, setStep }) => {
       try {
         const queryParams = new URLSearchParams({
           page,
-          ...(searchParams.get("batch_id") && { batch_id: searchParams.get("batch_id") }),
+          ...(selectedBatch && { batch_id: selectedBatch }),
           ...(debouncedFilters.customer_name && { customer_name: debouncedFilters.customer_name }),
           ...(debouncedFilters.customer_email && { customer_email: debouncedFilters.customer_email }),
           ...(debouncedFilters.orderId && { orderId: debouncedFilters.orderId }),
@@ -2272,6 +2273,11 @@ const Listing = ({ step, setStep }) => {
         );
       }
     },
+    ...(selectedBatch ? [{
+      field: 'shipping_error',
+      headerName: 'Shipping Error',
+      width: 130,
+    }] : []),
     {
       field: 'actions',
       headerName: 'Actions',
@@ -2327,7 +2333,7 @@ const Listing = ({ step, setStep }) => {
             )}
 
             {/* Clone Button */}
-            {searchParams.get("batch_id") === null &&
+            {!selectedBatch &&
               <Button
                 variant="contained"
                 size="small"
@@ -2498,13 +2504,13 @@ const Listing = ({ step, setStep }) => {
         </Paper>
 
         {
-          searchParams.get("batch_id") !== null ? (
+          selectedBatch ? (
             <div className="w-full relative flex">
               <div
-                onClick={() => !isBatchProcessing ? handleBulkShip(searchParams.get("batch_id")) : null}
+                onClick={() => (bulkManifestedShipments < bulkTotalShipments) ? (!isBatchProcessing ? handleBulkShip(selectedBatch) : null) : null}
                 className="px-5 py-1 bg-blue-500 rounded text-white"
               >
-                {isBatchProcessing ? "Checking..." : "Ship All"}
+                {isBatchProcessing ? "Checking..." : (bulkManifestedShipments < bulkTotalShipments) ? "Ship All" : "Shipped"}
               </div>
               <div
                 className="px-5 py-1 bg-blue-500 absolute rounded text-white right-4"
