@@ -13,6 +13,7 @@ import { USER_ROLES } from '@/Constants'
 import enableUserFeatureService from '@/services/featureServices/enable_user_feature.feature.service'
 import disableUserFeatureService from '@/services/featureServices/disable_user_feature.feature.service'
 import getUserFeaturesByUserRoleIdService from '@/services/featureServices/get_user_features_by_role_id.feature.service'
+import updateCreditLimitService from '@/services/walletServices/updateCreditLimitService'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const View = ({ userRoleId, onClose }) => {
     const [user, setUser] = useState({})
@@ -213,7 +214,7 @@ const MerchantManage = () => {
     // To Pay (Negative Limit) modal state
     const [showToPay, setShowToPay] = useState(false)
     const [selectedToPay, setSelectedToPay] = useState(null)
-    const [toPayForm, setToPayForm] = useState({ negative_limit: '' })
+    const [toPayForm, setToPayForm] = useState({ creditLimit: '' })
     const [toPaySubmitting, setToPaySubmitting] = useState(false)
 
     // Columns definition
@@ -251,8 +252,8 @@ const MerchantManage = () => {
                             className="px-3 py-1 bg-purple-600 text-white rounded-2xl text-sm"
                             onClick={() => {
                                 setSelectedToPay(params.row);
-                                const defaultLimit = (params.row?.negative_value ?? params.row?.negative_limit);
-                                setToPayForm({ negative_limit: (defaultLimit ?? '') === null ? '' : String(defaultLimit ?? '') });
+                                const defaultLimit = (params.row?.credit_limit ?? params.row?.credit_limit);
+                                setToPayForm({ creditLimit: (defaultLimit ?? '') === null ? '' : String(defaultLimit ?? '') });
                                 setShowToPay(true);
                             }}
                         >
@@ -373,44 +374,20 @@ const MerchantManage = () => {
                         <p className='absolute top-4 right-5 cursor-pointer' onClick={() => { if (!toPaySubmitting) setShowToPay(false) }}>X</p>
                         <p className='text-xl font-medium text-center'>To Pay</p>
                         <div className='space-y-2'>
-                            <label className='text-sm font-medium'>Negative Limit (≤ 0)</label>
+                            <label className='text-sm font-medium'>Credit Limit (≥ 0)</label>
                             <input
                                 type='number'
-                                max={0}
+                                min={0}
                                 step='0.01'
                                 className='border rounded-lg px-3 py-2 w-full outline-none focus:ring-2 focus:ring-red-400'
-                                placeholder='Enter negative limit (e.g., -5000)'
-                                value={toPayForm.negative_limit}
-                                onChange={(e) => setToPayForm({ negative_limit: e.target.value })}
+                                placeholder='Enter credit limit (e.g., 5000)'
+                                value={toPayForm.creditLimit}
+                                onChange={(e) => setToPayForm({ creditLimit: e.target.value })}
                                 disabled={toPaySubmitting}
                             />
-                            <p className='text-xs text-gray-500'>Set a negative spending limit for this merchant. Must be less than or equal to 0.</p>
+                            <p className='text-xs text-gray-500'>Set a credit limit for this merchant. Must be greater than or equal to 0.</p>
                         </div>
                         <div className='flex items-center justify-between pt-2'>
-                            {(selectedToPay?.negative_limit !== undefined && selectedToPay?.negative_limit !== null) || (selectedToPay?.negative_value !== undefined && selectedToPay?.negative_value !== null) ? (
-                                <button
-                                    className={`px-3 py-2 rounded-2xl text-sm ${toPaySubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 text-white'}`}
-                                    onClick={async () => {
-                                        if (toPaySubmitting) return;
-                                        try {
-                                            setToPaySubmitting(true)
-                                            await revokeNegativeBalanceService(selectedToPay.user_role_id)
-                                            toast.success('Negative limit removed')
-                                            // Update local rows
-                                            setRows(prev => prev.map(r => r.user_role_id === selectedToPay.user_role_id ? { ...r, negative_limit: null, negative_value: null } : r))
-                                            setShowToPay(false)
-                                        } catch (err) {
-                                            const msg = err instanceof Error ? err.message : 'Failed to remove negative limit'
-                                            toast.error(msg)
-                                        } finally {
-                                            setToPaySubmitting(false)
-                                        }
-                                    }}
-                                    disabled={toPaySubmitting}
-                                >
-                                    Remove Negative Limit
-                                </button>
-                            ) : <div />}
                             <div className='flex items-center space-x-2'>
                                 <button
                                     className={`px-3 py-2 rounded-2xl text-sm border ${toPaySubmitting ? 'opacity-60 cursor-not-allowed' : ''}`}
@@ -423,15 +400,15 @@ const MerchantManage = () => {
                                     className={`px-3 py-2 rounded-2xl text-sm ${toPaySubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 text-white'}`}
                                     onClick={async () => {
                                         if (toPaySubmitting) return;
-                                        const val = parseFloat(toPayForm.negative_limit)
+                                        const val = parseFloat(toPayForm.creditLimit)
                                         if (isNaN(val)) { toast.error('Please enter a number'); return }
-                                        if (val > 0) { toast.error('Negative Limit must be less than or equal to 0'); return }
+                                        if (val < 0) { toast.error('Credit limit must be greater than or equal to 0'); return }
                                         try {
                                             setToPaySubmitting(true)
-                                            await allowNegativeBalanceService(selectedToPay.user_role_id, { negative_limit: val })
-                                            toast.success('Negative limit updated successfully')
+                                            await updateCreditLimitService(selectedToPay.user_role_id, val)
+                                            toast.success('Credit limit updated successfully')
                                             // Update local rows
-                                            setRows(prev => prev.map(r => r.user_role_id === selectedToPay.user_role_id ? { ...r, negative_limit: val, negative_value: val } : r))
+                                            setRows(prev => prev.map(r => r.user_role_id === selectedToPay.user_role_id ? { ...r, credit_limit: val } : r))
                                             setShowToPay(false)
                                         } catch (err) {
                                             const msg = err instanceof Error ? err.message : 'Failed to update negative limit'
