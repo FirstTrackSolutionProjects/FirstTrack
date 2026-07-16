@@ -3,7 +3,8 @@ const API_URL = import.meta.env.VITE_APP_API_URL
 
 const shipB2CBulkShipmentService = async ({
     batchId,
-    service
+    service,
+    walletType
 }) => {
     try {
         if (!batchId) {
@@ -20,7 +21,8 @@ const shipB2CBulkShipmentService = async ({
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                service
+                service,
+                walletType,
             })
         });
         let data;

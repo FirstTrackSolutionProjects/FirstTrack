@@ -9,12 +9,14 @@ import { IconButton, Box } from '@mui/material';
 import * as XLSX from 'xlsx';
 import { toast } from 'react-toastify';
 import getAllTransactionsDataService from '../services/transactionServices/getAllTransactionDataService';
+import { WALLET_TYPES } from '@/Constants';
 
 const PAGE_SIZE = 50;
 
 const columns = [
   { field: 'DATE', headerName: 'Date', flex: 1, valueGetter: p => p?.row?.DATE, renderCell: p => new Date(p.row.DATE).toLocaleString(), minWidth: 175 },
   { field: 'TRANSACTION_TYPE', headerName: 'Type', flex: 1, minWidth: 100 },
+  { field: 'WALLET_TYPE', headerName: "Wallet Type", flex: 1, minWidth: 100},
   { field: 'ORDER_ID', headerName: 'Order ID', flex: 1, minWidth: 100 },
   { field: 'shipment_details', headerName: 'Shipment Details', minWidth: 200,
         renderCell: (params) => (
@@ -56,6 +58,7 @@ const TransactionHistory = () => {
     const [page, setPage] = useState(1); // server 1-based
     const [filters, setFilters] = useState({
         type: 'all',
+        walletType: 'all',
         order_id: '',
         awb: '',
         startDate: getFilterStartDate(),
@@ -85,6 +88,7 @@ const TransactionHistory = () => {
                 endDate: convertToUTCISOString(`${debouncedFilters.endDate}T23:59:59.999`),
                 order_id: debouncedFilters.order_id,
                 awb: debouncedFilters.awb,
+                walletType: debouncedFilters.walletType,
                 type: debouncedFilters.type
             });
             // Build a stable unique id; order_id can repeat across different types (e.g. expense & refund for same order)
@@ -163,7 +167,7 @@ const TransactionHistory = () => {
             <div className='w-full max-w-7xl px-4 flex flex-col gap-4'>
                 <h1 className='text-2xl font-semibold text-center'>Transaction History</h1>
                 <div className='bg-blue-500 text-white p-4 rounded-lg space-y-4'>
-                    <div className='grid md:grid-cols-6 gap-3'>
+                    <div className='grid md:grid-cols-7 gap-3'>
                         <select name='type' value={filters.type} onChange={handleFilterChange} className='p-2 rounded text-black bg-white'>
                             <option value='all'>All Types</option>
                             <option value='recharge'>Recharge</option>
@@ -178,6 +182,14 @@ const TransactionHistory = () => {
                         <input type='text' name='awb' value={filters.awb} onChange={handleFilterChange} placeholder='AWB' className='p-2 rounded text-black bg-white'/>
                         <input type='date' name='startDate' value={filters.startDate} onChange={handleFilterChange} className='p-2 rounded text-black bg-white'/>
                         <input type='date' name='endDate' value={filters.endDate} onChange={handleFilterChange} className='p-2 rounded text-black bg-white'/>
+                        <select name='walletType' value={filters.walletType} onChange={handleFilterChange} className='p-2 rounded text-black bg-white'>
+                          <option value='all'>ALL WALLETS</option>
+                          {Object.values(WALLET_TYPES).map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </select>
                         <IconButton
                             onClick={async () => {
                               try {

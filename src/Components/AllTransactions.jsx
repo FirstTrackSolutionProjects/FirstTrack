@@ -9,13 +9,14 @@ import { IconButton, Box } from '@mui/material';
 import * as XLSX from 'xlsx';
 import { toast } from 'react-toastify';
 import getAllTransactionsDataService from '../services/transactionServices/getAllTransactionDataService';
-import { TRANSACTION_TYPES, USER_ROLES } from '@/Constants';
+import { TRANSACTION_TYPES, USER_ROLES, WALLET_TYPES } from '@/Constants';
 
 const PAGE_SIZE = 50; // backend admin endpoint uses 50
 
 const columns = [
   { field: 'DATE', headerName: 'Date', flex: 1, renderCell: p => new Date(p.row.DATE).toLocaleString(), minWidth: 175 },
   { field: 'TRANSACTION_TYPE', headerName: 'Type', flex: 1, minWidth: 100 },
+  { field: 'WALLET_TYPE', headerName: "Wallet Type", flex: 1, minWidth: 100},
   { field: 'ORDER_ID', headerName: 'Order ID', flex: 1, minWidth: 100 },
   { field: 'merchant_details', headerName: 'User Details', minWidth: 250,
       renderCell: (params) => (
@@ -69,6 +70,7 @@ const AllTransactions = () => {
   // Filters
   const [filters, setFilters] = useState({
     type: 'all',
+    walletType: 'all',
     order_id: '',
     awb: '',
     merchant_email: '',
@@ -108,6 +110,7 @@ const AllTransactions = () => {
         merchant_name: debouncedFilters.merchant_name,
         merchant_business_name: debouncedFilters.merchant_business_name,
         type: debouncedFilters.type,
+        walletType: debouncedFilters.walletType,
         role: debouncedFilters.role
       });
       const incoming = data?.rows || [];
@@ -204,6 +207,14 @@ const AllTransactions = () => {
               {Object.values(USER_ROLES).map((role) => (
                 <option key={role} value={role}>
                   {role}
+                </option>
+              ))}
+            </select>
+            <select name='walletType' value={filters.walletType} onChange={handleFilterChange} className='p-2 rounded text-black bg-white'>
+              <option value='all'>ALL WALLETS</option>
+              {Object.values(WALLET_TYPES).map((type) => (
+                <option key={type} value={type}>
+                  {type}
                 </option>
               ))}
             </select>

@@ -9,6 +9,8 @@ import { FaWallet } from 'react-icons/fa'; // Added FaWallet icon
 import getAvailableRoles from '../services/roleServices/getAvailableRoles';
 import changeRoleService from '../services/roleServices/changeRoleService';
 import { toast } from 'react-toastify';
+import getWalletBalanceService from '@/services/walletServices/getWalletBalanceService';
+import { FaIndianRupeeSign } from 'react-icons/fa6';
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -17,6 +19,8 @@ const Header = () => {
   const {isAuthenticated, name, logout, verified, role} = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showRecharge, setShowRecharge] = useState(false);
+  const [showCreditDetails, setShowCreditDetails] = useState(false);
+  const creditDetailsRef = useRef(null);
 
   // Lock body scroll when sidebar is open
   useEffect(() => {
@@ -97,6 +101,17 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', onMouseDown)
   }, [roleMenuOpen])
 
+  useEffect(() => {
+    if (!showCreditDetails) return
+    const onMouseDown = (e) => {
+      if (!creditDetailsRef.current?.contains(e.target)) {
+        setShowCreditDetails(false)
+      }
+    }
+    document.addEventListener('mousedown', onMouseDown)
+    return () => document.removeEventListener('mousedown', onMouseDown)
+  }, [showCreditDetails])
+
   const handleSwitchRole = async (nextRole) => {
     try {
       const nextUserRoleId = nextRole?.user_role_id
@@ -160,27 +175,21 @@ const Header = () => {
       </div>
     )
   }
+  const INITIAL_WALLET_DATA = {
+    balance: 0,
+    balanceInUse: 0,
+    credits: 0,
+    creditsInUse: 0,
+    creditLimit: 0,
+    outstandingCredits: 0
+  }
 
-  const [balance, setBalance] = useState(0.00);
+  const [walletData, setWalletData] = useState(INITIAL_WALLET_DATA);
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const response = await fetch(`${API_URL}/wallet/balance`, {
-          method: 'POST',
-          headers: {
-            "Authorization": localStorage.getItem("token"),
-          }
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
-        if (result && result.balance !== undefined) {
-          const parsedBalance = parseFloat(result.balance);
-          setBalance(isNaN(parsedBalance) ? 0.00 : parsedBalance);
-        } else {
-          setBalance(0.00);
-        }
+        const data = await getWalletBalanceService();
+        setWalletData(data);
       } catch (error) {
         console.error("Error fetching balance:", error);
       }
@@ -240,31 +249,75 @@ const Header = () => {
             {(isAuthenticated &&
               verified &&
               location.pathname.startsWith("/dashboard")) && (
-              <div className="shrink-0">
+              <div className="shrink-0 flex flex-col gap-1">
                 <div
+                  title='Wallet Balance'
                   onClick={() => setShowRecharge(true)}
                   className={`relative bg-indigo-600 text-white flex items-center font-semibold rounded-full 
-                    px-2 py-0.5 sm:px-3 sm:py-1 md:px-4 md:py-2 text-xs sm:text-sm md:text-base cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap ${
-                    balance < 250
+                    px-2 py-0 sm:px-3 sm:py-0 md:px-4 md:py-0 text-xs sm:text-sm md:text-base cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap ${
+                    walletData.balance < 250
                       ? "ring-2 ring-red-500 ring-offset-1 bg-red-500"
                       : "hover:scale-105"
                   }`}
                   aria-label={`Current balance: ₹${formatBalance(
-                    balance
+                    walletData.balance
                   )}. Click to recharge.`}
                 >
                   <FaWallet className="mr-1 md:mr-2 text-xs sm:text-sm md:text-lg" />
                   <p className="flex items-center">
                     <span className="hidden min-[420px]:inline mr-0.5">₹</span>
-                    {formatBalance(balance)}
+                    {formatBalance(walletData.balance)}
                   </p>
                 
-                  {balance < 250 && (
+                  {walletData.balance < 250 && (
                     <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex items-center justify-center text-xs sm:text-sm md:text-base font-bold animate-pulse">
                       !
                     </span>
                   )}
                 </div>
+                {(walletData.creditLimit > 0 || walletData.credits != 0) && (
+                  <div className="relative" ref={creditDetailsRef}>
+                    <div
+                      title={`Credit Balance`}
+                      onClick={() => setShowCreditDetails((v) => !v)}
+                      className={`relative bg-indigo-600 text-white flex items-center font-semibold rounded-full 
+                        px-2 py-0 sm:px-3 sm:py-0 md:px-4 md:py-0 text-xs sm:text-sm md:text-base cursor-pointer transition-all duration-200 shadow-sm whitespace-nowrap ${
+                        walletData.credits < 250
+                          ? "ring-2 ring-red-500 ring-offset-1 bg-red-500"
+                          : "hover:scale-105"
+                      }`}
+                      aria-label={`Current credit balance: ₹${formatBalance(walletData.credits)}. Click for details.`}
+                    >
+                      <FaIndianRupeeSign className="mr-1 md:mr-2 text-xs sm:text-sm md:text-lg" />
+                      <p className="flex items-center">
+                        <span className="hidden min-[420px]:inline mr-0.5">₹</span>
+                        {formatBalance(walletData.credits)}
+                      </p>
+
+                      {walletData.credits < 250 && (
+                        <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex items-center justify-center text-xs sm:text-sm md:text-base font-bold animate-pulse">
+                          !
+                        </span>
+                      )}
+                    </div>
+
+                    {showCreditDetails && (
+                      <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-3 text-sm text-gray-700 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-500 font-medium">Credit Limit</span>
+                          <span className="font-semibold text-indigo-700">₹{formatBalance(walletData.creditLimit)}</span>
+                        </div>
+                        <div className="border-t border-gray-100" />
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-500 font-medium">Used Amount</span>
+                          <span className={`font-semibold ${walletData.outstandingCredits > 0 ? 'text-red-500' : 'text-green-600'}`}>
+                            ₹{formatBalance(walletData.outstandingCredits)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 

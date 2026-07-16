@@ -32,7 +32,7 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import TrackingShareDialog from './TrackingShareDialog';
 import convertToUTCISOString from "../helpers/convertToUTCISOString";
-import { DOMESTIC_ORDER_STATUS_ENUMS } from "@/Constants";
+import { DOMESTIC_ORDER_STATUS_ENUMS, WALLET_TYPES } from "@/Constants";
 import WarehouseSelect from "./UiComponents/WarehouseSelect";
 import getB2CBulkShipmentPriceService from "@/services/bulkServices/get_batch_price.bulk.service";
 import getB2CBulkShipmentPriceStatusService from "@/services/bulkServices/get_batch_price_status.bulk.service";
@@ -968,28 +968,11 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
 };
 
 
-const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
+const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels, walletType }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const ship = async () => {
     setIsLoading(true);
-    const getBalance = await fetch(`${API_URL}/wallet/balance`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': localStorage.getItem('token'),
-      }
-    });
-    const balanceData = await getBalance.json();
-    const balance = balanceData.balance;
-
-    if ((parseFloat(balance) < (parseFloat(price.price)))) {
-      alert('Insufficient balance to create shipment');
-      setIsLoading(false);
-      return;
-    }
-
     fetch(`${API_URL}/shipment/domestic/create`, {
       method: 'POST',
       headers: {
@@ -999,7 +982,8 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
       },
       body: JSON.stringify({
         orderId: shipment.ord_id,
-        service: price
+        service: price,
+        walletType: walletType,
       })
     }).then(response => response.json()).then(async result => {
       if (result.success) {
@@ -1057,12 +1041,12 @@ const ShipCard = ({ price, shipment, setIsShipped, setIsShip, getParcels }) => {
   );
 };
 
-const BulkShipCard = ({ price, batchId, pricesLoading, setIsBatchProcessing, setIsBulkShipOpen }) => {
+const BulkShipCard = ({ price, batchId, pricesLoading, setIsBatchProcessing, setIsBulkShipOpen, walletType }) => {
   const [isLoading, setIsLoading] = useState(false);
   const shipBulk = async (price) => {
     setIsLoading(true);
     try {
-      await shipB2CBulkShipmentService({ batchId: batchId, service: price });
+      await shipB2CBulkShipmentService({ batchId: batchId, service: price, walletType: walletType });
       setIsBatchProcessing(true);
       setIsBulkShipOpen(false);
       toast.success("Bulk Shipment Request Accepted!")
@@ -1119,6 +1103,7 @@ const ShipList = ({ shipment, isShipOpen, setIsShipOpen, setIsShipped, getParcel
   if (!isShipOpen) return null;
   const [prices, setPrices] = useState([]);
   const [boxes, setBoxes] = useState([]);
+  const [walletType, setWalletType] = useState(WALLET_TYPES.WALLET);
 
   useEffect(() => {
     if (!isShipOpen) return;
@@ -1200,6 +1185,22 @@ const ShipList = ({ shipment, isShipOpen, setIsShipOpen, setIsShipped, getParcel
         </Box>
       </DialogTitle>
       <DialogContent>
+        <Box sx={{ mt:2, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <InputLabel id="wallet-type-label">Pay With</InputLabel>
+            <Select
+              labelId="wallet-type-label"
+              id="wallet-type-select"
+              value={walletType}
+              label="Pay With"
+              onChange={(e) => setWalletType(e.target.value)}
+            >
+              {Object.values(WALLET_TYPES).map((type) => (
+                <MenuItem key={type} value={type}>{type === WALLET_TYPES.WALLET ? 'Wallet Balance' : 'Credit Balance'}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
         <Box sx={{ mt: 2 }}>
           {prices.length ? prices.map((price, index) => (
             <ShipCard
@@ -1209,6 +1210,7 @@ const ShipList = ({ shipment, isShipOpen, setIsShipOpen, setIsShipped, getParcel
               shipment={shipment}
               price={price}
               getParcels={getParcels}
+              walletType={walletType}
             />
           )) : (
             <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -1228,6 +1230,7 @@ const BulkShipList = ({ batch, isBulkShipOpen, setIsBulkShipOpen, setIsBatchProc
   const [totalShipments, setTotalShipments] = useState(null);
   const [processedShipments, setProcessedShipments] = useState(null);
   const [requestId, setRequestId] = useState(null);
+  const [walletType, setWalletType] = useState(WALLET_TYPES.WALLET);
 
   const initiatePriceFetching = async () => {
     try {
@@ -1318,6 +1321,22 @@ const BulkShipList = ({ batch, isBulkShipOpen, setIsBulkShipOpen, setIsBatchProc
         </Box>
       </DialogTitle>
       <DialogContent>
+        <Box sx={{ mt: 2, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <InputLabel id="bulk-wallet-type-label">Pay With</InputLabel>
+            <Select
+              labelId="bulk-wallet-type-label"
+              id="bulk-wallet-type-select"
+              value={walletType}
+              label="Pay With"
+              onChange={(e) => setWalletType(e.target.value)}
+            >
+              {Object.values(WALLET_TYPES).map((type) => (
+                <MenuItem key={type} value={type}>{type === WALLET_TYPES.WALLET ? 'Wallet Balance' : 'Credit Balance'}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
         <Box sx={{ mt: 2 }}>
           {prices.length ? prices.map((price, index) => (
             <BulkShipCard
@@ -1326,6 +1345,7 @@ const BulkShipList = ({ batch, isBulkShipOpen, setIsBulkShipOpen, setIsBatchProc
               setIsBatchProcessing={setIsBatchProcessing}
               price={price}
               batchId={batch}
+              walletType={walletType}
             />
           )) : (
             <Box sx={{ textAlign: 'center', py: 4 }}>

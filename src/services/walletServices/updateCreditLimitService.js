@@ -1,13 +1,14 @@
 const API_URL = import.meta.env.VITE_APP_API_URL
 
-const getWalletBalanceService = async () => {
+const updateCreditLimitService = async (userRoleId, newLimit) => {
     try {
-        const response = await fetch(`${API_URL}/wallet/balance`, {
+        const response = await fetch(`${API_URL}/wallet/update-credit-limit`, {
             method: "POST",
             headers: {
               Authorization: localStorage.getItem("token"),
               "Content-Type": "application/json",
-            }
+            },
+            body: JSON.stringify({ userRoleId, newLimit })
           });
         let data;
         try {
@@ -26,4 +27,4 @@ const getWalletBalanceService = async () => {
     }
 }
 
-export default getWalletBalanceService;
+export default updateCreditLimitService;

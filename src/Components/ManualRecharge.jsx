@@ -1,4 +1,4 @@
-import { USER_ROLES } from "@/Constants";
+import { USER_ROLES, WALLET_TYPES } from "@/Constants";
 import React, { useState } from "react";
 const API_URL = import.meta.env.VITE_APP_API_URL
 const ManualRecharge = () => {
@@ -6,6 +6,7 @@ const ManualRecharge = () => {
         email : '',
         amount : '',
         reason : '',
+        walletType: "WALLET",
         role: USER_ROLES.MERCHANT
     })
     const handleChange = (e) => {
@@ -77,6 +78,7 @@ const ManualRecharge = () => {
                 required
               />
             </div>
+            <div className="w-full flex mb-2 flex-wrap ">
             <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
               <label htmlFor="role">Role</label>
               <select
@@ -92,7 +94,17 @@ const ManualRecharge = () => {
                 <option value={USER_ROLES.SUBMERCHANT}>Submerchant</option>
               </select>
             </div>
-          
+            <div className="flex-1 mx-2 mb-2 min-w-[300px] space-y-2">
+              <label htmlFor="walletType">Wallet Type</label>
+              <select name='walletType' className="w-full border py-2 px-4 rounded" value={formData.walletType} onChange={handleChange}>
+              {Object.values(WALLET_TYPES).map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+            </div>
+            </div>
             <button type="submit" className="border bg-white mx-2  py-2 px-4 rounded">
               Recharge
             </button>

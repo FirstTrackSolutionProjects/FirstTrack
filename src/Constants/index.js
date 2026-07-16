@@ -48,6 +48,11 @@ export const FEATURES = Object.freeze({
   SUBMERCHANTS: "SUBMERCHANTS",
 })
 
+export const WALLET_TYPES = Object.freeze({
+  WALLET: 'WALLET',
+  CREDITS: 'CREDITS',
+})
+
 export const Admincards = [
   {
     id: '1',
