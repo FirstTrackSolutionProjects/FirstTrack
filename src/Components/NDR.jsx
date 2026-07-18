@@ -497,7 +497,7 @@ const Listing = () => {
   const handleGetLabel = async (shipmentIds) => {
     try {
       if (!Array.isArray(shipmentIds)) {
-        shipmentIds = [shipmentIds.ref_id];
+        shipmentIds = [shipmentIds.ord_id];
       }
       const response = await fetch(`${API_URL}/shipment/domestic/label`, {
         method: 'POST',
@@ -894,7 +894,7 @@ const Listing = () => {
             disableSelectionOnClick
             checkboxSelection
             onRowSelectionModelChange={setSelection}
-            getRowId={(row) => row.ref_id}
+            getRowId={(row) => row.ord_id}
             sx={{
               border: '1px solid #000',
               borderRadius: 0,
