@@ -1,16 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaFacebook, FaInstagram, FaYoutube, FaLinkedin, FaTwitter } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt, faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FaWhatsapp } from "react-icons/fa6";
 import { useInView } from 'react-intersection-observer';
+import sendContactEmailService from '../services/sendContactEmailService';
 
+const INITIAL_FORM = { name: '', email: '', mobile: '', subject: '', message: '' };
 
 const ContactUs = () => {
     const { ref, inView } = useInView({
         triggerOnce: true,
         threshold: 0.1,
     });
+
+    const [form, setForm] = useState(INITIAL_FORM);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState('');
+    const [error, setError] = useState('');
+
+    const handleChange = (e) => {
+        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+        setError('');
+        setSuccess('');
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const { name, email, mobile, subject, message } = form;
+
+        if (!name || !email || !mobile || !subject || !message) {
+            setError('All fields are required.');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            const res = await sendContactEmailService(name, email, mobile, subject, message);
+            if (res?.status === 200) {
+                setSuccess('Your message has been sent successfully! We\'ll get back to you soon.');
+                setForm(INITIAL_FORM);
+            } else {
+                setError(res?.message || 'Something went wrong. Please try again.');
+            }
+        } catch (err) {
+            setError('Failed to send message. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
   return (
     <div className="font-inter text-gray-800">
@@ -53,12 +94,32 @@ const ContactUs = () => {
                     }`}
                 >
                     <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-6">Send Us a <span className="text-green-600">Message</span></h3>
-                    <form className="space-y-5">
+
+                    {/* Success Banner */}
+                    {success && (
+                        <div className="mb-5 flex items-start gap-3 bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm font-medium">
+                            <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                            {success}
+                        </div>
+                    )}
+
+                    {/* Error Banner */}
+                    {error && (
+                        <div className="mb-5 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-medium">
+                            <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
+                            {error}
+                        </div>
+                    )}
+
+                    <form className="space-y-5" onSubmit={handleSubmit} noValidate>
                     <div>
                         <label htmlFor="name" className="sr-only">Name</label>
                         <input
                         type="text"
                         id="name"
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
                         className="mt-1 block w-full p-4 border border-gray-300 rounded-xl focus:ring-green-500 focus:border-green-500 shadow-sm transition-all duration-300 placeholder-gray-500"
                         placeholder="Your Name"
                         />
@@ -68,15 +129,21 @@ const ContactUs = () => {
                         <input
                         type="email"
                         id="email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleChange}
                         className="mt-1 block w-full p-4 border border-gray-300 rounded-xl focus:ring-green-500 focus:border-green-500 shadow-sm transition-all duration-300 placeholder-gray-500"
                         placeholder="Your Email"
                         />
                     </div>
                     <div>
-                        <label htmlFor="phone" className="sr-only">Phone</label>
+                        <label htmlFor="mobile" className="sr-only">Phone</label>
                         <input
                         type="tel"
-                        id="phone"
+                        id="mobile"
+                        name="mobile"
+                        value={form.mobile}
+                        onChange={handleChange}
                         className="mt-1 block w-full p-4 border border-gray-300 rounded-xl focus:ring-green-500 focus:border-green-500 shadow-sm transition-all duration-300 placeholder-gray-500"
                         placeholder="Your Phone Number"
                         />
@@ -86,6 +153,9 @@ const ContactUs = () => {
                         <input
                         type="text"
                         id="subject"
+                        name="subject"
+                        value={form.subject}
+                        onChange={handleChange}
                         className="mt-1 block w-full p-4 border border-gray-300 rounded-xl focus:ring-green-500 focus:border-green-500 shadow-sm transition-all duration-300 placeholder-gray-500"
                         placeholder="Subject"
                         />
@@ -94,6 +164,9 @@ const ContactUs = () => {
                         <label htmlFor="message" className="sr-only">Message</label>
                         <textarea
                         id="message"
+                        name="message"
+                        value={form.message}
+                        onChange={handleChange}
                         className="mt-1 block w-full p-4 border border-gray-300 rounded-xl focus:ring-green-500 focus:border-green-500 shadow-sm transition-all duration-300 placeholder-gray-500"
                         rows="6"
                         placeholder="Your Message"
@@ -101,10 +174,23 @@ const ContactUs = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full py-4 px-8 bg-green-600 text-white font-bold rounded-xl shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                        disabled={loading}
+                        className="w-full py-4 px-8 bg-green-600 text-white font-bold rounded-xl shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                     >
-                        Send Message
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        {loading ? (
+                            <>
+                                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                                </svg>
+                                Sending…
+                            </>
+                        ) : (
+                            <>
+                                Send Message
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </>
+                        )}
                     </button>
                     </form>
                 </div>
