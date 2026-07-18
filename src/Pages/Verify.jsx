@@ -275,7 +275,7 @@ const Verify = () => {
       toast.success(data?.message || "Verification request submitted successfully");
       setView("pending");
     } catch (error) {
-      toast.error("Failed to submit verification request");
+      toast.error(error.message || "Failed to submit verification request");
       console.error(error);
     } finally {
       setIsSubmitting(false);

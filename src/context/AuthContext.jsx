@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const decoded = await validateToken();
         setAuthState({ isAuthenticated: true, email: decoded.email, verified: decoded.verified, name: decoded.name, id: decoded.id, business_name: decoded.business_name, role: decoded.role, phone: decoded.phone });
-        if (decoded.role !== USER_ROLES.ADMIN){
+        if (![USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT].includes(decoded.role) && decoded.verified){
           const features = await getUserFeaturesService();
           setFeatures(features);
         }
