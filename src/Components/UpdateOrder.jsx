@@ -1725,10 +1725,10 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
                 </Typography>
                 <Box sx={{ pl: 2.5 }}>
                   <Typography variant="body2" fontWeight="700" color="text.primary" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
-                    {shipment.warehouse_city}, {shipment.warehouse_state}
+                    {shipment.city}, {shipment.state}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
-                    {shipment.warehouse_country} — {shipment.warehouse_pin}
+                    {shipment.country} — {shipment.pin}
                   </Typography>
                 </Box>
               </Box>

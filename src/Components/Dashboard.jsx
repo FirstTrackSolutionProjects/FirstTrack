@@ -53,7 +53,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className='h-[calc(100vh-86px)] flex font-inter bg-[#f8fafc] text-gray-800'> {/* Adjusted background to a lighter, softer shade */}
+    <div className='h-[calc(100vh-72px)] flex font-inter bg-[#f8fafc] text-gray-800'> {/* Adjusted background to a lighter, softer shade */}
       <Sidebar2 />
       <main className="flex-grow justify-center items-center overflow-y-auto">
         <Routes>

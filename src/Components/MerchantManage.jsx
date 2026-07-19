@@ -14,6 +14,7 @@ import enableUserFeatureService from '@/services/featureServices/enable_user_fea
 import disableUserFeatureService from '@/services/featureServices/disable_user_feature.feature.service'
 import getUserFeaturesByUserRoleIdService from '@/services/featureServices/get_user_features_by_role_id.feature.service'
 import updateCreditLimitService from '@/services/walletServices/updateCreditLimitService'
+import { Box } from '@mui/material'
 const API_URL = import.meta.env.VITE_APP_API_URL
 const View = ({ userRoleId, onClose }) => {
     const [user, setUser] = useState({})
@@ -225,7 +226,32 @@ const MerchantManage = () => {
         { field: 'email', headerName: 'Email', flex: 1.2, minWidth: 200 },
         { field: 'phone', headerName: 'Phone', width: 140 },
         { field: 'user_role', headerName: 'Role', width: 120 },
-        { field: 'balance', headerName: 'Balance', width: 120, renderCell: (p) => p.value !== undefined && p.value !== null ? `₹${p.value}` : '₹0' },
+        { field: 'merchant_details', headerName: 'Merchant Details', width: 200, renderCell: (params) => {
+            return (
+              <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 80 }}>
+                {params.row.merchantName ? (
+                  <>
+                    <div>{params.row.merchantName}</div>
+                    <div>{params.row.merchantEmail}</div>
+                    <div>{params.row.merchantPhone}</div>
+                  </>
+                ) : (
+                  <div style={{ color: '#666' }}>N/A</div>
+                )}
+              </Box>
+            );
+          } 
+        },
+        { field: 'balance', headerName: 'Balance', width: 160, renderCell: (p) => {
+            return(
+                <Box sx={{ whiteSpace: 'normal', lineHeight: 1.5, display: 'flex', flexDirection: 'column', justifyContent: 'center', height: 80 }}>
+                    <div> Balance : {p.value !== undefined && p.value !== null ? `₹${p.value}` : '₹0'}</div>
+                    <div> Credit Balance : {p.row.credits && p.value !== null ? `₹${p.row.credits}` : '₹0'}</div>
+                    <div> Credit Limit : {p.row.credit_limit !== undefined && p.value !== null ? `₹${p.row.credit_limit}` : '₹0'}</div>
+                    <div> Used Credits : ₹{p.row.credit_limit - p.row.credits} </div>
+                </Box>
+            )
+        } },
         { field: 'total_revenue', headerName: 'Total Revenue', width: 120, renderCell: (p) => p.value !== undefined && p.value !== null ? `₹${parseFloat(p.value).toFixed(2)}` : '₹0.00' },
         { field: 'createdAt', headerName: 'Joined', width: 170, renderCell: (p) => p.value ? new Date(p.value).toLocaleString() : '' },
         {
@@ -513,7 +539,7 @@ const MerchantManage = () => {
                                 density="compact"
                                 disableColumnMenu
                                 hideFooter
-                                rowHeight={64}
+                                rowHeight={120}
                                 columnHeaderHeight={64}
                                 sx={{
                                     border: '1px solid #000',

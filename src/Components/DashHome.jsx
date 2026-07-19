@@ -46,12 +46,15 @@ const DashHome = () => {
         <Greeting />
         <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-8 p-5 '>
             {admin ? <DashCard title="Total Merchants" count={summary?summary.merchant:0} /> : null}
+            {admin ? <DashCard title="Total Submerchants" count={summary?summary.submerchantCount:0} /> : null}
             <DashCard title="Total Warehouses" count={summary?summary.warehouse:0} />
             <DashCard title="Total Shipments" count={summary?summary.shipment:0} />
             <DashCard title="Total Delivered" count={summary?summary.delivered:0} />
-            <DashCard title="Pending Pickups" count={summary?summary.unDelivered:0} />
+            <DashCard title="Total Manifested" count={summary?summary.unDelivered:0} />
             <DashCard title={admin?`Total Revenue`:`Total Wallet Recharge`} count={summary? (admin ? summary.revenue : summary.total_recharge) :0}/>
-            <DashCard title="Parcel on process" count={summary?summary.inTransit:0} />
+            <DashCard title="In Transit" count={summary?summary.inTransit:0} />
+            <DashCard title="Out For Delivery" count={summary?summary.outForDeliveries:0} />
+            <DashCard title="RTO" count={summary?summary.rtoShipment:0} />
             {/* <DashCard title="Parcel Return" count="0" /> */}
             {/* <DashCard title="NDR Parcel" count="0" /> */}
           {/* {cards.map((card) =>(
