@@ -116,7 +116,7 @@ const uploadFileToS3 = async (file, key) => {
             Authorization: localStorage.getItem('token'),
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ filename: key, filetype: file.type }),
+        body: JSON.stringify({ filename: key, filetype: file.type, isPublic: true }),
     });
     if (!urlRes.ok) throw new Error('Failed to get upload URL');
     const { uploadURL } = await urlRes.json();
