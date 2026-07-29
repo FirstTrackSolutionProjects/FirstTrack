@@ -19,9 +19,6 @@ const WalletRechargeModal = ({onClose}) => {
         initializeSDK()
     }, [])
 
-    useEffect(()=>{
-        console.log(cashfree)
-    },[cashfree])
     const getOrderId = async () => {
         const request = await fetch(`${API_URL}/wallet/cashfree/create/order`,{
             method: 'POST',
