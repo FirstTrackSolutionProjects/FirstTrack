@@ -9,6 +9,8 @@ const WalletRechargeModal = ({onClose}) => {
     const [amount, setAmount] = useState(500)
     //Cashfree Integration Starts
     const [cashfree, setCashfree] = useState()
+    const [paymentId, setPaymentId] = useState('')
+    const [loading, setLoading] = useState(false)
     const initializeSDK = async () => {          
         const cashfree = await load({
             mode: "production"
@@ -24,7 +26,8 @@ const WalletRechargeModal = ({onClose}) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
                 orderAmount : amount
@@ -86,20 +89,113 @@ const WalletRechargeModal = ({onClose}) => {
             }
         });
     };
-    const handleSubmit = async (e) => {
+    const handleCashfreeRecharge = async (e) => {
         e.preventDefault()
-        const orderData = await getOrderId()
-        console.log(orderData)
-        if(orderData?.success){
-            await doPayment(orderData?.paymentSessionId, orderData?.orderId)
-        } else {
-            toast.error("Failed to recharge, please try again!");
+        try{
+            setLoading(true)
+            const orderData = await getOrderId()
+            console.log(orderData)
+            if(orderData?.success){
+                await doPayment(orderData?.paymentSessionId, orderData?.orderId)
+            } else {
+                toast.error("Failed to recharge, please try again!");
+            }
+        } catch (error) {
+            toast.error(error.message || "Recharge Failed! If payment is deducted from your account, please contact support team.")
+        } finally {
+            setLoading(false)
         }
     }
     //Cashfree Integration Ends
+
+    //Razorpay Integration Starts
+    const loadRazorpayScript = () => {
+      return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
+    };
+    const handleRazorpayRecharge = async (e) => {
+      e.preventDefault()
+      try{
+        const response = await fetch(`${API_URL}/wallet/razorpay/CreateOrderId`, {
+          method: 'POST',
+          body: JSON.stringify({ amount }),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          },
+        });
+        const data = await response.json();
+
+        const res = await loadRazorpayScript();
+      
+        if (!res) {
+          alert('Razorpay SDK failed to load. Are you online?');
+          return;
+        }
+      
+
+        const options = {
+          key: import.meta.env.VITE_APP_RAZORPAY_API_ID, // Replace with your Razorpay key ID
+          amount: amount*100, // Amount is in paise (50000 paise = INR 500)
+          currency: 'INR',
+          name: 'Your Company Name',
+          description: 'Test Transaction',
+          image: 'logo.webp',
+          order_id: data.id,
+          handler: async function (response) {
+            const verifyResponse = await fetch(`${API_URL}/wallet/verify/recharge`, {
+              method: 'POST',
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': localStorage.getItem('token')
+              },
+            });
+            const verifyData = await verifyResponse.json();
+            if (verifyData.success) {
+              toast.success("Recharge successful!");
+              setPaymentId(response.razorpay_payment_id);
+            } else {
+              toast.error(verifyData.error);
+            }
+          },
+          prefill: {
+            name: 'Your Name',
+            email: 'youremail@example.com',
+            contact: '9999999999',
+          },
+          notes: {
+            address: 'Corporate Office',
+          },
+          theme: {
+            color: '#3399cc',
+          },
+        };
+      
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+      } catch (error) {
+        console.error(error)
+        toast.error(error.message || "Recharge Failed! If payment is deducted from your account, please contact support team.")
+      } finally {
+        setLoading(false)
+      }
+    };
+    //Razorpay Integration Ends
   return (
     <div className='fixed inset-0 flex items-center justify-center z-50 bg-[rgba(0,0,0,0.5)]'>
-      <form className='relative mx-2 w-full sm:w-[500px] flex flex-col items-center bg-white rounded-2xl p-8 space-y-8' onSubmit={handleSubmit}>
+      <form className='relative mx-2 w-full sm:w-[500px] flex flex-col items-center bg-white rounded-2xl p-8 space-y-8'>
       <div className='absolute right-6 hover:bg-blue-500 w-7 h-7 rounded-full flex items-center justify-center hover:text-white' onClick={onClose}>
           X
         </div>
@@ -108,16 +204,25 @@ const WalletRechargeModal = ({onClose}) => {
       <input
         type="number"
         value={amount}
-        min={100}
+        min={1}
         onChange={(e) => setAmount(e.target.value)}
         className='w-full border py-2 px-4 rounded-3xl'
       />
       <div className='flex w-full justify-evenly'>
-      <button className='w-20 border py-2 px-4 rounded-3xl hover:bg-blue-500 hover:text-white' onClick={()=>{setAmount(500)}}>500</button>
-      <button className='w-20 border py-2 px-4 rounded-3xl hover:bg-blue-500 hover:text-white' onClick={()=>{setAmount(1000)}}>1000</button>
-      <button className='w-20 border py-2 px-4 rounded-3xl hover:bg-blue-500 hover:text-white' onClick={()=>{setAmount(2000)}}>2000</button>
+      <button type='button' className='w-20 border py-2 px-4 rounded-3xl hover:bg-blue-500 hover:text-white' onClick={()=>{setAmount((prev) => prev+500)}}>+500</button>
+      <button type='button' className='w-20 border py-2 px-4 rounded-3xl hover:bg-blue-500 hover:text-white' onClick={()=>{setAmount((prev) => prev+1000)}}>+1000</button>
+      <button type='button' className='w-20 border py-2 px-4 rounded-3xl hover:bg-blue-500 hover:text-white' onClick={()=>{setAmount((prev) => prev+2000)}}>+2000</button>
       </div>
-      <button type='submit' className='w-40 border py-2 px-4 rounded-3xl hover:text-white hover:bg-blue-500'>Recharge Wallet</button>
+      <div className='flex w-full justify-evenly'>
+      <div className='flex justify-center flex-col'>
+        {/* <button onClick={handleRazorpayRecharge} disabled={loading}><img referrerpolicy="origin" src="https://badges.razorpay.com/badge-light.png " style = {{ height: "45px" , width: "113px", cursor: "pointer" }} alt = "Razorpay | Payment Gateway | Neobank" /></button> */}
+        <div className='text-[10px]'>Razorpay(Coming Soon)</div>
+      </div>
+      <div>
+        <button onClick={handleCashfreeRecharge} disabled={loading}><img referrerpolicy="origin" src="https://mma.prnewswire.com/media/1714361/Cashfree_Payments_Logo.jpg?w=200" style = {{ height: "45px" , width: "113px", border: "2px solid #bbb", cursor: "pointer" }} alt = "Cashfree | Payment Gateway" /></button>
+        <div className='text-[10px]'>UPI working on mobile device only</div>
+      </div>
+      </div>
       </form>
     </div>
   )
