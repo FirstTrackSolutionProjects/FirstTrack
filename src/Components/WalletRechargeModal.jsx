@@ -10,6 +10,7 @@ const WalletRechargeModal = ({onClose}) => {
     //Cashfree Integration Starts
     const [cashfree, setCashfree] = useState()
     const [paymentId, setPaymentId] = useState('')
+    const { business_name, email, phone } = useAuth();
     const [loading, setLoading] = useState(false)
     const initializeSDK = async () => {          
         const cashfree = await load({
@@ -144,9 +145,9 @@ const WalletRechargeModal = ({onClose}) => {
           key: import.meta.env.VITE_APP_RAZORPAY_API_ID, // Replace with your Razorpay key ID
           amount: amount*100, // Amount is in paise (50000 paise = INR 500)
           currency: 'INR',
-          name: 'Your Company Name',
-          description: 'Test Transaction',
-          image: 'logo.webp',
+          name: 'First Track',
+          description: 'Wallet Recharge',
+          image: 'images/logo3.jpg',
           order_id: data.id,
           handler: async function (response) {
             const verifyResponse = await fetch(`${API_URL}/wallet/verify/recharge`, {
@@ -171,12 +172,12 @@ const WalletRechargeModal = ({onClose}) => {
             }
           },
           prefill: {
-            name: 'Your Name',
-            email: 'youremail@example.com',
-            contact: '9999999999',
+            name: business_name,
+            email: email,
+            contact: phone,
           },
           notes: {
-            address: 'Corporate Office',
+            address: 'First Track',
           },
           theme: {
             color: '#3399cc',
