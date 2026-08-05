@@ -215,8 +215,8 @@ const WalletRechargeModal = ({onClose}) => {
       </div>
       <div className='flex w-full justify-evenly'>
       <div className='flex justify-center flex-col'>
-        {/* <button onClick={handleRazorpayRecharge} disabled={loading}><img referrerpolicy="origin" src="https://badges.razorpay.com/badge-light.png " style = {{ height: "45px" , width: "113px", cursor: "pointer" }} alt = "Razorpay | Payment Gateway | Neobank" /></button> */}
-        <div className='text-[10px]'>Razorpay(Coming Soon)</div>
+        <button onClick={handleRazorpayRecharge} disabled={loading}><img referrerpolicy="origin" src="https://badges.razorpay.com/badge-light.png " style = {{ height: "45px" , width: "113px", cursor: "pointer" }} alt = "Razorpay | Payment Gateway | Neobank" /></button>
+        <div className='text-[10px]'>Active</div>
       </div>
       <div>
         <button onClick={handleCashfreeRecharge} disabled={loading}><img referrerpolicy="origin" src="https://mma.prnewswire.com/media/1714361/Cashfree_Payments_Logo.jpg?w=200" style = {{ height: "45px" , width: "113px", border: "2px solid #bbb", cursor: "pointer" }} alt = "Cashfree | Payment Gateway" /></button>
