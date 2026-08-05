@@ -37,9 +37,9 @@ export const AuthProvider = ({ children }) => {
         }
         return true;
       } catch (error) {
-        let message = error.message;
+        let message = error.message.replace('Error: ', '');
         if (error.message === 'TypeError: Failed to fetch') message = 'Network error. Please check your connection and try again.';
-        toast.error(message);
+        toast.info(message);
         throw new Error(message);
       }
     } catch (error) {

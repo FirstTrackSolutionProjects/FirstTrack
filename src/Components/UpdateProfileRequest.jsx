@@ -447,7 +447,7 @@ const UpdateProfileRequest = () => {
                 toast.error(result.message || 'Submission failed');
             }
         } catch (err) {
-            toast.error('Error: ' + err.message);
+            toast.error(err.message);
         } finally {
             setLoading('');
         }

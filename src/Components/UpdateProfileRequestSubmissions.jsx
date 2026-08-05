@@ -73,7 +73,7 @@ const ViewDialog = ({ row, onClose, onApprove, onReject }) => {
                 toast.error(result.message || 'Failed to approve');
             }
         } catch (e) {
-            toast.error('Error: ' + e.message);
+            toast.error(e.message);
         } finally {
             setApproving(false);
         }
@@ -96,7 +96,7 @@ const ViewDialog = ({ row, onClose, onApprove, onReject }) => {
                 toast.error(result.message || 'Failed to reject');
             }
         } catch (e) {
-            toast.error('Error: ' + e.message);
+            toast.error(e.message);
         } finally {
             setRejecting(false);
         }
@@ -369,7 +369,7 @@ const UpdateProfileRequestSubmissions = () => {
                                 const result = await res.json();
                                 if (result.success) { toast.success(result.message); fetchData(); }
                                 else toast.error(result.message);
-                            } catch (e) { toast.error('Error: ' + e.message); }
+                            } catch (e) { toast.error(e.message); }
                         }}
                     >
                         Approve
@@ -389,7 +389,7 @@ const UpdateProfileRequestSubmissions = () => {
                                 const result = await res.json();
                                 if (result.success) { toast.success(result.message); fetchData(); }
                                 else toast.error(result.message);
-                            } catch (e) { toast.error('Error: ' + e.message); }
+                            } catch (e) { toast.error(e.message); }
                         }}
                     >
                         Reject

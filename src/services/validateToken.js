@@ -11,7 +11,7 @@ const validateToken = async () => {
         }
       });
       if (!validateRequest.ok) {
-        throw new Error('Failed to validate token');
+        throw new Error('You are logged out');
       }
   
       const data = await validateRequest.json();
