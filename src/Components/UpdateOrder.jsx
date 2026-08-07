@@ -38,6 +38,7 @@ import getB2CBulkShipmentPriceService from "@/services/bulkServices/get_batch_pr
 import getB2CBulkShipmentPriceStatusService from "@/services/bulkServices/get_batch_price_status.bulk.service";
 import shipB2CBulkShipmentService from "@/services/bulkServices/ship_batch.bulk.service";
 import getShipB2CBulkShipmentStatusService from "@/services/bulkServices/get_ship_batch_status.bulk.service";
+import { PDFDocument } from "pdf-lib";
 
 const API_URL = import.meta.env.VITE_APP_API_URL
 
@@ -2049,32 +2050,89 @@ const Listing = ({ step, setStep }) => {
     }
   };
 
+  const mergePDFs = async (pdfBase64s) => {
+    if (!Array.isArray(pdfBase64s) || pdfBase64s.length === 0) {
+      throw new Error("No PDF data provided to mergePDFs");
+    }
+  
+    const mergedPdf = await PDFDocument.create();
+  
+    for (const base64 of pdfBase64s) {
+      if (!base64) continue;
+  
+      // Some APIs may return data URLs ("data:application/pdf;base64,....")
+      const cleanBase64 = base64.includes(",") ? base64.split(",")[1] : base64;
+  
+      const pdfBytes = Uint8Array.from(atob(cleanBase64), (c) => c.charCodeAt(0));
+      const pdf = await PDFDocument.load(pdfBytes);
+      const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
+  
+    const mergedBytes = await mergedPdf.save();
+    const blob = new Blob([mergedBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    return url;
+  };
+
+  // const handleGetLabel = async (shipment) => {
+  //   try {
+  //     const response = await fetch(`${API_URL}/shipment/domestic/label`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json',
+  //         'Authorization': localStorage.getItem('token')
+  //       },
+  //       body: JSON.stringify({ orders: [shipment.ord_id] })
+  //     });
+  //     const result = await response.json();
+  //     const base64label = result?.labels?.[0];
+  //     if (result.success && base64label) {
+  //       const link = document.createElement('a');
+  //       link.href = `data:application/pdf;base64,${base64label}`;
+  //       link.download = `Label_${shipment.ord_id}.pdf`;
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     alert("Failed to get label");
+  //   }
+  // };
   const handleGetLabel = async (shipment) => {
-    try {
-      const response = await fetch(`${API_URL}/shipment/domestic/label`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': localStorage.getItem('token')
-        },
-        body: JSON.stringify({ orders: [shipment.ord_id] })
-      });
-      const result = await response.json();
-      const base64label = result?.labels?.[0];
-      if (result.success && base64label) {
+      try {
+        toast.info("Getting labels, please wait...")
+        const response = await fetch(`${API_URL}/shipment/domestic/label`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('token')
+          },
+          body: JSON.stringify({ orders: [shipment.ord_id] })
+        });
+        const result = await response.json();
+        const base64s = result?.labels || [];
+        if (!base64s.length) {
+          toast.error("No labels found");
+          return;
+        }
+        ///DOWNLOAD EACH LABEL AND MERGE INTO A SINGLE PDF
+        const pdfBase64s = base64s;
+        const mergedPdfUrl = await mergePDFs(pdfBase64s);
         const link = document.createElement('a');
-        link.href = `data:application/pdf;base64,${base64label}`;
-        link.download = `Label_${shipment.ord_id}.pdf`;
+        link.href = mergedPdfUrl;
+        link.download = `labels_${new Date().toISOString()}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to get label");
       }
-    } catch (error) {
-      console.error(error);
-      alert("Failed to get label");
-    }
-  };
+    };
 
   const handleTrackAndShare = async (reportRow) => {
     if (!reportRow?.awb) {
