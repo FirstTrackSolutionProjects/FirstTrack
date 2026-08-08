@@ -1979,10 +1979,10 @@ const Listing = ({ step, setStep }) => {
       const result = await response.json();
 
       if (result.success) {
-        toast.success(result?.data || "Your shipment has been cancelled");
+        toast.success(result?.message || "Your shipment has been cancelled");
         getParcels();
       } else {
-        toast.error(result?.data || "Your shipment has not been cancelled");
+        toast.error(result?.message || "Your shipment has not been cancelled");
       }
     } catch (error) {
       console.error(error);
