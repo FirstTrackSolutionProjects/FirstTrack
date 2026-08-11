@@ -2145,13 +2145,14 @@ const Listing = ({ step, setStep }) => {
     setIsTrackingShareOpen(true);
 
     try {
-      const response = await fetch(`${API_URL}/shipment/track`, {
+      const response = await fetch(`${API_URL}/shipment/domestic/report`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token'),
           'Accept': 'application/json'
         },
-        body: JSON.stringify({ awb: reportRow.awb })
+        body: JSON.stringify({ ord_id: reportRow.ord_id })
       });
       const result = await response.json();
       if (result.success) {
