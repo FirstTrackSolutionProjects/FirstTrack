@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, Box, IconButton, Button, Typography, Divider } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, Box, IconButton, Button, Typography, Divider, Tabs, Tab } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
@@ -34,20 +34,29 @@ const GenericTrackingShareCard = ({ scan }) => (
 );
 
 
-const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
+const TrackingShareDialog = ({ isOpen, onClose, trackingData, report, isInternational=false }) => {
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
       setLoading(trackingData === null);
+      setActiveTab(0); // reset to first tab whenever dialog opens or data refreshes
     } else {
       setLoading(true);
+      setActiveTab(0);
     }
   }, [isOpen, trackingData]);
 
+  // Safely extract the array of TrackShipmentResultFactory items
+  const getAwbResults = () => {
+    if (!trackingData?.success || !trackingData?.data) return [];
+    return Array.isArray(trackingData.data) ? trackingData.data : [trackingData.data];
+  };
+
   const getTrackingLink = () => {
     // Determine which tracking ID to use (AWB for domestic, ref_id for international)
-    const trackingId = report?.iid ? report.ref_id : report?.awb;
+    const trackingId = isInternational ? report?.ref_id : report?.awb;
     return trackingId ? `${window.location.origin}/track?awb=${trackingId}` : '';
   };
 
@@ -55,7 +64,6 @@ const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
     if (!report) return "No shipment details available.";
 
     // Determine values based on available properties (domestic vs. international)
-    const isInternational = !!report.iid; // Check for international order ID property
     const awbNumber = isInternational ? report.ref_id || 'N/A' : report.awb || 'N/A';
     const orderId = isInternational ? report.iid || 'N/A' : report.ord_id || 'N/A';
     const customerName = isInternational ? report.consignee_name || 'N/A' : report.customer_name || 'N/A';
@@ -92,35 +100,27 @@ const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
       return message;
     }
 
-    const updates = Array.isArray(trackingData.data) ? trackingData.data : (trackingData.data ? [trackingData.data] : []);
-    const cleanedUpdates = updates.filter(Boolean);
+    const awbResults = getAwbResults();
 
-    message += `*🗓️ Tracking History:*\n`;
-    if (cleanedUpdates.length > 0) {
-      cleanedUpdates.slice().reverse().forEach((scan) => {
-        let status = 'Update';
-        let loc = '';
-        let time = '';
-        const sId = Number(trackingData.id);
-
-        if (sId === 1) { // Delhivery B2B (example service ID)
-          status = scan.scan_remark || 'N/A';
-          loc = scan.location || '';
-          time = timestampToDate(scan.scan_timestamp);
-        } else if (sId === 2 || sId === 3) { // Delhivery (other types)
-          const d = scan.ScanDetail ?? scan;
-          status = d.Instructions || d.Scan || 'N/A';
-          loc = d.ScannedLocation || '';
-          time = timestampToDate(d.ScanDateTime);
-        } else { // Generic / Other International
-          status = scan.status || 'N/A';
-          loc = scan.location || '';
-          time = timestampToDate(scan.timestamp);
-        }
-        message += `• *${time}* - *${status}*${loc ? ` at ${loc}` : ''}\n`;
-      });
+    if (awbResults.length === 0) {
+      message += `*🗓️ Tracking History:*\n_No detailed scan history available yet._\n`;
     } else {
-      message += "_No detailed scan history available yet._\n";
+      awbResults.forEach((result) => {
+        const awbLabel = result.awb || 'N/A';
+        const events = Array.isArray(result.events) ? result.events : [];
+        message += `*🗓️ Tracking History — AWB: ${awbLabel}*\n`;
+        if (events.length > 0) {
+          events.slice().reverse().forEach((scan) => {
+            const status = scan.status || 'N/A';
+            const loc = scan.location || '';
+            const time = timestampToDate(scan.timestamp);
+            message += `• *${time}* - *${status}*${loc ? ` at ${loc}` : ''}\n`;
+          });
+        } else {
+          message += `_No events recorded for this AWB._\n`;
+        }
+        message += `\n`;
+      });
     }
 
     const trackingLink = getTrackingLink();
@@ -171,23 +171,75 @@ const TrackingShareDialog = ({ isOpen, onClose, trackingData, report }) => {
       );
     }
 
-    const updates = Array.isArray(trackingData.data) ? trackingData.data : (trackingData.data ? [trackingData.data] : []);
-    if (updates.length === 0) {
+    const awbResults = getAwbResults();
+
+    if (awbResults.length === 0) {
       return (
         <Box p={4} textAlign="center">
           <Typography variant="body1" color="text.secondary">No updates available yet.</Typography>
         </Box>
       );
     }
-    
+
+    const activeResult = awbResults[activeTab] ?? awbResults[0];
+    const events = Array.isArray(activeResult?.events) ? activeResult.events : [];
+
     return (
-      <div className="relative">
-        <div className="absolute left-[22px] top-0 bottom-0 w-px bg-gray-200" /> 
-        {updates.slice().reverse().map((scan, index) => {
-           if (!scan) return null;
-           return <GenericTrackingShareCard key={index} scan={scan} />;
-        })}
-      </div>
+      <Box>
+        {/* Tab Bar */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
+          <Tabs
+            value={activeTab}
+            onChange={(_, newValue) => setActiveTab(newValue)}
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{
+              '& .MuiTab-root': {
+                textTransform: 'none',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                minWidth: 'auto',
+                px: 2,
+              },
+              '& .Mui-selected': {
+                color: 'primary.main',
+              },
+            }}
+          >
+            {awbResults.map((result, index) => (
+              <Tab
+                key={index}
+                label={result.awb || `AWB ${index + 1}`}
+                id={`awb-tab-${index}`}
+                aria-controls={`awb-tabpanel-${index}`}
+              />
+            ))}
+          </Tabs>
+        </Box>
+
+        {/* Tab Content */}
+        <Box
+          role="tabpanel"
+          id={`awb-tabpanel-${activeTab}`}
+          aria-labelledby={`awb-tab-${activeTab}`}
+        >
+          {events.length === 0 ? (
+            <Box p={4} textAlign="center">
+              <Typography variant="body2" color="text.secondary">
+                No events recorded for this AWB yet.
+              </Typography>
+            </Box>
+          ) : (
+            <div className="relative">
+              <div className="absolute left-[22px] top-0 bottom-0 w-px bg-gray-200" />
+              {events.slice().reverse().map((scan, index) => {
+                if (!scan) return null;
+                return <GenericTrackingShareCard key={index} scan={scan} />;
+              })}
+            </div>
+          )}
+        </Box>
+      </Box>
     );
   };
 
