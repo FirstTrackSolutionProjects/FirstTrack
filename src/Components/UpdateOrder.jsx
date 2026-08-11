@@ -468,7 +468,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
               >
                 <MenuItem value="COD">COD</MenuItem>
                 <MenuItem value="Pre-paid">Prepaid</MenuItem>
-                <MenuItem value="topay">To Pay</MenuItem>
+                {/* <MenuItem value="topay">To Pay</MenuItem> */}
               </Select>
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>

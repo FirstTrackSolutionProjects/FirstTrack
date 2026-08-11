@@ -239,8 +239,8 @@ const Domestic = () => {
               className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-colors"
             >
               <option value="Delivered">Forward</option>
-              <option value="RTO">RTO</option>
-              <option value="DTO">Reverse</option>
+              {/* <option value="RTO">RTO</option>
+              <option value="DTO">Reverse</option> */}
             </select>
           </div>
 
