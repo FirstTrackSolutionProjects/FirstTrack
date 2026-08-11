@@ -1,6 +1,6 @@
 import cloneOrderService from "../services/orderServices/cloneOrderService";
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -1833,6 +1833,8 @@ const OrderDetailsDialog = ({ isOpen, onClose, orderId, shipment }) => {
 
 const Listing = ({ step, setStep }) => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigatedOrderId = location.state?.orderId ?? null;
   const [shipments, setShipments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -2241,6 +2243,17 @@ const Listing = ({ step, setStep }) => {
 
     fetchData();
   }, [debouncedFilters, page]);
+
+  // Auto-open ShipList when navigated here with a new orderId from CreateOrder
+  useEffect(() => {
+    if (!navigatedOrderId || shipments.length === 0) return;
+    const target = shipments.find((s) => String(s.ord_id) === String(navigatedOrderId));
+    if (target) {
+      // Clear the navigation state so a refresh doesn't re-trigger this
+      window.history.replaceState({}, document.title);
+      handleShip(target);
+    }
+  }, [shipments, navigatedOrderId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

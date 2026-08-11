@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import WarehouseSelect from './UiComponents/WarehouseSelect';
+import { toast } from 'react-toastify';
 const API_URL = import.meta.env.VITE_APP_API_URL
 
 const getTodaysDate = () => {
@@ -128,6 +130,7 @@ const schema = z.object({
   path: ["ewaybill"], // Error path
 });
 const FullDetails = () => {
+  const navigate = useNavigate();
   const { register, control, handleSubmit, watch, formState: { errors }, setValue } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -213,8 +216,8 @@ const FullDetails = () => {
         
     // Compare pickup time with the current IST time
     if (pickupDateAndTime < istDate) {
-        alert('Pickup time is already passed. Please update and try again');
-        return;
+      toast.error('Pickup time is already passed. Please update and try again');
+      return;
     }
     let boxFlag = 0
     for (let i = 0; i < data.boxes.length; i++) {
@@ -224,7 +227,7 @@ const FullDetails = () => {
         }
       }
       if (boxFlag == 0) {
-        alert('Please make sure every box has some items')
+        toast.error('Please make sure every box has some items')
         return
       }
       boxFlag = 0
@@ -238,7 +241,7 @@ const FullDetails = () => {
         }
       }
       if (itemFlag == 0) {
-        alert('Some items have invalid box no.')
+        toast.error('Some items have invalid box no.')
         return
       }
       itemFlag = 0
@@ -254,14 +257,19 @@ const FullDetails = () => {
       });
       const result = await response.json();
       if (result.success) {
-        alert('Order created successfully');
+        navigate('/dashboard/shipments/domestic', {
+          state: {
+            orderId: result?.data?.orderId
+          }
+        });
+        toast.success('Order created successfully');
       } else {
-        alert('Order failed: ' + result.message);
+        toast.error('Order failed: ' + result.message);
         console.log(result.orders);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred during Order');
+      toast.error('An error occurred during creating order');
     }
   };
   const [invoice, setInvoice] = useState(null);
