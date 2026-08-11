@@ -483,7 +483,7 @@ const FullDetails = () => {
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
+          {/* <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
             <input
               className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
               type="checkbox"
@@ -491,7 +491,7 @@ const FullDetails = () => {
               {...register("same")}
             />
             <label className="text-sm font-medium text-gray-700 cursor-pointer" htmlFor="same">Billing Address same as Shipping Address</label>
-          </div>
+          </div> */}
         </div>
 
         {/* Billing Address Card (Conditional) */}

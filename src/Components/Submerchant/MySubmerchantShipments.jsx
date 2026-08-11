@@ -542,7 +542,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
                 onChange={handleChange}
               />
             </FormControl>
-            <FormControlLabel
+            {/* <FormControlLabel
               control={
                 <Checkbox
                   checked={formData.same}
@@ -551,7 +551,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
                 />
               }
               label="Billing address is same as Shipping address"
-            />
+            /> */}
           </Box>
           <Box sx={{ display: formData.same ? 'none' : 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
             <FormControl fullWidth sx={{ minWidth: 300 }}>
