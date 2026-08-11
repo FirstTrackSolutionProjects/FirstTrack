@@ -368,7 +368,7 @@ const FullDetails = () => {
               >
                 <option value="COD">COD</option>
                 <option value="Pre-paid">Prepaid</option>
-                <option value="topay">To Pay</option>
+                {/* <option value="topay">To Pay</option> */}
               </select>
               {errors.payMode && <span className='text-red-500 text-sm'>{errors.payMode.message}</span>}
             </div>
