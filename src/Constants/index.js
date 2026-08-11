@@ -42,6 +42,7 @@ import MySubmerchantCodRemittances from '@/Components/Submerchant/MySubmerchantC
 import MySubmerchantWeightDisputes from '@/Components/Submerchant/MySubmerchantWeightDisputes';
 import CreateB2CBulkBatch from '@/Components/BulkShipment/CreateB2CBulkBatch';
 import ManageB2CBulkBatch from '@/Components/BulkShipment/ManageB2CBulkBatch';
+import CodRemittanceMerchant from '@/Components/CodRemittance/CodRemittanceMerchant';
 
 export const FEATURES = Object.freeze({
   BULK_SHIPMENTS: "BULK_SHIPMENTS",
@@ -475,6 +476,16 @@ export const menuItems = [
     url: 'cod-remittance-manage',
     component: CodRemittanceAdmin,
     roles: [USER_ROLES.ADMIN],
+    dropDownOptions: [{}]
+  },
+  {
+    icon: Banknote,
+    name: "COD Remittance",
+    isDropdown: false,
+    admin: true,
+    url: 'cod-remittance',
+    component: CodRemittanceMerchant,
+    roles: [USER_ROLES.MERCHANT, USER_ROLES.SUBMERCHANT],
     dropDownOptions: [{}]
   },
   {

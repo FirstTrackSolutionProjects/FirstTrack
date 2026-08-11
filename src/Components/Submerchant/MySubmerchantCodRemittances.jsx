@@ -150,7 +150,7 @@ const MySubmerchantCodRemittances = () => {
   return (
     <>
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">COD Remittance (Admin)</h2>
+      <h2 className="text-xl font-semibold mb-4">COD Remittance (Submerchants)</h2>
 
       <Paper sx={{ width: '100%', p: 2, mb: 3 }}>
         <Box
