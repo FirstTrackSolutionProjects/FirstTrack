@@ -43,10 +43,35 @@ import MySubmerchantWeightDisputes from '@/Components/Submerchant/MySubmerchantW
 import CreateB2CBulkBatch from '@/Components/BulkShipment/CreateB2CBulkBatch';
 import ManageB2CBulkBatch from '@/Components/BulkShipment/ManageB2CBulkBatch';
 import CodRemittanceMerchant from '@/Components/CodRemittance/CodRemittanceMerchant';
+import EarningHistory from '@/Components/Earnings/EarningHistory';
+import EarningRedeemHistory from '@/Components/Earnings/EarningRedeemHistory';
 
 export const FEATURES = Object.freeze({
   BULK_SHIPMENTS: "BULK_SHIPMENTS",
   SUBMERCHANTS: "SUBMERCHANTS",
+})
+
+export const EARNING_REDEEM_PAYMENT_METHODS = Object.freeze({
+  BANK_TRANSFER: 'BANK TRANSFER',
+})
+
+export const EARNING_REDEEM_STATUS = Object.freeze({
+  PENDING: 'PENDING',
+  SETTLED: 'SETTLED',
+})
+
+export const EARNING_HISTORY_SORT_BY = Object.freeze({
+  LATEST_EARNING: 'LATEST EARNING',
+  OLDEST_EARNING: 'OLDEST EARNING',
+  HIGHEST_EARNING: 'HIGHEST EARNING',
+  LOWEST_EARNING: 'LOWEST EARNING',
+})
+
+export const EARNING_REDEEM_HISTORY_SORT_BY = Object.freeze({
+  LATEST_REQUEST: 'LATEST REQUEST',
+  OLDEST_REQUEST: 'OLDEST REQUEST',
+  LATEST_SETTLEMENT: 'LATEST SETTLEMENT',
+  OLDEST_SETTLEMENT: 'OLDEST SETTLEMENT',
 })
 
 export const WALLET_TYPES = Object.freeze({
@@ -612,6 +637,59 @@ export const menuItems = [
     ]
   },
   {
+    icon: FaMoneyBillAlt,
+    name: "Earnings",
+    isDropdown: true,
+    url: 'earnings',
+    roles: [USER_ROLES.MERCHANT],
+    featureSwitchId: FEATURES.SUBMERCHANTS,
+    dropDownOptions: [{
+      icon: FaMoneyBillAlt,
+      name: "Earning History",
+      isDropdown: false,
+      url: 'earnings/history',
+      roles: [USER_ROLES.MERCHANT],
+      component: EarningHistory,
+      dropDownOptions: []
+    },
+    {
+      icon: FaMoneyBillAlt,
+      name: "Earning Redeem History",
+      isDropdown: false,
+      url: 'earnings/redeem-history',
+      roles: [USER_ROLES.MERCHANT],
+      component: EarningRedeemHistory,
+      dropDownOptions: []
+    },
+    ]
+  },
+  {
+    icon: FaMoneyBillAlt,
+    name: "Merchant Earnings",
+    isDropdown: true,
+    url: 'merchant-earnings',
+    roles: [USER_ROLES.ADMIN],
+    dropDownOptions: [{
+      icon: FaMoneyBillAlt,
+      name: "Earning History",
+      isDropdown: false,
+      url: 'merchant-earnings/history',
+      roles: [USER_ROLES.ADMIN],
+      component: EarningHistory,
+      dropDownOptions: []
+    },
+    {
+      icon: FaMoneyBillAlt,
+      name: "Earning Redeem Requests",
+      isDropdown: false,
+      url: 'merchant-earnings/redeem-requests',
+      roles: [USER_ROLES.ADMIN],
+      component: EarningRedeemHistory,
+      dropDownOptions: []
+    },
+    ]
+  },
+  {
     icon: ShieldCheck,
     name: "Submerchant Requests",
     isDropdown: false,
@@ -711,13 +789,13 @@ export const menuItems = [
       dropDownOptions: [{}]
     },
     {
-        icon : "/logo.webp",
-        name : "Update Profile Requests",
-        isDropdown : false,
-        admin : true,
-        url : 'submissions/merchant-update-profile-requests',
-        component : UpdateProfileRequestSubmissions,
-        dropDownOptions : [{}]
+      icon: "/logo.webp",
+      name: "Update Profile Requests",
+      isDropdown: false,
+      admin: true,
+      url: 'submissions/merchant-update-profile-requests',
+      component: UpdateProfileRequestSubmissions,
+      dropDownOptions: [{}]
     },
     {
       icon: FaFileAlt,
@@ -786,13 +864,13 @@ export const menuItems = [
         dropDownOptions: [{}]
       },
       {
-          icon : "/logo.webp",
-          name : "Profile Update",
-          isDropdown : false,
-          url : 'settings/profile-update-request',
-          component : UpdateProfileRequest,
-          merchantOnly : true,
-          dropDownOptions : [{}]
+        icon: "/logo.webp",
+        name: "Profile Update",
+        isDropdown: false,
+        url: 'settings/profile-update-request',
+        component: UpdateProfileRequest,
+        merchantOnly: true,
+        dropDownOptions: [{}]
       },
       {
         icon: Key,
