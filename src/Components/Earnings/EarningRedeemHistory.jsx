@@ -24,6 +24,7 @@ import redeemEarningService from '@/services/earningServices/redeemEarning.servi
 import settleEarningRedeemRequestService from '@/services/earningServices/settleEarningRedeemRequest.service';
 import getS3PutUrlService from '@/services/s3Services/getS3PutUrlService';
 import s3FileUploadService from '@/services/s3Services/s3FileUploadService';
+import getEarningsBalanceService from '@/services/earningServices/getEarningsBalance.service';
 
 const BUCKET_URL = import.meta.env.VITE_APP_BUCKET_URL;
 
@@ -109,6 +110,17 @@ const EarningRedeemHistory = () => {
   const { role } = useAuth();
   const isAdmin = role === USER_ROLES.ADMIN;
   const isMerchant = role === USER_ROLES.MERCHANT;
+
+  const [earningsBalance, setEarningsBalance] = useState(null);
+
+  // Fetch earnings balance once on mount (merchant only)
+  useEffect(() => {
+    if (isMerchant) {
+      getEarningsBalanceService()
+        .then((data) => setEarningsBalance(data?.earnings ?? null))
+        .catch((e) => console.warn('Failed to fetch earnings balance', e));
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── List state ──────────────────────────────────────────────────────────────
   const [filters, setFilters] = useState({
@@ -487,6 +499,27 @@ const EarningRedeemHistory = () => {
             </Box>
           </Box>
         </Paper>
+
+        {/* Earnings balance tile — merchant only */}
+        {isMerchant && (
+          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+            <Box
+              sx={{
+                flex: 1,
+                maxWidth: 240,
+                p: 2,
+                borderRadius: 1,
+                bgcolor: '#ecfdf3',
+                border: '1px solid #bbf7d0',
+              }}
+            >
+              <div className="text-xs font-semibold text-gray-600">Earnings Balance</div>
+              <div className="text-lg font-bold">
+                {earningsBalance !== null ? `₹ ${Number(earningsBalance).toFixed(2)}` : '—'}
+              </div>
+            </Box>
+          </Box>
+        )}
 
         {error && <div className="text-red-600 mb-3">{error}</div>}
 
