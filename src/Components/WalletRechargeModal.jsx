@@ -219,7 +219,7 @@ const WalletRechargeModal = ({onClose}) => {
         <button onClick={handleRazorpayRecharge} disabled={loading}><img referrerpolicy="origin" src="https://badges.razorpay.com/badge-light.png " style = {{ height: "45px" , width: "113px", cursor: "pointer" }} alt = "Razorpay | Payment Gateway | Neobank" /></button>
         <div className='text-[10px]'>Active</div>
       </div>
-      <div>
+      <div className='block sm:hidden'>
         <button onClick={handleCashfreeRecharge} disabled={loading}><img referrerpolicy="origin" src="https://mma.prnewswire.com/media/1714361/Cashfree_Payments_Logo.jpg?w=200" style = {{ height: "45px" , width: "113px", border: "2px solid #bbb", cursor: "pointer" }} alt = "Cashfree | Payment Gateway" /></button>
         <div className='text-[10px]'>UPI working on mobile device only</div>
       </div>
