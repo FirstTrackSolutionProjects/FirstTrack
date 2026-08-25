@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,12 +36,21 @@ const getPickupTime = (string) => {
 }
 
 const schema = z.object({
-  wid: z.string().min(1, "Pickup Warehouse Name is required"),
+  wid: z.string({
+    error: (issue) => {
+      if (issue.input === undefined){
+        return "Pickup Warehouse Name is required"
+      }
+      if (issue.code === "invalid_type"){
+        return "Invalid Warehouse"
+      }
+    }
+  }).min(1, "Pickup Warehouse Name is required"),
   // order: z.string().min(1, "Order ID is required"),
   // date: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, "Invalid date format (DD/MM/YYYY)"),
   payMode: z.enum(['COD', 'Pre-paid', 'topay']),
   name: z.string().min(1, "Buyer's name is required"),
-  email: z.string().email("Invalid email address"),
+  email: z.string().email("Invalid email address").or(z.literal("")),
   phone: z.string().regex(/^\d{10}$/, "Invalid phone number"),
   address: z.string().min(1, "Shipping address is required"),
   addressType: z.enum(['home', 'office']),
@@ -58,76 +67,80 @@ const schema = z.object({
   Bcountry: z.string().optional(),
   orders: z.array(
     z.object({
-      box_no: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(1, "Box no. must be at least 1")),
+      box_no: z.coerce.number().min(1, "Box no. must be at least 1"),
       product_name: z.string().min(1, "Product name is required"),
-      product_quantity: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(1, "Quantity must be at least 1")),
-      selling_price: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(0, "Price must be a non-negative number")),
-      tax_in_percentage: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(0, "Tax must be a positive number")),
+      product_quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
+      selling_price: z.coerce.number().min(1, "Price must be atleast 1"),
+      tax_in_percentage: z.coerce.number().min(0, "Tax must be a positive number"),
     })
   ),
   boxes: z.array(
     z.object({
-      box_no: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(1, "Box no. must be at least 1")),
-      length: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(1, "Length must be at greater than 0")),
-      breadth: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(1, "Breadth must be at greater than 0")),
-      height: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(1, "Height must be at greater than 0")),
-      weight: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(1, "Weight must be at greater than 0")),
-        weight_unit: z.enum(['g','kg']),
-      quantity: z.preprocess(
-        (a) => parseInt(a, 10),
-        z.number().min(1, "Quantity must be at least 1")
-      )
+      box_no: z.coerce.number().min(1, "Box no. must be at least 1"),
+      length: z.coerce.number().min(1, "Length must be at greater than 0"),
+      breadth: z.coerce.number().min(1, "Breadth must be at greater than 0"),
+      height: z.coerce.number().min(1, "Height must be at greater than 0"),
+      weight: z.coerce.number("Weight should be a number"),
+      weight_unit: z.enum(['g','kg']),
+      quantity: z.coerce.number().min(1, "Quantity must be at least 1")
     })
   ),
-  discount: z.preprocess(
-    (a) => parseInt(a, 10),
-    z.number().min(0, "Must be a non-negative number")),
-  cod: z.preprocess(
-    (a) => parseInt(a, 10),
-    z.number().min(0, "COD must be a positive number")),
+  discount: z.coerce.number().min(0, "Must be a non-negative number"),
+  cod: z.coerce.number().min(0, "COD must be a positive number"),
   shippingType: z.enum(['Surface', 'Express']),
   gst: z.string(),
   Cgst: z.string().optional(),
   pickupDate: z.string(),
   pickupTime: z.preprocess((a) => a + ':00', z.string()),
-  shipmentValue: z.preprocess(
-    (a) => parseFloat(a),
-    z.number().min(1, "Shipment value must be greater than 0")
-  ),
+  shipmentValue: z.coerce.number().min(1, "Shipment value must be greater than 0"),
   insurance: z.boolean().optional(),
-  ewaybill: z.string().optional(),
+  ewaybill: z.string({
+    error: (issue) => {
+      if (issue.input === undefined){
+        return "E-Waybill is required"
+      }
+      if (issue.code === "invalid_type"){
+        return "Invalid E-Waybill"
+      }
+    }
+  })
+  .trim()
+  .regex(/^\d{12}$/, "Invalid E-Waybill number")
+  .or(z.literal("")),
   invoiceNumber: z.string().optional(),
   invoiceDate: z.string().optional(),
-  invoiceAmount: z.preprocess(
-    (a) => parseInt(a, 10),
-    z.number().min(1, "Invoice Amount must be a positive number")),
+  invoiceAmount: z.coerce.number().min(1, "Invoice Amount must be a positive number"),
   invoiceUrl: z.string().optional(),
   isB2B: z.boolean(),
   customer_reference_number: z.string().max(15, "Customer Reference Number cannot exceed 15 characters")
 }).refine((data) => !data.isB2B || (data.isB2B && !!data.invoiceUrl), {
   message: "Invoice is required for B2B shipments",
   path: ["invoiceUrl"],
-}).refine((data) => (data.shipmentValue < 50000) || (data.ewaybill && data.ewaybill.length > 0), {
-  message: "Ewaybill is required for invoice amount of at least 50000",
+}).refine((data) => ((data.shipmentValue < 50000) || Boolean(data.ewaybill?.trim())), {
+  message: "Ewaybill is required for shipment value of at least 50000",
   path: ["ewaybill"], // Error path
+}).superRefine((data, ctx) => {
+  const boxes = data.boxes;
+  boxes.forEach((box, index) => {
+    const weight_unit = box.weight_unit;
+    if (weight_unit === "g") {
+      if (box.weight < 50) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be greater than 50g",
+          path: ["boxes", index, "weight"],
+        });
+      }
+    } else if (weight_unit === "kg") {
+      if (box.weight < 0.05) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be greater than 50g",
+          path: ["boxes", index, "weight"],
+        });
+      }
+    }
+  });
 });
 const FullDetails = () => {
   const navigate = useNavigate();
@@ -149,8 +162,8 @@ const FullDetails = () => {
       shippingType: "Surface",
       country: "India",
       Bcountry: "India",
-      orders: [{ box_no: '1', product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: 0 }],
-      boxes: [{ box_no: 1, length: 0, breadth: 0, height: 0, weight: 0, weight_unit: 'kg', quantity: 1 }],
+      orders: [{ box_no: '1', product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: 0 }],
+      boxes: [{ box_no: 1, length: 10, breadth: 10, height: 10, weight: 1, weight_unit: 'kg', quantity: 1 }],
       invoiceAmount: 1,
       isB2B: false,
       invoiceUrl: '',
@@ -168,6 +181,7 @@ const FullDetails = () => {
     control,
     name: 'boxes'
   });
+  const watchedOrders = useWatch({ control, name: 'orders' });
   useEffect(() => {
 
     const pinToAdd = async () => {
@@ -205,6 +219,17 @@ const FullDetails = () => {
     }
     if (watch('Bpostcode').length == 6) pinToAdd()
   }, [watch('Bpostcode')])
+
+  // Auto-calculate shipment value from items price × quantity
+  useEffect(() => {
+    if (!watchedOrders || watchedOrders.length === 0) return;
+    const total = watchedOrders.reduce((sum, item) => {
+      const price = parseFloat(item.selling_price) || 0;
+      const qty = parseInt(item.product_quantity) || 0;
+      return sum + price * qty;
+    }, 0);
+    setValue('shipmentValue', total);
+  }, [watchedOrders])
 
   const onSubmit = async (data) => {
     const now = new Date();
@@ -441,6 +466,7 @@ const FullDetails = () => {
                 <option value="home">Home</option>
                 <option value="office">Office</option>
               </select>
+              {errors.addressType && <span className='text-red-500 text-sm'>{errors.addressType.message}</span>}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700" htmlFor="postcode">Pincode</label>
@@ -461,6 +487,7 @@ const FullDetails = () => {
                 id="city"
                 {...register("city")}
               />
+              {errors.city && <span className='text-red-500 text-sm'>{errors.city.message}</span>}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700" htmlFor="state">State</label>
@@ -470,6 +497,7 @@ const FullDetails = () => {
                 id="state"
                 {...register("state")}
               />
+              {errors.state && <span className='text-red-500 text-sm'>{errors.state.message}</span>}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700" htmlFor="country">Country</label>
@@ -480,6 +508,7 @@ const FullDetails = () => {
                 readOnly
                 {...register("country")}
               />
+              {errors.country && <span className='text-red-500 text-sm'>{errors.country.message}</span>}
             </div>
           </div>
           
@@ -567,7 +596,7 @@ const FullDetails = () => {
             <button
               type="button"
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"
-              onClick={() => boxes.append({ box_no: watch('boxes').length + 1, length: 0, breadth: 0, height: 0, weight: 0, weight_unit: 'kg', quantity: 1 })}
+              onClick={() => boxes.append({ box_no: watch('boxes').length + 1, length: 10, breadth: 10, height: 10, weight: 1, weight_unit: 'kg', quantity: 1 })}
             >
               + Add Box
             </button>
@@ -593,16 +622,16 @@ const FullDetails = () => {
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-gray-500 uppercase">W (cm)</label>
-                    <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" type="number" {...register(`boxes[${index}].breadth`)} />
+                    <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" {...register(`boxes[${index}].breadth`)} />
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-gray-500 uppercase">H (cm)</label>
-                    <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" type="number" {...register(`boxes[${index}].height`)} />
+                    <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" {...register(`boxes[${index}].height`)} />
                   </div>
                   <div className="space-y-1 col-span-2 md:col-span-1">
                     <label className="text-xs font-bold text-gray-500 uppercase">Weight</label>
                     <div className="flex gap-1">
-                      <input className="w-2/3 border border-gray-300 py-2 px-2 rounded focus:ring-2 focus:ring-blue-500" type="number" {...register(`boxes[${index}].weight`)} />
+                      <input className="w-2/3 border border-gray-300 py-2 px-2 rounded focus:ring-2 focus:ring-blue-500" {...register(`boxes[${index}].weight`)} />
                       <select className="w-1/3 border border-gray-300 py-2 px-1 rounded text-xs" {...register(`boxes[${index}].weight_unit`)}>
                         <option value="kg">kg</option>
                         <option value="g">g</option>
@@ -627,7 +656,7 @@ const FullDetails = () => {
             <button
               type="button"
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"
-              onClick={() => append({ box_no: 1, product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: 0 })}
+              onClick={() => append({ box_no: 1, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: 0 })}
             >
               + Add Product
             </button>
@@ -639,23 +668,27 @@ const FullDetails = () => {
                 <div className="md:col-span-1">
                   <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Box</label>
                   <input className="w-full border border-gray-300 py-2 px-3 rounded" type="number" {...register(`orders[${index}].box_no`)} />
+                  {errors.orders?.[index]?.box_no && <span className='text-red-500 text-sm'>{errors.orders[index].box_no.message}</span>}
                 </div>
                 <div className="md:col-span-4">
                   <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Product Name</label>
                   <input className="w-full border border-gray-300 py-2 px-3 rounded" type="text" {...register(`orders[${index}].product_name`)} placeholder="Item name" />
+                  {errors.orders?.[index]?.product_name && <span className='text-red-500 text-sm'>{errors.orders[index].product_name.message}</span>}
                 </div>
                 <div className="md:col-span-2">
                   <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Qty</label>
                   <input className="w-full border border-gray-300 py-2 px-3 rounded" type="number" {...register(`orders[${index}].product_quantity`)} />
+                  {errors.orders?.[index]?.product_quantity && <span className='text-red-500 text-sm'>{errors.orders[index].product_quantity.message}</span>}
                 </div>
                 <div className="md:col-span-2">
                   <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Price</label>
                   <input className="w-full border border-gray-300 py-2 px-3 rounded" type="number" {...register(`orders[${index}].selling_price`)} />
+                  {errors.orders?.[index]?.selling_price && <span className='text-red-500 text-sm'>{errors.orders[index].selling_price.message}</span>}
                 </div>
-                <div className="md:col-span-2">
+                {/* <div className="md:col-span-2">
                   <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Tax (%)</label>
                   <input className="w-full border border-gray-300 py-2 px-3 rounded" type="number" {...register(`orders[${index}].tax_in_percentage`)} />
-                </div>
+                </div> */}
                 <div className="md:col-span-1 text-center">
                   {fields.length > 1 && (
                     <button type="button" className="text-red-500 hover:text-red-700 transition p-2" onClick={() => remove(index)}>
@@ -680,7 +713,8 @@ const FullDetails = () => {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700" htmlFor="shipmentValue">Shipment Value</label>
-              <input className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500" type="number" id="shipmentValue" {...register("shipmentValue")} />
+              <input readOnly className="w-full border border-gray-300 py-2 px-4 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed" type="number" id="shipmentValue" {...register("shipmentValue")} />
+              <p className="text-xs text-gray-400">Auto-calculated from item prices × quantities.</p>
               {errors.shipmentValue && <span className='text-red-500 text-sm'>{errors.shipmentValue.message}</span>}
             </div>
             <div className="space-y-2">
@@ -688,10 +722,10 @@ const FullDetails = () => {
               <input className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500" type="text" id="ewaybill" {...register("ewaybill")} />
               {errors.ewaybill && <span className='text-red-500 text-sm'>{errors.ewaybill.message}</span>}
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700" htmlFor="discount">Discount</label>
               <input className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500" type="number" id="discount" {...register("discount")} />
-            </div>
+            </div> */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700" htmlFor="cod">COD Amount</label>
               <input className="w-full border border-gray-300 py-2 px-4 rounded-lg focus:ring-2 focus:ring-blue-500" type="number" min={watch("payMode") == "Pre-paid" ? 0 : 1} id="cod" {...register("cod")} />
