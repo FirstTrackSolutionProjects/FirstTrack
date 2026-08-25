@@ -216,11 +216,11 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
   }, [formData?.Bpostcode])
 
   const addProduct = () => {
-    setOrders([...orders, { box_no: 1, product_name: '', product_quantity: 0, selling_price: 0, tax_in_percentage: '' }]);
+    setOrders([...orders, { box_no: 1, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: '' }]);
   };
 
   const addBox = () => {
-    setBoxes([...boxes, { box_no: boxes.length + 1, length: 0, breadth: 0, height: 0, weight: 0, weight_unit: 'kg', quantity: 1 }]);
+    setBoxes([...boxes, { box_no: boxes.length + 1, length: 10, breadth: 10, height: 10, weight: 1, weight_unit: 'kg', quantity: 1 }]);
   };
 
   const removeProduct = (index) => {
@@ -1835,6 +1835,7 @@ const Listing = ({ step, setStep }) => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigatedOrderId = location.state?.orderId ?? null;
+  const [openedNavigatedOrderId, setOpenedNavigatedOrderId] = useState(false);
   const [shipments, setShipments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -2246,12 +2247,14 @@ const Listing = ({ step, setStep }) => {
 
   // Auto-open ShipList when navigated here with a new orderId from CreateOrder
   useEffect(() => {
+    if (openedNavigatedOrderId) return;
     if (!navigatedOrderId || shipments.length === 0) return;
     const target = shipments.find((s) => String(s.ord_id) === String(navigatedOrderId));
     if (target) {
       // Clear the navigation state so a refresh doesn't re-trigger this
       window.history.replaceState({}, document.title);
       handleShip(target);
+      setOpenedNavigatedOrderId(true);
     }
   }, [shipments, navigatedOrderId]);
 
