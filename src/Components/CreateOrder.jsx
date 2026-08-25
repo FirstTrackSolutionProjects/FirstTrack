@@ -589,10 +589,10 @@ const FullDetails = () => {
           </div>
         )}
 
-        {/* Packages Details Card */}
+        {/* Packages Details Card — items nested inside each box */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex justify-between items-center mb-6 border-b pb-2">
-            <h2 className="text-xl font-semibold text-blue-600">Package Details (Boxes)</h2>
+            <h2 className="text-xl font-semibold text-blue-600">Package Details (Boxes &amp; Items)</h2>
             <button
               type="button"
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"
@@ -601,103 +601,134 @@ const FullDetails = () => {
               + Add Box
             </button>
           </div>
-          
+
           <div className="space-y-6">
-            {boxes.fields.map((field, index) => (
-              <div key={field.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200 relative group">
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase">Box No.</label>
-                    <input 
-                      className="w-full bg-gray-100 border-none py-2 px-3 rounded text-gray-700 font-bold" 
-                      type="text" 
-                      value={index + 1} 
-                      {...register(`boxes[${index}].box_no`)}
-                      readOnly 
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase">L (cm)</label>
-                    <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" type="number" {...register(`boxes[${index}].length`)} />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase">W (cm)</label>
-                    <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" {...register(`boxes[${index}].breadth`)} />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase">H (cm)</label>
-                    <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" {...register(`boxes[${index}].height`)} />
-                  </div>
-                  <div className="space-y-1 col-span-2 md:col-span-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase">Weight</label>
-                    <div className="flex gap-1">
-                      <input className="w-2/3 border border-gray-300 py-2 px-2 rounded focus:ring-2 focus:ring-blue-500" {...register(`boxes[${index}].weight`)} />
-                      <select className="w-1/3 border border-gray-300 py-2 px-1 rounded text-xs" {...register(`boxes[${index}].weight_unit`)}>
-                        <option value="kg">kg</option>
-                        <option value="g">g</option>
-                      </select>
+            {boxes.fields.map((boxField, boxIndex) => {
+              // Derive the 1-based box number for this card
+              const boxNumber = boxIndex + 1;
+              // Find items belonging to this box
+              const boxItems = fields
+                .map((f, i) => ({ field: f, index: i }))
+                .filter(({ index }) => {
+                  const val = watch(`orders[${index}].box_no`);
+                  return parseInt(val) === boxNumber;
+                });
+
+              return (
+                <div key={boxField.id} className="rounded-xl border border-blue-100 bg-blue-50/30 overflow-hidden relative group">
+
+                  {/* ── Box dimension row ── */}
+                  <div className="p-4 bg-white border-b border-blue-100">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold shrink-0">{boxNumber}</span>
+                      <span className="text-sm font-semibold text-blue-700">Box {boxNumber}</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      <input type="hidden" value={boxNumber} {...register(`boxes[${boxIndex}].box_no`)} />
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase">L (cm)</label>
+                        <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" type="number" {...register(`boxes[${boxIndex}].length`)} />
+                        {errors.boxes?.[boxIndex]?.length && <span className='text-red-500 text-xs'>{errors.boxes[boxIndex].length.message}</span>}
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase">W (cm)</label>
+                        <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" type="number" {...register(`boxes[${boxIndex}].breadth`)} />
+                        {errors.boxes?.[boxIndex]?.breadth && <span className='text-red-500 text-xs'>{errors.boxes[boxIndex].breadth.message}</span>}
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase">H (cm)</label>
+                        <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-blue-500" type="number" {...register(`boxes[${boxIndex}].height`)} />
+                        {errors.boxes?.[boxIndex]?.height && <span className='text-red-500 text-xs'>{errors.boxes[boxIndex].height.message}</span>}
+                      </div>
+                      <div className="space-y-1 col-span-2 md:col-span-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase">Weight</label>
+                        <div className="flex gap-1">
+                          <input className="w-2/3 border border-gray-300 py-2 px-2 rounded focus:ring-2 focus:ring-blue-500" type="number" {...register(`boxes[${boxIndex}].weight`)} />
+                          <select className="w-1/3 border border-gray-300 py-2 px-1 rounded text-xs" {...register(`boxes[${boxIndex}].weight_unit`)}>
+                            <option value="kg">kg</option>
+                            <option value="g">g</option>
+                          </select>
+                        </div>
+                        {errors.boxes?.[boxIndex]?.weight && <span className='text-red-500 text-xs'>{errors.boxes[boxIndex].weight.message}</span>}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {watch('boxes').length > 1 && (
-                  <button type="button" className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 md:opacity-0 md:group-hover:opacity-100 transition shadow-sm border border-red-200" onClick={() => boxes.remove(index)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Items/Orders Card */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex justify-between items-center mb-6 border-b pb-2">
-            <h2 className="text-xl font-semibold text-blue-600">Product Details</h2>
-            <button
-              type="button"
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"
-              onClick={() => append({ box_no: 1, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: 0 })}
-            >
-              + Add Product
-            </button>
-          </div>
-          
-          <div className="space-y-4">
-            {fields.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 bg-gray-50 rounded-xl border border-gray-100 group relative">
-                <div className="md:col-span-1">
-                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Box</label>
-                  <input className="w-full border border-gray-300 py-2 px-3 rounded" type="number" {...register(`orders[${index}].box_no`)} />
-                  {errors.orders?.[index]?.box_no && <span className='text-red-500 text-sm'>{errors.orders[index].box_no.message}</span>}
-                </div>
-                <div className="md:col-span-4">
-                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Product Name</label>
-                  <input className="w-full border border-gray-300 py-2 px-3 rounded" type="text" {...register(`orders[${index}].product_name`)} placeholder="Item name" />
-                  {errors.orders?.[index]?.product_name && <span className='text-red-500 text-sm'>{errors.orders[index].product_name.message}</span>}
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Qty</label>
-                  <input className="w-full border border-gray-300 py-2 px-3 rounded" type="number" {...register(`orders[${index}].product_quantity`)} />
-                  {errors.orders?.[index]?.product_quantity && <span className='text-red-500 text-sm'>{errors.orders[index].product_quantity.message}</span>}
-                </div>
-                <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Price</label>
-                  <input className="w-full border border-gray-300 py-2 px-3 rounded" type="number" {...register(`orders[${index}].selling_price`)} />
-                  {errors.orders?.[index]?.selling_price && <span className='text-red-500 text-sm'>{errors.orders[index].selling_price.message}</span>}
-                </div>
-                {/* <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Tax (%)</label>
-                  <input className="w-full border border-gray-300 py-2 px-3 rounded" type="number" {...register(`orders[${index}].tax_in_percentage`)} />
-                </div> */}
-                <div className="md:col-span-1 text-center">
-                  {fields.length > 1 && (
-                    <button type="button" className="text-red-500 hover:text-red-700 transition p-2" onClick={() => remove(index)}>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  {/* ── Items belonging to this box ── */}
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Items in Box {boxNumber}</span>
+                      <button
+                        type="button"
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-sm"
+                        onClick={() => append({ box_no: boxNumber, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: 0 })}
+                      >
+                        + Add Item
+                      </button>
+                    </div>
+
+                    {boxItems.length === 0 && (
+                      <p className="text-xs text-gray-400 italic py-2 text-center">No items yet — click &quot;+ Add Item&quot; to add one.</p>
+                    )}
+
+                    {boxItems.map(({ field, index }) => (
+                      <div key={field.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-3 bg-white rounded-lg border border-gray-100 shadow-sm group/item">
+                        {/* hidden box_no — auto-set */}
+                        <input type="hidden" value={boxNumber} {...register(`orders[${index}].box_no`)} />
+                        <div className="md:col-span-5">
+                          <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Product Name</label>
+                          <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-green-400" type="text" {...register(`orders[${index}].product_name`)} placeholder="Item name" />
+                          {errors.orders?.[index]?.product_name && <span className='text-red-500 text-xs'>{errors.orders[index].product_name.message}</span>}
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Qty</label>
+                          <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-green-400" type="number" min={1} {...register(`orders[${index}].product_quantity`)} />
+                          {errors.orders?.[index]?.product_quantity && <span className='text-red-500 text-xs'>{errors.orders[index].product_quantity.message}</span>}
+                        </div>
+                        <div className="md:col-span-3">
+                          <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Price (₹)</label>
+                          <input className="w-full border border-gray-300 py-2 px-3 rounded focus:ring-2 focus:ring-green-400" type="number" min={0} {...register(`orders[${index}].selling_price`)} />
+                          {errors.orders?.[index]?.selling_price && <span className='text-red-500 text-xs'>{errors.orders[index].selling_price.message}</span>}
+                        </div>
+                        <div className="md:col-span-1 flex justify-center">
+                          <button
+                            type="button"
+                            className="text-red-400 hover:text-red-600 transition p-1.5 rounded-full hover:bg-red-50"
+                            onClick={() => remove(index)}
+                            title="Remove item"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* ── Remove box button ── */}
+                  {watch('boxes').length > 1 && (
+                    <button
+                      type="button"
+                      className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 md:opacity-0 md:group-hover:opacity-100 transition shadow-sm border border-red-200"
+                      title="Remove box"
+                      onClick={() => {
+                        // Remove all items belonging to this box (in reverse index order to avoid index shifting)
+                        const toRemove = fields
+                          .map((f, i) => ({ i, box_no: parseInt(watch(`orders[${i}].box_no`)) }))
+                          .filter(({ box_no }) => box_no === boxNumber)
+                          .map(({ i }) => i)
+                          .reverse();
+                        toRemove.forEach(i => remove(i));
+                        boxes.remove(boxIndex);
+                        // Re-number remaining box items
+                        // (box_no is derived from boxIndex live, so no extra action needed)
+                      }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                     </button>
                   )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         {/* Shipment Info & Shipping Type Card */}
