@@ -58,7 +58,7 @@ const getCurrentTime = () => {
 }
 
 
-const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
+const ManageForm = ({ isManage, setIsManage, shipment, isShipped, fetchData }) => {
   if (!isManage) return null;
 
   const [boxes, setBoxes] = useState([
@@ -215,8 +215,18 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
     if (formData?.Bpostcode?.length == 6) pinToAdd()
   }, [formData?.Bpostcode])
 
-  const addProduct = () => {
-    setOrders([...orders, { box_no: 1, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: '' }]);
+  // Auto-calculate shipment value from items
+  useEffect(() => {
+    const total = orders.reduce((sum, item) => {
+      const price = parseFloat(item.selling_price) || 0;
+      const qty = parseInt(item.product_quantity) || 0;
+      return sum + price * qty;
+    }, 0);
+    setFormData(prev => ({ ...prev, shipmentValue: total }));
+  }, [orders]);
+
+  const addProduct = (boxNumber = 1) => {
+    setOrders([...orders, { box_no: boxNumber, product_name: '', product_quantity: 1, selling_price: 0, tax_in_percentage: '' }]);
   };
 
   const addBox = () => {
@@ -233,12 +243,11 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
   };
 
   const removeBox = (index) => {
+    const boxNumber = index + 1;
     const updatedBoxes = boxes.filter((_, i) => i !== index);
+    const updatedOrders = orders.filter(o => parseInt(o.box_no) !== boxNumber);
     setBoxes(updatedBoxes);
-    setFormData((prev) => ({
-      ...prev,
-      boxes: boxes
-    }))
+    setOrders(updatedOrders);
   };
 
   const handleOrders = (index, event) => {
@@ -331,12 +340,22 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
     const istOffset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
     const istDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60 * 1000) + istOffset);
 
+    // COD validation
+    if (formData.payMode === 'COD' && (!formData.cod || parseFloat(formData.cod) <= 0)) {
+      toast.error('COD amount must be greater than 0 for COD orders');
+      return;
+    }
+    if (formData.payMode === 'Pre-paid' && parseFloat(formData.cod) > 0) {
+      toast.error('COD amount must be 0 for Prepaid orders');
+      return;
+    }
+
     // Combine shipment pickup date and time into a single Date object
     const pickupDateAndTime = new Date(`${formData.pickupDate}T${formData.pickupTime}`);
 
     // Compare pickup time with the current IST time
     if (pickupDateAndTime < istDate) {
-      alert('Pickup time is already passed. Please update and try again');
+      toast.error('Pickup time is already passed. Please update and try again');
       return;
     }
     let boxFlag = 0
@@ -347,7 +366,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
         }
       }
       if (boxFlag == 0) {
-        alert('Please make sure every box has some items')
+        toast.error('Please make sure every box has some items');
         return
       }
       boxFlag = 0
@@ -361,7 +380,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
         }
       }
       if (itemFlag == 0) {
-        alert('Some items have invalid box no.')
+        toast.error('Some items have invalid box no.');
         return
       }
       itemFlag = 0
@@ -378,14 +397,16 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
       .then(response => response.json())
       .then(result => {
         if (result.success) {
-          alert('Order Updated successfully')
+          toast.success('Order updated successfully');
+          setIsManage(false);
+          fetchData();
         } else {
-          alert('Order failed: ' + result.message)
+          toast.error('Order failed: ' + result.message);
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred during Order');
+        toast.error('An error occurred during Order');
       });
   }
 
@@ -415,7 +436,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Pickup Date"
+                label="Pickup Date *"
                 type="date"
                 name="pickupDate"
                 size="small"
@@ -427,7 +448,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Pickup Time"
+                label="Pickup Time *"
                 type="time"
                 name="pickupTime"
                 size="small"
@@ -458,7 +479,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
               />
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>
-              <InputLabel>Payment Method</InputLabel>
+              <InputLabel>Payment Method *</InputLabel>
               <Select
                 value={formData.payMode}
                 onChange={handleChange}
@@ -481,7 +502,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
               />
             </FormControl>
             <FormControl sx={{ minWidth: 300, flex: 1 }}>
-              <InputLabel>Shipping Type</InputLabel>
+              <InputLabel>Shipping Type *</InputLabel>
               <Select
                 value={formData.shippingType}
                 onChange={handleChange}
@@ -500,12 +521,13 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
                 size="small"
                 type="number"
                 value={formData.shipmentValue}
-                onChange={handleChange}
+                disabled
+                helperText="Auto-calculated from item prices × quantities"
               />
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Buyer's Name"
+                label="Buyer's Name *"
                 name="name"
                 size="small"
                 placeholder="Ex. Aditya Kumar"
@@ -525,7 +547,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Buyer's Phone"
+                label="Buyer's Phone *"
                 name="phone"
                 size="small"
                 placeholder="Ex. 1234554321"
@@ -535,7 +557,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 3 }}>
               <TextField
-                label="Shipping Address"
+                label="Shipping Address *"
                 name="address"
                 size="small"
                 placeholder="Ex. House no. 105, Kankarbagh, Patna, Bihar"
@@ -544,7 +566,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
               />
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
-              <InputLabel>Shipping Address Type</InputLabel>
+              <InputLabel>Shipping Address Type *</InputLabel>
               <Select
                 value={formData.addressType}
                 onChange={handleChange}
@@ -558,7 +580,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Shipping Pincode"
+                label="Shipping Pincode *"
                 name="postcode"
                 size="small"
                 placeholder="Ex. 813210"
@@ -568,7 +590,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Shipping City"
+                label="Shipping City *"
                 name="city"
                 size="small"
                 placeholder="Ex. Bhagalpur"
@@ -578,7 +600,7 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
             <FormControl fullWidth sx={{ minWidth: 300, flex: 1 }}>
               <TextField
-                label="Shipping State"
+                label="Shipping State *"
                 name="state"
                 size="small"
                 placeholder="Ex. Bihar"
@@ -674,172 +696,98 @@ const ManageForm = ({ isManage, setIsManage, shipment, isShipped }) => {
             </FormControl>
           </Box>
           <Box sx={{ my: 4 }}>
-            <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Boxes</div>
-            {boxes.map((box, index) => (
-              <Box key={index} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
-                <FormControl sx={{ minWidth: 100, flex: 1 }}>
-                  <TextField
-                    label="Box No"
-                    name="box_no"
-                    size="small"
-                    disabled
-                    value={index + 1}
-                  />
-                </FormControl>
-                <FormControl sx={{ minWidth: 100, flex: 1 }}>
-                  <TextField
-                    label="Length (in cm)"
-                    name="length"
-                    size="small"
-                    value={box.length}
-                    onChange={(e) => handleBoxes(index, e)}
-                  />
-                </FormControl>
-                <FormControl sx={{ minWidth: 100, flex: 1 }}>
-                  <TextField
-                    label="Width (in cm)"
-                    name="breadth"
-                    size="small"
-                    value={box.breadth}
-                    onChange={(e) => handleBoxes(index, e)}
-                  />
-                </FormControl>
-                <FormControl sx={{ minWidth: 100, flex: 1 }}>
-                  <TextField
-                    label="Height (in cm)"
-                    name="height"
-                    size="small"
-                    value={box.height}
-                    onChange={(e) => handleBoxes(index, e)}
-                  />
-                </FormControl>
-                <Box sx={{ flex: 1, display: 'flex' }}>
-                  <FormControl sx={{ minWidth: 90, flex: 1 }}>
-                    <TextField
-                      label="Weight"
-                      name="weight"
-                      size="small"
-                      value={box.weight}
-                      onChange={(e) => handleBoxes(index, e)}
-                    />
-                  </FormControl>
-                  <FormControl sx={{ minWidth: 50 }}>
-                    <InputLabel>Unit</InputLabel>
-                    <Select
-                      value={box.weight_unit}
-                      onChange={(e) => handleBoxes(index, e)}
-                      name="weight_unit"
-                      size="small"
-                      label="Weight Unit"
-                    >
-                      <MenuItem value="g">gm</MenuItem>
-                      <MenuItem value="kg">kg</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
-                <FormControl sx={{ minWidth: 100, flex: 1 }}>
-                  <TextField
-                    label="Quantity"
-                    name="quantity"
-                    size="small"
-                    type="text"
-                    value={box.quantity}
-                    onChange={(e) => handleBoxes(index, e)}
-                  />
-                </FormControl>
-                {boxes.length > 1 && (
-                  <FormControl fullWidth sx={{ minWidth: 150 }}>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={() => removeBox(index)}
-                      sx={{ width: '100%' }}
-                    >
-                      Remove
-                    </Button>
-                  </FormControl>
-                )}
+            <Typography variant="h6" fontWeight="bold" mb={2}>Package Details (Boxes &amp; Items)</Typography>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {boxes.map((box, boxIndex) => {
+                const boxNumber = boxIndex + 1;
+                const boxItems = orders
+                  .map((o, i) => ({ order: o, index: i }))
+                  .filter(({ order }) => parseInt(order.box_no) === boxNumber);
+                return (
+                  <Paper key={boxIndex} variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                    {/* Box header */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1.5, bgcolor: '#f0f4ff', borderBottom: '1px solid', borderColor: 'divider' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Chip label={boxNumber} size="small" color="primary" />
+                        <Typography variant="body2" fontWeight="bold" color="primary.main">Box {boxNumber}</Typography>
+                      </Box>
+                      {boxes.length > 1 && !isShipped && (
+                        <Tooltip title="Remove box">
+                          <IconButton size="small" color="error" onClick={() => removeBox(boxIndex)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
+                    {/* Box dimensions */}
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+                      <FormControl sx={{ minWidth: 100, flex: 1 }}>
+                        <TextField label="Length (cm) *" name="length" size="small" type="number" value={box.length} onChange={(e) => handleBoxes(boxIndex, e)} />
+                      </FormControl>
+                      <FormControl sx={{ minWidth: 100, flex: 1 }}>
+                        <TextField label="Width (cm) *" name="breadth" size="small" type="number" value={box.breadth} onChange={(e) => handleBoxes(boxIndex, e)} />
+                      </FormControl>
+                      <FormControl sx={{ minWidth: 100, flex: 1 }}>
+                        <TextField label="Height (cm) *" name="height" size="small" type="number" value={box.height} onChange={(e) => handleBoxes(boxIndex, e)} />
+                      </FormControl>
+                      <Box sx={{ flex: 1, display: 'flex', minWidth: 150 }}>
+                        <FormControl sx={{ flex: 1 }}>
+                          <TextField label="Weight *" name="weight" size="small" type="number" value={box.weight} onChange={(e) => handleBoxes(boxIndex, e)} />
+                        </FormControl>
+                        <FormControl sx={{ minWidth: 70 }}>
+                          <InputLabel>Unit</InputLabel>
+                          <Select value={box.weight_unit} onChange={(e) => handleBoxes(boxIndex, e)} name="weight_unit" size="small" label="Unit">
+                            <MenuItem value="g">gm</MenuItem>
+                            <MenuItem value="kg">kg</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Box>
+                    </Box>
+                    {/* Items in this box */}
+                    <Box sx={{ p: 2 }}>
+                      <Typography variant="caption" color="text.secondary" fontWeight="bold" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        Items in Box {boxNumber}
+                      </Typography>
+                      {boxItems.length === 0 && (
+                        <Typography variant="caption" color="text.disabled" display="block" textAlign="center" py={1} fontStyle="italic">
+                          No items yet — click &quot;+ Add Item&quot; to add one.
+                        </Typography>
+                      )}
+                      {boxItems.map(({ order, index }) => (
+                        <Box key={index} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 1.5, p: 1.5, bgcolor: 'grey.50', border: '1px solid', borderColor: 'grey.200', borderRadius: 1, alignItems: 'center' }}>
+                          <FormControl sx={{ minWidth: 200, flex: 2 }}>
+                            <TextField label="Product Name *" name="product_name" size="small" value={order.product_name} onChange={(e) => handleOrders(index, e)} />
+                          </FormControl>
+                          <FormControl sx={{ minWidth: 80, flex: 1 }}>
+                            <TextField label="Qty *" name="product_quantity" size="small" type="number" value={order.product_quantity} onChange={(e) => handleOrders(index, e)} />
+                          </FormControl>
+                          <FormControl sx={{ minWidth: 100, flex: 1 }}>
+                            <TextField label="Price (₹) *" name="selling_price" size="small" type="number" value={order.selling_price} onChange={(e) => handleOrders(index, e)} />
+                          </FormControl>
+                          {boxItems.length > 1 && !isShipped && (
+                            <Tooltip title="Remove item">
+                              <IconButton size="small" color="error" onClick={() => removeProduct(index)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Box>
+                      ))}
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1.5 }}>
+                        <Button variant="contained" color="success" size="small" onClick={() => addProduct(boxNumber)} disabled={isShipped}>
+                          + Add Item
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Paper>
+                );
+              })}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                <Button variant="contained" onClick={addBox} disabled={isShipped}>
+                  + Add Box
+                </Button>
               </Box>
-            ))}
-            <Button
-              variant="contained"
-              onClick={addBox}
-              sx={{ borderRadius: '4px', mt: 2 }}
-            >
-              Add More Boxes
-            </Button>
-          </Box>
-          <Box sx={{ my: 4 }}>
-            <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>Items</div>
-            {orders.map((order, index) => (
-              <Box key={index} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 2 }}>
-                <FormControl sx={{ minWidth: 150, flex: 1 }}>
-                  <TextField
-                    label="Box No"
-                    name="box_no"
-                    size="small"
-                    value={order.box_no}
-                    onChange={(e) => handleOrders(index, e)}
-                  />
-                </FormControl>
-                <FormControl sx={{ minWidth: 300, flex: 2 }}>
-                  <TextField
-                    label="Product Name"
-                    name="product_name"
-                    size="small"
-                    value={order.product_name}
-                    onChange={(e) => handleOrders(index, e)}
-                  />
-                </FormControl>
-                <FormControl sx={{ minWidth: 75, flex: 1 }}>
-                  <TextField
-                    label="Quantity"
-                    name="product_quantity"
-                    size="small"
-                    type="number"
-                    value={order.product_quantity}
-                    onChange={(e) => handleOrders(index, e)}
-                  />
-                </FormControl>
-                <FormControl fullWidth sx={{ minWidth: 100, flex: 1 }}>
-                  <TextField
-                    label="Price"
-                    name="selling_price"
-                    size="small"
-                    value={order.selling_price}
-                    onChange={(e) => handleOrders(index, e)}
-                  />
-                </FormControl>
-                <FormControl fullWidth sx={{ minWidth: 100, flex: 1 }}>
-                  <TextField
-                    label="Tax"
-                    name="tax_in_percentage"
-                    size="small"
-                    value={order.tax_in_percentage}
-                    onChange={(e) => handleOrders(index, e)}
-                  />
-                </FormControl>
-                {orders.length > 1 && (
-                  <FormControl fullWidth sx={{ minWidth: 150 }}>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={() => removeProduct(index)}
-                      sx={{ width: '100%' }}
-                    >
-                      Remove
-                    </Button>
-                  </FormControl>
-                )}
-              </Box>
-            ))}
-            <Button
-              variant="contained"
-              onClick={addProduct}
-              sx={{ borderRadius: '4px', mt: 2 }}
-            >
-              Add More Product
-            </Button>
+            </div>
           </Box>
           <FormControlLabel
             control={
@@ -2191,8 +2139,7 @@ const Listing = ({ step, setStep }) => {
   }, [filters]);
 
   // Fetch data with filters and pagination
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
       if (abortController) {
         abortController.abort();
       }
@@ -2241,7 +2188,7 @@ const Listing = ({ step, setStep }) => {
         setIsLoading(false);
       }
     };
-
+  useEffect(() => {
     fetchData();
   }, [debouncedFilters, page]);
 
@@ -2666,6 +2613,7 @@ const Listing = ({ step, setStep }) => {
       {selectedShipment && (
         <Modal isOpen={isManageOpen} onClose={() => setIsManageOpen(false)}>
           <ManageForm
+            fetchData={fetchData}
             isManage={isManageOpen}
             setIsManage={setIsManageOpen}
             shipment={selectedShipment}
