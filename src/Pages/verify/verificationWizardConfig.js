@@ -38,20 +38,20 @@ export const VERIFICATION_WIZARD_CONFIG = Object.freeze({
         {
           name: "bank",
           label: "Bank Name",
-          required: true,
-          helperText: "Enter your bank name",
+          required: false,
+          helperText: "Enter your bank name for COD settlement (optional)",
         },
         {
           name: "ifsc",
           label: "IFSC Code",
-          required: true,
-          helperText: "Enter your bank IFSC code",
+          required: false,
+          helperText: "Enter your bank IFSC code for COD settlement (optional)",
         },
         {
           name: "account",
           label: "Account Number",
-          required: true,
-          helperText: "Enter your bank account number",
+          required: false,
+          helperText: "Enter your bank account number for COD settlement (optional)",
         },
       ],
       fileFields: [
@@ -168,9 +168,9 @@ export const VERIFICATION_STEP_SCHEMAS = Object.freeze({
       .string()
       .min(1, "PIN Code is required")
       .regex(/^\d{6}$/, "Invalid PIN Code"),
-    bank: z.string().min(1, "Bank Name is required"),
-    ifsc: z.string().min(1, "IFSC Code is required"),
-    account: z.string().min(1, "Account Number is required"),
+    bank: z.string().optional(),
+    ifsc: z.string().optional(),
+    account: z.string().optional(),
   }),
   kyc: z.object({
     aadhar: z
