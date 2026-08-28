@@ -8,7 +8,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { InputAdornment } from '@mui/material';
 import { toast } from 'react-toastify';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 import getMerchantProfileService from '../services/updateProfileServices/getMerchantProfileService';
 import getMyProfileUpdateRequestService from '../services/updateProfileServices/getMyProfileUpdateRequestService';
 
@@ -22,10 +22,10 @@ const basicSchema = z.object({
 });
 
 const personalSchema = z.object({
-    address: z.string().min(20, 'Address must be at least 20 characters').max(255, 'Address too long').or(z.literal('')),
-    state: z.string().min(3, 'State too short').max(100).or(z.literal('')),
-    city: z.string().min(3, 'City too short').max(100).or(z.literal('')),
-    pin: z.string().regex(/^[1-9]\d{5}$/, 'Invalid pincode').or(z.literal('')),
+    address: z.string().min(20, 'Address must be at least 20 characters').max(255, 'Address too long'),
+    state: z.string().min(3, 'State too short').max(100),
+    city: z.string().min(3, 'City too short').max(100),
+    pin: z.string().regex(/^[1-9]\d{5}$/, 'Invalid pincode'),
     accountNumber: z.string().or(z.literal('')),
     ifsc: z.string().or(z.literal('')),
     bank: z.string().or(z.literal('')),
@@ -39,8 +39,8 @@ const businessSchema = z.object({
 });
 
 const kycSchema = z.object({
-    aadhar_number: z.string().regex(/^\d{12}$/, 'Aadhar must be 12 digits').or(z.literal('')),
-    pan_number: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN (capital letters)').or(z.literal('')),
+    aadhar_number: z.string().regex(/^\d{12}$/, 'Aadhar must be 12 digits'),
+    pan_number: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN (capital letters)'),
 });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -63,6 +63,7 @@ const EMPTY_FILES = {
     cancelledCheque: null,
     selfie_doc: null,
     gst_doc: null,
+    msme_doc: null,
     aadhar_doc: null,
     pan_doc: null,
 };
@@ -105,6 +106,7 @@ const FIELD_LABELS = {
     aadhar_number: 'Aadhar Number', pan_number: 'PAN Number',
     cancelledCheque: 'Cancelled Cheque', selfie_doc: 'Selfie Document',
     gst_doc: 'GST Document', aadhar_doc: 'Aadhar Document', pan_doc: 'PAN Document',
+    msme_doc: 'MSME Document',
 };
 
 // ─── File Upload Helper ───────────────────────────────────────────────────────
@@ -141,7 +143,7 @@ const FormField = ({ fieldId, label, helperText, formData, onChange, errors, cha
         onChange={onChange}
         fullWidth
         error={Boolean(errors[fieldId])}
-        helperText={errors[fieldId]?.[0] || helperText}
+        helperText={errors[fieldId] || helperText}
         sx={changed ? { '& fieldset': { borderColor: '#f59e0b !important', borderWidth: '2px' } } : {}}
     />
 );
@@ -159,11 +161,11 @@ const BasicStage = ({ formData, onChange, errors, original }) => (
 
 const PersonalStage = ({ formData, onChange, errors, original, files, onFileChange }) => (
     <Box display="flex" flexDirection="column" gap={2}>
-        <FormField fieldId="address" label="Address" helperText="Full address (min 20 chars)" formData={formData} onChange={onChange} errors={errors} changed={formData.address !== original.address} />
+        <FormField fieldId="address" label="Address *" helperText="Full address (min 20 chars)" formData={formData} onChange={onChange} errors={errors} changed={formData.address !== original.address} />
         <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2}>
-            <FormField fieldId="state" label="State" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.state !== original.state} />
-            <FormField fieldId="city" label="City" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.city !== original.city} />
-            <FormField fieldId="pin" label="Pincode" helperText="6-digit pincode" formData={formData} onChange={onChange} errors={errors} changed={formData.pin !== original.pin} />
+            <FormField fieldId="state" label="State *" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.state !== original.state} />
+            <FormField fieldId="city" label="City *" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.city !== original.city} />
+            <FormField fieldId="pin" label="Pincode *" helperText="6-digit pincode" formData={formData} onChange={onChange} errors={errors} changed={formData.pin !== original.pin} />
             <FormField fieldId="bank" label="Bank Name" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.bank !== original.bank} />
             <FormField fieldId="accountNumber" label="Account Number" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.accountNumber !== original.accountNumber} />
             <FormField fieldId="ifsc" label="IFSC Code" helperText="" formData={formData} onChange={onChange} errors={errors} changed={formData.ifsc !== original.ifsc} />
@@ -185,6 +187,7 @@ const BusinessStage = ({ formData, onChange, errors, original, files, onFileChan
             <FormField fieldId="cin" label="CIN Number" helperText="Company Identification Number" formData={formData} onChange={onChange} errors={errors} changed={formData.cin !== original.cin} />
             <FormField fieldId="msme" label="MSME Number" helperText="UDYAM-XX-00-0000000" formData={formData} onChange={onChange} errors={errors} changed={formData.msme !== original.msme} />
             <FileField fieldId="gst_doc" label="GST Document" helperText="Upload GST certificate (png/jpeg/pdf)" files={files} onFileChange={onFileChange} />
+            <FileField fieldId="msme_doc" label="MSME Document" helperText="Upload MSME certificate (png/jpeg/pdf)" files={files} onFileChange={onFileChange} />
         </Box>
     </Box>
 );
@@ -193,9 +196,9 @@ const BusinessStage = ({ formData, onChange, errors, original, files, onFileChan
 
 const KycStage = ({ formData, onChange, errors, original, files, onFileChange }) => (
     <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr' }} gap={2}>
-        <FormField fieldId="aadhar_number" label="Aadhar Number" helperText="12-digit number" formData={formData} onChange={onChange} errors={errors} changed={formData.aadhar_number !== original.aadhar_number} />
+        <FormField fieldId="aadhar_number" label="Aadhar Number *" helperText="12-digit number" formData={formData} onChange={onChange} errors={errors} changed={formData.aadhar_number !== original.aadhar_number} />
         <FileField fieldId="aadhar_doc" label="Aadhar Document" helperText="Upload Aadhar (png/jpeg/pdf)" files={files} onFileChange={onFileChange} />
-        <FormField fieldId="pan_number" label="PAN Number" helperText="10-char PAN (capital letters)" formData={formData} onChange={onChange} errors={errors} changed={formData.pan_number !== original.pan_number} />
+        <FormField fieldId="pan_number" label="PAN Number *" helperText="10-char PAN (capital letters)" formData={formData} onChange={onChange} errors={errors} changed={formData.pan_number !== original.pan_number} />
         <FileField fieldId="pan_doc" label="PAN Document" helperText="Upload PAN (png/jpeg/pdf)" files={files} onFileChange={onFileChange} />
     </Box>
 );
@@ -360,11 +363,13 @@ const UpdateProfileRequest = () => {
             return true;
         } catch (e) {
             const fieldErrors = {};
-            e.errors.forEach((err) => {
-                const path = err.path[0];
-                if (path) fieldErrors[path] = [err.message];
-            });
-            setErrors(fieldErrors);
+            if (e instanceof ZodError){
+                e.issues.forEach((err) => {
+                    const path = err.path[0];
+                    if (path) fieldErrors[path] = [err.message];
+                });
+                setErrors(fieldErrors);
+            }
             return false;
         }
     }, [stage, formData]);
@@ -395,7 +400,7 @@ const UpdateProfileRequest = () => {
                 fileUrls[key] = await uploadFileToS3(files[key], s3Key);
             }
 
-            setLoading('Submitting request...');
+            setLoading('Submitting...');
 
             const BASIC_DATA = {
                 fullName: formData.fullName,
@@ -441,8 +446,8 @@ const UpdateProfileRequest = () => {
 
             const result = await response.json();
             if (result.success) {
-                toast.success('Profile update request submitted successfully!');
-                setSubmitted(true);
+                toast.success('Profile updated successfully!');
+                // setSubmitted(true);
             } else {
                 toast.error(result.message || 'Submission failed');
             }
@@ -471,12 +476,12 @@ const UpdateProfileRequest = () => {
         <Box sx={{ maxWidth: 720, mx: 'auto', p: { xs: 2, sm: 4 } }}>
             {/* Header */}
             <Typography variant="h5" fontWeight={700} textAlign="center" mb={0.5}>
-                Profile Update Request
+                Profile Update
             </Typography>
-            <Typography variant="body2" color="text.secondary" textAlign="center" mb={3}>
+            {/* <Typography variant="body2" color="text.secondary" textAlign="center" mb={3}>
                 Fields highlighted in amber have been changed from your current profile.
                 Only changed fields will be reviewed by the admin.
-            </Typography>
+            </Typography> */}
 
             {/* Stepper */}
             <Stepper activeStep={stage} alternativeLabel sx={{ mb: 4 }}>
@@ -543,7 +548,7 @@ const UpdateProfileRequest = () => {
                         disabled={Boolean(loading) || !hasChanges}
                         sx={{ minWidth: 140, bgcolor: 'black', '&:hover': { bgcolor: '#333' } }}
                     >
-                        {loading || 'Submit Request'}
+                        {loading || 'Update'}
                     </Button>
                 )}
             </Box>

@@ -12,6 +12,7 @@ const Profile = () => {
     email: '',
     phone: '',
     msme: '',
+    msme_doc: '',
     cin: '',
     gstin: '', // Maps to gst from backend
     aadhar: '', // Maps to aadhar_number from backend
@@ -114,6 +115,7 @@ const Profile = () => {
             email: data.email || '',
             phone: data.phone || '',
             msme: data.msme || '',
+            msme_doc: data.msme_doc || '',
             cin: data.cin || '',
             gstin: data.gst || '', // Backend field is 'gst'
             aadhar: data.aadhar_number || '',
@@ -242,7 +244,7 @@ const Profile = () => {
                 <DetailRow label="Address" value={profileData.address} />
                 <DetailRow label="GSTIN" value={profileData.gstin} docKey="gst_doc" />
                 <DetailRow label="CIN" value={profileData.cin} />
-                <DetailRow label="MSME/UDYOG" value={profileData.msme} />
+                <DetailRow label="MSME/UDYOG" value={profileData.msme} docKey="msme_doc" />
                 <DetailRow label="Aadhar Number" value={profileData.aadhar} docKey="aadhar_doc" />
                 <DetailRow label="PAN Number" value={profileData.pan} docKey="pan_doc" />
                 <DetailRow label="City" value={profileData.city} />
