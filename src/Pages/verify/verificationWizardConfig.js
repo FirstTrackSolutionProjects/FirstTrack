@@ -140,6 +140,13 @@ export const VERIFICATION_WIZARD_CONFIG = Object.freeze({
       ],
       fileFields: [
         {
+          name: "msme_doc",
+          label: "MSME Certificate",
+          required: false,
+          helperText: "Upload MSME certificate (optional)",
+          accept: "image/*,application/pdf",
+        },
+        {
           name: "gst_doc",
           label: "GST Certificate",
           required: false,

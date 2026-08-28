@@ -152,6 +152,7 @@ const View = ({ userRoleId, onClose }) => {
                         <div className='w-full font-medium text-gray-700'>
                             <p>GSTIN : {user.gstin} <span className="cursor-pointer" onClick={() => handleDownload('gst_doc')}>[PDF]</span></p>
                             <p>CIN : {user.cin}</p>
+                            <p>MSME/UDYOG : {user.msme} <span className="cursor-pointer" onClick={() => handleDownload('msme_doc')}>[PDF]</span></p>
                             <p>Aadhar Number : {user.aadhar_number} <span className="cursor-pointer" onClick={() => handleDownload('aadhar_doc')}>[PDF]</span></p>
                             <p>PAN Number : {user.pan_number} <span className="cursor-pointer" onClick={() => handleDownload('pan_doc')}>[PDF]</span></p>
                             <p>Address : {user.address}</p>
