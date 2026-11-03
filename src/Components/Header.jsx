@@ -16,7 +16,7 @@ const API_URL = import.meta.env.VITE_APP_API_URL
 
 const Header = () => {
   const location = useLocation();
-  const {isAuthenticated, name, logout, verified, role} = useAuth()
+  const {isAuthenticated, name, logout, verified, role, business_name} = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showRecharge, setShowRecharge] = useState(false);
   const [showCreditDetails, setShowCreditDetails] = useState(false);
@@ -329,9 +329,9 @@ const Header = () => {
                     to="/dashboard"
                     onClick={() => setIsSidebarOpen(false)}
                     className="font-semibold text-gray-800 hover:text-green-600 transition-colors duration-200 cursor-pointer truncate max-w-30 md:max-w-37.5"
-                    title={name}
+                    title={business_name || name}
                   >
-                    {name}
+                    {business_name || name}
                   </NavLink>
               
                   <button
