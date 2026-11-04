@@ -9,8 +9,8 @@ const getGreeting = (h) => {
 }
 
 const Greeting = ({ className = '' }) => {
-  const { name } = useAuth()
-  const displayName = name ?? 'User'
+  const { name, business_name } = useAuth()
+  const displayName = business_name ?? name ?? 'User'
 
   const [now, setNow] = useState(new Date())
 
